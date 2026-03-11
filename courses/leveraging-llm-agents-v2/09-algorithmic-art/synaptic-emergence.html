@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synaptic Emergence — Knowledge Network</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.7.0/p5.min.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --anthropic-dark: #141413;
+            --anthropic-light: #faf9f5;
+            --anthropic-mid-gray: #b0aea5;
+            --anthropic-light-gray: #e8e6dc;
+            --anthropic-orange: #d97757;
+            --anthropic-blue: #6a9bcc;
+            --anthropic-green: #788c5d;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, var(--anthropic-light) 0%, #f5f3ee 100%);
+            min-height: 100vh;
+            color: var(--anthropic-dark);
+        }
+        .container { display: flex; min-height: 100vh; padding: 20px; gap: 20px; }
+        .sidebar {
+            width: 320px; flex-shrink: 0;
+            background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+            padding: 24px; border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(20,20,19,0.1);
+            overflow-y: auto; overflow-x: hidden;
+        }
+        .sidebar h1 { font-family: 'Lora', serif; font-size: 22px; font-weight: 500; color: var(--anthropic-dark); margin-bottom: 4px; }
+        .sidebar .subtitle { color: var(--anthropic-mid-gray); font-size: 13px; margin-bottom: 24px; line-height: 1.4; }
+        .control-section { margin-bottom: 28px; }
+        .control-section h3 {
+            font-size: 15px; font-weight: 600; color: var(--anthropic-dark);
+            margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+        }
+        .control-section h3::before { content: '•'; color: var(--anthropic-orange); font-weight: bold; }
+        .seed-input {
+            width: 100%; background: var(--anthropic-light); padding: 10px;
+            border-radius: 8px; font-family: 'Courier New', monospace; font-size: 14px;
+            margin-bottom: 10px; border: 1px solid var(--anthropic-light-gray); text-align: center;
+        }
+        .seed-input:focus { outline: none; border-color: var(--anthropic-orange); box-shadow: 0 0 0 2px rgba(217,119,87,0.1); background: white; }
+        .seed-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 8px; }
+        .control-group { margin-bottom: 16px; }
+        .control-group label { display: block; font-size: 13px; font-weight: 500; color: var(--anthropic-dark); margin-bottom: 6px; }
+        .slider-container { display: flex; align-items: center; gap: 10px; }
+        .slider-container input[type="range"] { flex: 1; height: 4px; background: var(--anthropic-light-gray); border-radius: 2px; outline: none; -webkit-appearance: none; }
+        .slider-container input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; background: var(--anthropic-orange); border-radius: 50%; cursor: pointer; }
+        .slider-container input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; background: var(--anthropic-orange); border-radius: 50%; border: none; cursor: pointer; }
+        .value-display { font-family: 'Courier New', monospace; font-size: 11px; color: var(--anthropic-mid-gray); min-width: 50px; text-align: right; }
+        .button {
+            background: var(--anthropic-orange); color: white; border: none;
+            padding: 9px 14px; border-radius: 6px; font-size: 13px; font-weight: 500;
+            cursor: pointer; transition: all 0.2s ease; width: 100%;
+        }
+        .button:hover { background: #c86641; transform: translateY(-1px); }
+        .button:active { transform: translateY(0); }
+        .button.secondary { background: var(--anthropic-blue); }
+        .button.secondary:hover { background: #5a8bb8; }
+        .button.tertiary { background: var(--anthropic-green); }
+        .button.tertiary:hover { background: #6b7b52; }
+        .button-row { display: flex; gap: 8px; }
+        .button-row .button { flex: 1; }
+        .canvas-area { flex: 1; display: flex; align-items: center; justify-content: center; min-width: 0; }
+        #canvas-container {
+            width: 100%; max-width: 1000px; border-radius: 12px; overflow: hidden;
+            box-shadow: 0 20px 40px rgba(20,20,19,0.1); background: #0d1117;
+        }
+        #canvas-container canvas { display: block; width: 100% !important; height: auto !important; }
+        .loading { display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--anthropic-mid-gray); padding: 200px 0; }
+        .legend { margin-top: 8px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; font-size: 12px; color: var(--anthropic-mid-gray); }
+        .legend-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+        @media (max-width: 700px) { .container { flex-direction: column; } .sidebar { width: 100%; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h1>Synaptic Emergence</h1>
+            <div class="subtitle">Knowledge network of a 5-session LLM Agent course — 10 objectives clustering, connecting, and breathing as learning takes shape.</div>
+
+            <div class="control-section">
+                <h3>Seed</h3>
+                <input type="number" id="seed-input" class="seed-input" value="42" onchange="updateSeed()">
+                <div class="seed-controls">
+                    <button class="button secondary" onclick="previousSeed()">← Prev</button>
+                    <button class="button secondary" onclick="nextSeed()">Next →</button>
+                </div>
+                <button class="button tertiary" style="margin-top:0" onclick="randomSeedAndUpdate()">↻ Random</button>
+            </div>
+
+            <div class="control-section">
+                <h3>Parameters</h3>
+                <div class="control-group">
+                    <label>Node Count</label>
+                    <div class="slider-container">
+                        <input type="range" id="nodeCount" min="30" max="120" step="5" value="60" oninput="updateParam('nodeCount', this.value)">
+                        <span class="value-display" id="nodeCount-value">60</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Cluster Gravity</label>
+                    <div class="slider-container">
+                        <input type="range" id="clusterGravity" min="0.002" max="0.03" step="0.001" value="0.012" oninput="updateParam('clusterGravity', this.value)">
+                        <span class="value-display" id="clusterGravity-value">0.012</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Edge Distance</label>
+                    <div class="slider-container">
+                        <input type="range" id="edgeDist" min="60" max="200" step="5" value="120" oninput="updateParam('edgeDist', this.value)">
+                        <span class="value-display" id="edgeDist-value">120</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Breathing Amplitude</label>
+                    <div class="slider-container">
+                        <input type="range" id="breathAmp" min="0" max="3" step="0.1" value="1.2" oninput="updateParam('breathAmp', this.value)">
+                        <span class="value-display" id="breathAmp-value">1.2</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Cascade Frequency</label>
+                    <div class="slider-container">
+                        <input type="range" id="cascadeFreq" min="60" max="600" step="30" value="180" oninput="updateParam('cascadeFreq', this.value)">
+                        <span class="value-display" id="cascadeFreq-value">180</span>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label>Cross-Cluster Edges</label>
+                    <div class="slider-container">
+                        <input type="range" id="crossEdges" min="0" max="1" step="0.05" value="0.3" oninput="updateParam('crossEdges', this.value)">
+                        <span class="value-display" id="crossEdges-value">0.30</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Sessions</h3>
+                <div class="legend">
+                    <div class="legend-item"><div class="legend-dot" style="background:#5BC0BE"></div>Session 1 — Agent & Skill 101</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#F4A261"></div>Session 2 — Using Built-in Skills</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#8CB369"></div>Session 3 — Create Your First Skill</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#7B8CDE"></div>Session 4 — Advanced Skills</div>
+                    <div class="legend-item"><div class="legend-dot" style="background:#C77DFF"></div>Session 5 — Optimize & Deploy</div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <h3>Actions</h3>
+                <div class="button-row">
+                    <button class="button" onclick="resetParameters()">Reset</button>
+                    <button class="button tertiary" onclick="downloadPNG()">↓ PNG</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="canvas-area">
+            <div id="canvas-container">
+                <div class="loading">Initializing synaptic network...</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ═══════════════════════════════════════════════════════════════
+    // PARAMETERS
+    // ═══════════════════════════════════════════════════════════════
+    let params = {
+        seed: 42,
+        nodeCount: 60,
+        clusterGravity: 0.012,
+        edgeDist: 120,
+        breathAmp: 1.2,
+        cascadeFreq: 180,
+        crossEdges: 0.3
+    };
+    let defaultParams = JSON.parse(JSON.stringify(params));
+
+    // 5 session colors — teal, amber, sage, indigo, violet
+    const SESSION_COLORS = [
+        [91, 192, 190],   // #5BC0BE — Session 1
+        [244, 162, 97],   // #F4A261 — Session 2
+        [140, 179, 105],  // #8CB369 — Session 3
+        [123, 140, 222],  // #7B8CDE — Session 4
+        [199, 125, 255]   // #C77DFF — Session 5
+    ];
+
+    // 10 learning objectives mapped to sessions
+    const OBJECTIVES = [
+        { session: 0, label: "Explain prompt vs agent" },
+        { session: 0, label: "Identify automatable tasks" },
+        { session: 1, label: "Activate 3+ skills" },
+        { session: 1, label: "Choose skill via decision tree" },
+        { session: 2, label: "Create SKILL.md" },
+        { session: 2, label: "Organize skill folder" },
+        { session: 3, label: "Design complex skill" },
+        { session: 3, label: "Compare Cowork vs Claude Code" },
+        { session: 4, label: "Evaluate skill quality" },
+        { session: 4, label: "Build team adoption plan" }
+    ];
+
+    // ═══════════════════════════════════════════════════════════════
+    // SYSTEM STATE
+    // ═══════════════════════════════════════════════════════════════
+    let nodes = [];
+    let edges = [];
+    let cascades = [];
+    let clusterCenters = [];
+    let frameNum = 0;
+
+    // ═══════════════════════════════════════════════════════════════
+    // NODE CLASS
+    // ═══════════════════════════════════════════════════════════════
+    class Node {
+        constructor(x, y, session, objIndex, isObjective) {
+            this.x = x;
+            this.y = y;
+            this.vx = 0;
+            this.vy = 0;
+            this.session = session;
+            this.objIndex = objIndex;
+            this.isObjective = isObjective;
+            this.baseRadius = isObjective ? 8 : random(2.5, 5);
+            this.radius = this.baseRadius;
+            this.brightness = 0;
+            this.cascadeBrightness = 0;
+            this.phase = random(TWO_PI);
+            // Scaffolding encoding: earlier sessions = more noise, later = tighter
+            this.noiseAmp = map(session, 0, 4, 1.8, 0.4);
+        }
+
+        update(t) {
+            let cx = clusterCenters[this.session].x;
+            let cy = clusterCenters[this.session].y;
+
+            // Spring force toward cluster center
+            let dx = cx - this.x;
+            let dy = cy - this.y;
+            let dist = sqrt(dx * dx + dy * dy);
+            let force = params.clusterGravity * (1 + this.session * 0.15);
+            this.vx += dx * force;
+            this.vy += dy * force;
+
+            // Perlin noise perturbation (breathing)
+            let nx = noise(this.x * 0.003, this.y * 0.003, t * 0.008) - 0.5;
+            let ny = noise(this.x * 0.003 + 100, this.y * 0.003 + 100, t * 0.008) - 0.5;
+            this.vx += nx * params.breathAmp * this.noiseAmp;
+            this.vy += ny * params.breathAmp * this.noiseAmp;
+
+            // Repulsion from other nearby nodes
+            for (let other of nodes) {
+                if (other === this) continue;
+                let odx = this.x - other.x;
+                let ody = this.y - other.y;
+                let od = odx * odx + ody * ody;
+                if (od < 900 && od > 0.1) {
+                    let repel = 2.0 / od;
+                    this.vx += odx * repel;
+                    this.vy += ody * repel;
+                }
+            }
+
+            // Damping
+            this.vx *= 0.92;
+            this.vy *= 0.92;
+
+            this.x += this.vx;
+            this.y += this.vy;
+
+            // Keep in bounds
+            this.x = constrain(this.x, 40, width - 40);
+            this.y = constrain(this.y, 40, height - 40);
+
+            // Pulse radius
+            this.radius = this.baseRadius + sin(t * 0.03 + this.phase) * 0.8;
+
+            // Cascade brightness decay
+            this.cascadeBrightness *= 0.96;
+        }
+
+        draw() {
+            let col = SESSION_COLORS[this.session];
+            let bright = 160 + this.cascadeBrightness * 95;
+            let alpha = this.isObjective ? 240 : 140 + this.cascadeBrightness * 100;
+
+            // Glow
+            if (this.cascadeBrightness > 0.1 || this.isObjective) {
+                let glowSize = this.radius * (2.5 + this.cascadeBrightness * 3);
+                let glowAlpha = (this.isObjective ? 30 : 10) + this.cascadeBrightness * 50;
+                noStroke();
+                fill(col[0], col[1], col[2], glowAlpha);
+                ellipse(this.x, this.y, glowSize * 2);
+            }
+
+            // Core
+            noStroke();
+            fill(col[0], col[1], col[2], alpha);
+            ellipse(this.x, this.y, this.radius * 2);
+
+            // Bright center for objectives
+            if (this.isObjective) {
+                fill(255, 255, 255, 80 + this.cascadeBrightness * 120);
+                ellipse(this.x, this.y, this.radius * 0.8);
+            }
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // EDGE CLASS
+    // ═══════════════════════════════════════════════════════════════
+    class Edge {
+        constructor(a, b, isCross) {
+            this.a = a;
+            this.b = b;
+            this.isCross = isCross;
+            this.age = 0;
+            this.maxAge = 300;
+            this.brightness = 0;
+        }
+
+        draw() {
+            let dx = this.b.x - this.a.x;
+            let dy = this.b.y - this.a.y;
+            let dist = sqrt(dx * dx + dy * dy);
+            if (dist > params.edgeDist * 1.5) return;
+
+            this.age = min(this.age + 1, this.maxAge);
+            let ageFactor = this.age / this.maxAge;
+
+            // Cascade brightness from nodes
+            let cascB = max(this.a.cascadeBrightness, this.b.cascadeBrightness);
+            this.brightness = this.brightness * 0.9 + cascB * 0.1;
+
+            let baseAlpha = this.isCross ? 20 : 40;
+            let alpha = (baseAlpha + this.brightness * 80) * ageFactor;
+
+            if (this.isCross) {
+                // Gradient between two session colors
+                let ca = SESSION_COLORS[this.a.session];
+                let cb = SESSION_COLORS[this.b.session];
+                let mx = (ca[0] + cb[0]) / 2;
+                let my = (ca[1] + cb[1]) / 2;
+                let mz = (ca[2] + cb[2]) / 2;
+                stroke(mx, my, mz, alpha);
+            } else {
+                let col = SESSION_COLORS[this.a.session];
+                stroke(col[0], col[1], col[2], alpha);
+            }
+            strokeWeight(0.6 + this.brightness * 1.5);
+            line(this.a.x, this.a.y, this.b.x, this.b.y);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // CASCADE
+    // ═══════════════════════════════════════════════════════════════
+    function triggerCascade() {
+        let startNode = nodes[floor(random(nodes.length))];
+        startNode.cascadeBrightness = 1.0;
+        cascades.push({ origin: startNode, wave: 0, speed: 3.5, maxWave: params.edgeDist * 3 });
+    }
+
+    function updateCascades() {
+        for (let i = cascades.length - 1; i >= 0; i--) {
+            let c = cascades[i];
+            c.wave += c.speed;
+            for (let n of nodes) {
+                let d = dist(c.origin.x, c.origin.y, n.x, n.y);
+                if (abs(d - c.wave) < 15) {
+                    n.cascadeBrightness = max(n.cascadeBrightness, 1.0 - abs(d - c.wave) / 15);
+                }
+            }
+            if (c.wave > c.maxWave) cascades.splice(i, 1);
+        }
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // P5.JS SETUP & DRAW
+    // ═══════════════════════════════════════════════════════════════
+    function setup() {
+        let canvas = createCanvas(1200, 1200);
+        canvas.parent('canvas-container');
+        document.querySelector('.loading').style.display = 'none';
+        initializeSystem();
+    }
+
+    function initializeSystem() {
+        randomSeed(params.seed);
+        noiseSeed(params.seed);
+        nodes = [];
+        edges = [];
+        cascades = [];
+        frameNum = 0;
+
+        // Place 5 cluster centers in a pentagonal layout
+        clusterCenters = [];
+        let cx = width / 2, cy = height / 2, radius = 280;
+        for (let i = 0; i < 5; i++) {
+            let angle = -HALF_PI + (TWO_PI / 5) * i;
+            clusterCenters.push({
+                x: cx + cos(angle) * radius,
+                y: cy + sin(angle) * radius
+            });
+        }
+
+        // Create objective nodes (the 10 big ones)
+        for (let i = 0; i < OBJECTIVES.length; i++) {
+            let s = OBJECTIVES[i].session;
+            let cc = clusterCenters[s];
+            let n = new Node(
+                cc.x + random(-80, 80),
+                cc.y + random(-80, 80),
+                s, i, true
+            );
+            nodes.push(n);
+        }
+
+        // Create satellite nodes distributed across sessions
+        let perSession = floor((params.nodeCount - 10) / 5);
+        for (let s = 0; s < 5; s++) {
+            let cc = clusterCenters[s];
+            for (let j = 0; j < perSession; j++) {
+                let n = new Node(
+                    cc.x + random(-160, 160),
+                    cc.y + random(-160, 160),
+                    s, -1, false
+                );
+                nodes.push(n);
+            }
+        }
+
+        buildEdges();
+    }
+
+    function buildEdges() {
+        edges = [];
+        for (let i = 0; i < nodes.length; i++) {
+            for (let j = i + 1; j < nodes.length; j++) {
+                let a = nodes[i], b = nodes[j];
+                let d = dist(a.x, a.y, b.x, b.y);
+                if (a.session === b.session && d < params.edgeDist) {
+                    edges.push(new Edge(a, b, false));
+                } else if (a.session !== b.session && d < params.edgeDist * 0.8 && random() < params.crossEdges) {
+                    edges.push(new Edge(a, b, true));
+                }
+            }
+        }
+    }
+
+    function draw() {
+        background(13, 17, 23, 40); // Dark bg with trail fade
+        frameNum++;
+
+        // Rebuild edges periodically as nodes move
+        if (frameNum % 60 === 0) buildEdges();
+
+        // Trigger cascades
+        if (frameNum % params.cascadeFreq === 0 && frameNum > 30) triggerCascade();
+        updateCascades();
+
+        // Update & draw edges
+        for (let e of edges) e.draw();
+
+        // Update & draw nodes
+        for (let n of nodes) {
+            n.update(frameNum);
+            n.draw();
+        }
+
+        // Draw objective labels on hover proximity (subtle)
+        let mx = mouseX * (1200 / width), my = mouseY * (1200 / height);
+    }
+
+    // ═══════════════════════════════════════════════════════════════
+    // UI HANDLERS
+    // ═══════════════════════════════════════════════════════════════
+    function updateParam(name, value) {
+        params[name] = parseFloat(value);
+        document.getElementById(name + '-value').textContent =
+            name === 'crossEdges' ? parseFloat(value).toFixed(2) : value;
+        if (name === 'nodeCount') initializeSystem();
+    }
+
+    function updateSeedDisplay() { document.getElementById('seed-input').value = params.seed; }
+    function updateSeed() {
+        let v = parseInt(document.getElementById('seed-input').value);
+        if (v && v > 0) { params.seed = v; initializeSystem(); } else updateSeedDisplay();
+    }
+    function previousSeed() { params.seed = Math.max(1, params.seed - 1); updateSeedDisplay(); initializeSystem(); }
+    function nextSeed() { params.seed++; updateSeedDisplay(); initializeSystem(); }
+    function randomSeedAndUpdate() { params.seed = Math.floor(Math.random() * 999999) + 1; updateSeedDisplay(); initializeSystem(); }
+
+    function resetParameters() {
+        params = JSON.parse(JSON.stringify(defaultParams));
+        document.getElementById('nodeCount').value = params.nodeCount;
+        document.getElementById('nodeCount-value').textContent = params.nodeCount;
+        document.getElementById('clusterGravity').value = params.clusterGravity;
+        document.getElementById('clusterGravity-value').textContent = params.clusterGravity;
+        document.getElementById('edgeDist').value = params.edgeDist;
+        document.getElementById('edgeDist-value').textContent = params.edgeDist;
+        document.getElementById('breathAmp').value = params.breathAmp;
+        document.getElementById('breathAmp-value').textContent = params.breathAmp;
+        document.getElementById('cascadeFreq').value = params.cascadeFreq;
+        document.getElementById('cascadeFreq-value').textContent = params.cascadeFreq;
+        document.getElementById('crossEdges').value = params.crossEdges;
+        document.getElementById('crossEdges-value').textContent = parseFloat(params.crossEdges).toFixed(2);
+        updateSeedDisplay();
+        initializeSystem();
+    }
+
+    function downloadPNG() {
+        saveCanvas('synaptic-emergence-' + params.seed, 'png');
+    }
+
+    window.addEventListener('load', updateSeedDisplay);
+    </script>
+</body>
+</html>

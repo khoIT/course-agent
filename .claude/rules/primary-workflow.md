@@ -42,8 +42,8 @@
 #### 3. Material Generation
 - Based on the approved lesson plan, generate all required materials:
   - **Slides** → Use `pptx` skill. Follow the 4 design principles (KISS, Easy to Understand, Easy to Remember, Dynamic)
-  - **Facilitator Guide** → Use `docx` skill. Include speaker notes, timing, transition cues
-  - **Learner Handout** → Use `docx` skill. Standalone-usable summary + worksheets
+  - **Facilitator Guide** → Markdown (.md). Include speaker notes, timing, transition cues
+  - **Learner Handout** → Markdown (.md). Standalone-usable summary + worksheets
   - **Activities** → Design using REAL criteria. Include complete step-by-step procedures and all materials
   - **Assessments** → Align with learning objectives. Include rubrics if applicable
   - **Illustrations** → Use `canvas-design` skill for infographics, diagrams, poster visuals
@@ -51,12 +51,12 @@
 - **Use `WebSearch`** when generating content that references specific tools, platforms, or techniques — verify current accuracy.
 
 #### 4. Quality Evaluation
-- After generating materials, run the **18-criterion self-evaluation** from `./course-designer/references/evaluation-criteria.md`
+- After generating materials, run the **19-criterion self-evaluation** from `./course-designer/references/evaluation-criteria.md`
 - Rate each criterion: Pass / Needs Improvement / Not Addressed
 - For any criterion rated NI or NA, revise the materials and re-evaluate
 - Use `design-critique` skill to review visual quality of slides and visuals
 - **DO NOT** skip evaluation just to mark tasks complete.
-- **IMPORTANT:** Always fix quality issues following evaluation recommendations. Only finalize when all 18 criteria pass.
+- **IMPORTANT:** Always fix quality issues following evaluation recommendations. Only finalize when all 19 criteria pass.
 - **Update plan**: Mark `phase-08-quality-evaluation.md` with results and final status.
 
 #### 5. Integration & Consistency
@@ -73,7 +73,7 @@
   - Identify root cause (content gap, sequencing issue, activity mismatch)
   - **Use `WebSearch`** to verify corrected content is factually accurate
   - Implement the fix in the actual material files
-  - Re-run the 18-criterion evaluation on affected materials
+  - Re-run the 19-criterion evaluation on affected materials
   - If evaluation reveals new issues, fix them and repeat from **Step 4**
 
 #### 7. Visual Explanations

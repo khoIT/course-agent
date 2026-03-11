@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đánh giá chất lượng Skill</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .score-1 { background: linear-gradient(to right, #ef4444, transparent); }
+        .score-2 { background: linear-gradient(to right, #f97316, transparent); }
+        .score-3 { background: linear-gradient(to right, #eab308, transparent); }
+        .score-4 { background: linear-gradient(to right, #22c55e, transparent); }
+        .score-5 { background: linear-gradient(to right, #10b981, transparent); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        const SkillQualityChecker = () => {
+            const [scores, setScores] = useState({
+                trigger: 3,
+                output: 3,
+                reusability: 3,
+                maintainability: 3,
+                scope: 3
+            });
+
+            const criteria = {
+                trigger: {
+                    label: "Độ chính xác kích hoạt",
+                    question: "Description có kích hoạt đúng skill không?",
+                    tips: {
+                        1: "🔴 Description mơ hồ, khó trigger. VD: 'Làm cái gì đó với file'",
+                        2: "🟠 Description có nhưng chưa rõ ràng. Người dùng khó tìm thấy skill",
+                        3: "🟡 Trigger oải, nhưng có thể cải thiện. VD: 'Tạo báo cáo...' rõ hơn",
+                        4: "🟢 Trigger tốt. Description rõ về chức năng skill.",
+                        5: "🟢🟢 Trigger tuyệt vời! Người dùng dễ dàng gọi skill chính xác."
+                    }
+                },
+                output: {
+                    label: "Chất lượng output",
+                    question: "Kết quả có chính xác, hữu ích, dùng được không?",
+                    tips: {
+                        1: "🔴 Output sai, thiếu, hoặc không dùng được",
+                        2: "🟠 Output có nhưng còn lỗi, cần chỉnh sửa nhiều",
+                        3: "🟡 Output bình thường, có thể dùng được nhưng còn thiếu chi tiết",
+                        4: "🟢 Output tốt, đầy đủ và có chất lượng cao",
+                        5: "🟢🟢 Output xuất sắc, không cần chỉnh sửa, sẵn sàng dùng ngay"
+                    }
+                },
+                reusability: {
+                    label: "Khả năng tái sử dụng",
+                    question: "Skill có dùng lại được cho nhiều tình huống không?",
+                    tips: {
+                        1: "🔴 Skill chỉ dùng được cho 1 trường hợp cụ thể",
+                        2: "🟠 Skill dùng được cho 2-3 trường hợp tương tự",
+                        3: "🟡 Skill dùng lại được cho 3-5 scenarios khác nhau",
+                        4: "🟢 Skill linh hoạt, dùng được cho 5+ variations",
+                        5: "🟢🟢 Skill rất tổng quát, dùng được cho nhiều ngành/bộ phận"
+                    }
+                },
+                maintainability: {
+                    label: "Dễ bảo trì",
+                    question: "Skill có dễ cập nhật, sửa chữa khi quy trình thay đổi không?",
+                    tips: {
+                        1: "🔴 Skill khó hiểu, lộn xộn. Cập nhật sẽ gây nhiều vấn đề",
+                        2: "🟠 Skill có thể cập nhật nhưng khó tìm chỗ sửa",
+                        3: "🟡 Skill bình thường. Cập nhật được nhưng cần đọc lại code",
+                        4: "🟢 Skill rõ ràng, dễ tìm chỗ sửa. Comments tốt",
+                        5: "🟢🟢 Skill cực kỳ rõ ràng, modular, dễ cập nhật"
+                    }
+                },
+                scope: {
+                    label: "Phạm vi hợp lý",
+                    question: "Phạm vi skill có hợp lý không? Không quá rộng, không quá hẹp?",
+                    tips: {
+                        1: "🔴 Skill quá rộng (cố làm 10 cái cùng lúc) hoặc quá hẹp",
+                        2: "🟠 Phạm vi chưa cân bằng. Có thể tách/gộp lại",
+                        3: "🟡 Phạm vi bình thường. Có thể tối ưu một chút",
+                        4: "🟢 Phạm vi tốt. Skill làm 1-2 việc chính xác",
+                        5: "🟢🟢 Phạm vi tuyệt vời. Focused, rõ mục đích, không lẫn lộn"
+                    }
+                }
+            };
+
+            const handleScoreChange = (key, value) => {
+                setScores({ ...scores, [key]: value });
+            };
+
+            const totalScore = Object.values(scores).reduce((a, b) => a + b, 0);
+            const avgScore = (totalScore / 5).toFixed(1);
+
+            const lowestScores = Object.entries(scores)
+                .sort((a, b) => a[1] - b[1])
+                .slice(0, 3);
+
+            const improvements = lowestScores.map(([key, score]) => {
+                const criterium = criteria[key];
+                if (score <= 2) return `🔴 [${criterium.label}] ${criterium.tips[score]}. Cần cải thiện ngay.`;
+                if (score === 3) return `🟡 [${criterium.label}] ${criterium.tips[score]}. Có thể cải thiện.`;
+                return `🟢 [${criterium.label}] Tốt! Giữ nguyên.`;
+            });
+
+            const handleCopy = () => {
+                const summary = `SKILL QUALITY ASSESSMENT
+=======================
+
+Tên skill: [Nhập tên]
+Ngày đánh giá: ${new Date().toLocaleDateString('vi-VN')}
+
+ĐIỂM SỐ (1-5):
+${Object.entries(scores).map(([k, v]) => `- ${criteria[k].label}: ${v}/5`).join('\n')}
+
+Điểm trung bình: ${avgScore}/5
+
+TOP ACTIONS CẦN LÀM:
+${improvements.map((imp, i) => `${i + 1}. ${imp}`).join('\n')}
+
+KẾ HOẠCH CẢI THIỆN:
+${lowestScores.map(([key]) => `[ ] Cải thiện ${criteria[key].label}`).join('\n')}
+`;
+                navigator.clipboard.writeText(summary);
+                alert('✓ Đã copy assessment vào clipboard!');
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+                    <div className="max-w-5xl mx-auto">
+                        {/* Header */}
+                        <div className="mb-8 text-center">
+                            <h1 className="text-4xl font-bold text-white mb-2">📋 Đánh giá Chất lượng Skill</h1>
+                            <p className="text-slate-400">5 tiêu chí đánh giá + kế hoạch cải thiện</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Main form */}
+                            <div className="lg:col-span-2 space-y-6">
+                                {Object.entries(criteria).map(([key, criterium]) => {
+                                    const score = scores[key];
+                                    const tip = criterium.tips[score];
+                                    return (
+                                        <div key={key} className="fade-in bg-slate-800 rounded-xl border border-slate-700 p-6">
+                                            <div className="mb-4">
+                                                <h3 className="text-lg font-bold text-white mb-1">{criterium.label}</h3>
+                                                <p className="text-sm text-slate-400">{criterium.question}</p>
+                                            </div>
+
+                                            {/* Slider */}
+                                            <div className="mb-4">
+                                                <div className="flex justify-between mb-2">
+                                                    {[1, 2, 3, 4, 5].map((val) => (
+                                                        <button
+                                                            key={val}
+                                                            onClick={() => handleScoreChange(key, val)}
+                                                            className={`w-10 h-10 rounded-lg font-bold transition-all ${
+                                                                score === val
+                                                                    ? 'bg-teal-600 text-white scale-110'
+                                                                    : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
+                                                            }`}
+                                                        >
+                                                            {val}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                                <div className="bg-slate-700 rounded-full h-2 flex overflow-hidden">
+                                                    <div
+                                                        className={`score-${score} h-full transition-all`}
+                                                        style={{ width: `${(score / 5) * 100}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+
+                                            {/* Tip */}
+                                            <div className="bg-slate-700 bg-opacity-50 rounded p-3 text-sm text-slate-300 border-l-4 border-amber-400">
+                                                {tip}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+
+                            {/* Summary sidebar */}
+                            <div className="fade-in space-y-6">
+                                {/* Overall Score */}
+                                <div className="bg-gradient-to-br from-teal-600 to-teal-500 rounded-xl p-6 text-white">
+                                    <div className="text-center">
+                                        <p className="text-sm opacity-90 mb-2">Điểm trung bình</p>
+                                        <div className="text-5xl font-bold mb-2">{avgScore}</div>
+                                        <p className="text-sm opacity-90">trên 5</p>
+                                    </div>
+
+                                    <div className="mt-4 pt-4 border-t border-white border-opacity-20 text-sm space-y-1">
+                                        <p>
+                                            {avgScore >= 4.5 ? '🌟 Xuất sắc! Skill sẵn sàng dùng.' :
+                                             avgScore >= 4 ? '✓ Rất tốt. Có thể dùng được.' :
+                                             avgScore >= 3 ? '⚠️ Bình thường. Cần cải thiện.' :
+                                             '❌ Cần làm lại. Quá nhiều vấn đề.'}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Radar-like visualization */}
+                                <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
+                                    <h4 className="font-bold text-white mb-4">📊 Tổng quan 5 tiêu chí</h4>
+                                    <div className="space-y-3">
+                                        {Object.entries(scores).map(([key, score]) => (
+                                            <div key={key}>
+                                                <div className="flex justify-between mb-1">
+                                                    <span className="text-xs font-medium text-slate-300">{criteria[key].label}</span>
+                                                    <span className="text-xs font-bold text-teal-400">{score}/5</span>
+                                                </div>
+                                                <div className="bg-slate-700 rounded-full h-2">
+                                                    <div
+                                                        className="h-full bg-gradient-to-r from-teal-500 to-teal-400 rounded-full transition-all"
+                                                        style={{ width: `${(score / 5) * 100}%` }}
+                                                    />
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Improvements */}
+                                <div className="bg-slate-800 rounded-xl border border-slate-700 p-6">
+                                    <h4 className="font-bold text-white mb-4">🎯 Top 3 Actions</h4>
+                                    <div className="space-y-3">
+                                        {improvements.map((imp, i) => (
+                                            <div key={i} className="bg-slate-700 bg-opacity-50 rounded p-3 text-xs text-slate-300">
+                                                {imp}
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                {/* Export button */}
+                                <button
+                                    onClick={handleCopy}
+                                    className="w-full px-6 py-3 bg-green-600 hover:bg-green-500 text-white rounded-lg font-medium transition-all"
+                                >
+                                    📋 Copy Assessment
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* Tips */}
+                        <div className="mt-8 bg-slate-800 rounded-xl border border-slate-700 p-6">
+                            <h3 className="text-lg font-bold text-white mb-4">💡 Lời khuyên</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 text-sm text-slate-300">
+                                <div>
+                                    <p className="font-bold text-amber-300 mb-2">✓ Trigger Accuracy</p>
+                                    <p>Viết description sao cho người dùng dễ tìm và kích hoạt đúng skill của bạn.</p>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-amber-300 mb-2">✓ Output Quality</p>
+                                    <p>Output phải chính xác, đầy đủ, và có thể dùng được ngay mà không cần sửa.</p>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-amber-300 mb-2">✓ Reusability</p>
+                                    <p>Skill nên dùng được cho 3+ trường hợp khác nhau, không chỉ 1 case cụ thể.</p>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-amber-300 mb-2">✓ Maintainability</p>
+                                    <p>Comments rõ, code sạch, dễ tìm chỗ sửa khi quy trình thay đổi.</p>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-amber-300 mb-2">✓ Scope</p>
+                                    <p>Không quá rộng (cố làm 10 cái), không quá hẹp (chỉ 1 case). Balanced.</p>
+                                </div>
+                                <div>
+                                    <p className="font-bold text-amber-300 mb-2">✓ Tiếp theo</p>
+                                    <p>Sau đánh giá, hãy cải thiện theo top 3 actions và đánh giá lại.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<SkillQualityChecker />);
+    </script>
+</body>
+</html>

@@ -79,6 +79,33 @@ The output of analysis is a learner portrait describing three dimensions:
 ### Using the Learner Portrait
 The portrait informs ALL subsequent design decisions: what to include/exclude, how complex to make it, which methods to use, how much practice to include.
 
+### Example Learner Portrait
+
+```
+## Learner Portrait: Customer Service Representatives — Conflict De-escalation
+
+### Target Learners
+- Primary: Frontline customer service reps (6-18 months tenure), retail banking
+- Secondary: Team leads who coach reps on difficult calls
+
+### Current State (KSA)
+- Knowledge: Know company policies and basic call scripts. No formal conflict resolution training.
+- Skills: Can handle routine complaints. Struggle with emotionally charged callers — tend to escalate to supervisor.
+- Attitudes: Motivated but anxious. Past negative experiences with angry customers have eroded confidence.
+
+### Learning Context
+- Learning styles: Predominantly kinesthetic (learn by doing) — role-play and simulated calls are essential
+- Available time: 1 full day (8 hours including breaks)
+- Environment: In-person classroom at regional training center, groups of 12-16
+- Motivation: High — they want tools to handle tough calls without escalating. WIIFM is clear.
+
+### Design Implications
+- Use real recorded call examples (anonymized) rather than abstract theory
+- Heavy emphasis on role-play and practice — at least 40% of time on activities
+- Keep cognitive level at Apply (Level 2) — they need to execute techniques, not analyze theory
+- Include a "cheat sheet" handout they can keep at their desk post-training
+```
+
 ---
 
 ## 4. Step 2: Design — Objectives, Content, Lesson Plan
@@ -104,13 +131,21 @@ Components:
 2. **Condition**: Context in which the learner performs (e.g., "without supervisor support", "using the company template", "within 3 minutes")
 3. **Standard/Criteria**: How well they must perform (e.g., "99% accuracy", "following company guidelines", "to customer satisfaction")
 
-**Action Verb Examples by Level**:
+**Action Verb Examples by Level** (top 10 most useful per level):
 
-Level 1 (Remember/Understand): Arrange, Cite, Estimate, Distinguish, Extract, Copy, Define, Describe, Repeat, Rewrite, Report, Illustrate, Complete, Execute, Classify, Explain, Summarize, State, Give examples, Identify, Point out, Label, List, Locate, Match, Adapt, Simulate, Discuss, Compare, Contrast, Organize
+- Level 1 (Remember/Understand): List, Describe, Explain, Identify, Compare, Classify, Summarize, Define, Distinguish, Illustrate
+- Level 2 (Apply): Demonstrate, Implement, Use, Prepare, Select, Modify, Apply, Draft, Complete, Assemble
+- Level 3 (Analyze/Evaluate/Create): Evaluate, Analyze, Design, Propose, Organize, Plan, Produce, Distinguish, Prioritize, Justify
 
-Level 2 (Apply): Prepare, Initiate, Adjust, Eliminate, Implement, Choose, Present, Use, Measure, Rotate, Repair, Assemble, Change, Select, Protect, Apply, Evaluate, Categorize, Modify, Draft, Recruit, Divide, Separate, Complete, Order
+### Example Objectives (Good vs Bad)
 
-Level 3 (Analyze/Evaluate/Create): Distinguish, Specify, Prepare, Initiate, Adjust, Produce, Choose, Select, Eliminate, Implement, Present, Use, Measure, Evaluate, Rotate, Repair, Categorize, Modify, Organize, Plan
+**Bad:** "Learners will understand conflict de-escalation techniques"
+- Problem: "understand" is not observable or measurable
+
+**Good:** "Demonstrate at least 3 de-escalation techniques during a simulated angry-customer call, following the company's CALM framework, with no policy violations"
+- Action verb: Demonstrate (Level 2 — Apply)
+- Standard: At least 3 techniques, following CALM framework, no violations
+- Condition: During a simulated angry-customer call
 
 ### 4.2 Selecting and Categorizing Content
 
@@ -236,4 +271,4 @@ Pilot the course with a small group before full rollout. Observe what works, wha
 
 ## 7. Step 5: Evaluation and Revision
 
-Review the course holistically after implementation. Use the 18-criterion evaluation checklist (see `evaluation-criteria.md`) to assess quality across all dimensions. Revise based on findings, then re-pilot if changes are significant.
+Review the course holistically after implementation. Use the 19-criterion evaluation checklist (see `evaluation-criteria.md`) to assess quality across all dimensions. Revise based on findings, then re-pilot if changes are significant.

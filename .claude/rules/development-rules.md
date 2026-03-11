@@ -26,7 +26,7 @@
 - When looking for reference materials, use `WebSearch` tool first, then browse with Chrome tools for visual references.
 - Use `canvas-design` skill for creating illustrations, infographics, and visual aids
 - Use `pptx` skill for all slide deck creation and editing
-- Use `docx` skill for Word documents (facilitator guides, handouts, workbooks)
+- **All text-based course materials MUST be Markdown (.md)** — facilitator guides, handouts, activities, assessments. Never generate .docx files (unreliable rendering). Only slides use .pptx.
 - Use `pdf` skill for PDF extraction and generation
 - Use browser tools (Claude in Chrome) for:
   - Researching subject matter content online
@@ -45,7 +45,7 @@
 - Use `design-critique` skill to review visual quality of slides and materials
 
 ## Pre-commit/Push Rules
-- Run quality check (18-criterion evaluation) before finalizing deliverables
+- Run quality check (19-criterion evaluation) before finalizing deliverables
 - Review all materials for consistency before pushing
 - Keep commits focused on the actual content changes
 - **DO NOT** commit and push any confidential information (such as dotenv files, API keys, credentials, etc.) to git repository!

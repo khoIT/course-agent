@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(powershell -Command \"Get-NetAdapter | Where-Object { \\\\$_.InterfaceDescription -like '*Realtek*' } | Format-Table Name, InterfaceDescription, Status\")",
+      "Bash(powershell.exe -NoProfile -Command \"Get-NetAdapter | Where-Object { $_.InterfaceDescription -like '*Realtek*' } | Format-Table Name, InterfaceDescription, Status\")",
+      "Bash(powershell.exe -NoProfile -Command \"schtasks /Query /TN 'Reset Ethernet on Wake'\" 2>&1; echo \"exit: $?\")"
+    ]
+  }
+}

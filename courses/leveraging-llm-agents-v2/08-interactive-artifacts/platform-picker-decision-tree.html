@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn nền tảng - Cowork vs Claude Code</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .pulse-soft { animation: pulseSoft 2s ease-in-out infinite; }
+        @keyframes pulseSoft { 0%, 100% { opacity: 1; } 50% { opacity: 0.7; } }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        const PlatformPicker = () => {
+            const [stage, setStage] = useState('start');
+            const [answers, setAnswers] = useState({});
+
+            const questions = {
+                q1: {
+                    question: "Bạn cần viết code không?",
+                    description: "Ví dụ: Python script, JavaScript, data processing",
+                    yes: { text: "Có, cần viết code", next: "q3" },
+                    no: { text: "Không, chỉ tạo file/document", next: "q2" }
+                },
+                q2: {
+                    question: "Bạn muốn tạo file gì? (Word, slide, PDF, Excel, hình)",
+                    description: "Hoặc workflow đơn giản với các công cụ có sẵn",
+                    yes: { text: "Có, tạo file & document", next: "result-cowork" },
+                    no: { text: "Không, cần tự động hóa phức tạp", next: "q3" }
+                },
+                q3: {
+                    question: "Team của bạn có kỹ năng kỹ thuật (developers, engineers)?",
+                    description: "Hay là nhóm phi kỹ thuật (business users)?",
+                    yes: { text: "Có, team kỹ thuật", next: "result-code" },
+                    no: { text: "Không, team phi kỹ thuật", next: "result-cowork" }
+                }
+            };
+
+            const results = {
+                cowork: {
+                    platform: "🚀 Cowork",
+                    color: "from-teal-600 to-teal-500",
+                    strengths: [
+                        "✓ Giao diện trực quan, không cần code",
+                        "✓ Skills có sẵn (docx, pptx, xlsx, pdf, canvas-design)",
+                        "✓ Workflow đơn giản, không cần maintenance",
+                        "✓ Phù hợp với business users, marketer, HR, finance"
+                    ],
+                    useCases: [
+                        "Tạo báo cáo, slide presentation, onboarding checklist",
+                        "Viết bài blog, email template, job description",
+                        "Phân tích dữ liệu CSV, tạo biểu đồ infographic",
+                        "Tìm kiếm thông tin & tóm tắt từ web",
+                        "Lên kế hoạch dự án, tổ chức workflow công việc"
+                    ],
+                    when: "Khi bạn: chỉ cần tạo file, không cần custom logic, muốn nhanh gọn"
+                },
+                code: {
+                    platform: "💻 Claude Code",
+                    color: "from-purple-600 to-purple-500",
+                    strengths: [
+                        "✓ Viết code tuỳ chỉnh (Python, JavaScript, etc.)",
+                        "✓ Xử lý dữ liệu phức tạp, machine learning workflow",
+                        "✓ Tích hợp API bên thứ ba, database, tools nâng cao",
+                        "✓ Automation tối ưu cho developer teams"
+                    ],
+                    useCases: [
+                        "Xây dựng web app, backend API, data pipeline",
+                        "Phân tích dữ liệu lớn, tạo model machine learning",
+                        "Tự động hóa quy trình kỹ thuật phức tạp",
+                        "Tích hợp nhiều tools, database, cloud services",
+                        "Viết testing, debugging, code optimization"
+                    ],
+                    when: "Khi bạn: cần custom code logic, tích hợp systems phức tạp, xử lý dữ liệu massive"
+                }
+            };
+
+            const handleAnswer = (direction) => {
+                const current = questions[stage];
+                if (!current) return;
+
+                const nextStage = direction === 'yes' ? current.yes.next : current.no.next;
+                setAnswers({ ...answers, [stage]: direction });
+
+                if (nextStage.startsWith('result-')) {
+                    setStage(nextStage);
+                } else {
+                    setStage(nextStage);
+                }
+            };
+
+            const reset = () => {
+                setStage('start');
+                setAnswers({});
+            };
+
+            const current = questions[stage];
+            const isResult = stage.startsWith('result-');
+            const result = results[stage.replace('result-', '')];
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+                    <div className="max-w-4xl mx-auto">
+                        {/* Header */}
+                        <div className="mb-8 text-center">
+                            <h1 className="text-4xl font-bold text-white mb-2">🌍 Chọn Nền tảng</h1>
+                            <p className="text-slate-400">Cowork vs Claude Code — cái nào phù hợp nhất?</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                            {/* Main content */}
+                            <div className="lg:col-span-2">
+                                {!isResult ? (
+                                    <div className="fade-in">
+                                        <div className="bg-slate-800 rounded-xl border border-teal-500 border-opacity-30 shadow-2xl overflow-hidden">
+                                            <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-8">
+                                                <h2 className="text-3xl font-bold text-white">{current?.question}</h2>
+                                            </div>
+
+                                            <div className="p-8">
+                                                <p className="text-slate-300 mb-8 text-lg">{current?.description}</p>
+
+                                                {current ? (
+                                                    <div className="space-y-4">
+                                                        <button
+                                                            onClick={() => handleAnswer('yes')}
+                                                            className="w-full p-6 text-left bg-green-900 bg-opacity-30 hover:bg-opacity-50 border-2 border-green-600 border-opacity-50 hover:border-opacity-100 rounded-lg text-white font-medium transition-all"
+                                                        >
+                                                            <div className="text-lg font-bold">✓ {current.yes.text}</div>
+                                                        </button>
+
+                                                        <button
+                                                            onClick={() => handleAnswer('no')}
+                                                            className="w-full p-6 text-left bg-slate-700 hover:bg-slate-600 border-2 border-slate-600 hover:border-slate-500 rounded-lg text-white font-medium transition-all"
+                                                        >
+                                                            <div className="text-lg font-bold">✗ {current.no.text}</div>
+                                                        </button>
+                                                    </div>
+                                                ) : null}
+
+                                                {Object.keys(answers).length > 0 && (
+                                                    <div className="mt-8 pt-6 border-t border-slate-600">
+                                                        <button
+                                                            onClick={reset}
+                                                            className="px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-all"
+                                                        >
+                                                            🔄 Thử lại
+                                                        </button>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="fade-in">
+                                        <div className={`bg-gradient-to-r ${result.color} rounded-xl p-8 text-white mb-6`}>
+                                            <h2 className="text-4xl font-bold mb-2">{result.platform}</h2>
+                                            <p className="text-white opacity-90">Đây là lựa chọn tốt nhất cho bạn</p>
+                                        </div>
+
+                                        <div className="bg-slate-800 rounded-xl border border-slate-700 p-8 space-y-6">
+                                            <div>
+                                                <h3 className="text-xl font-bold text-white mb-4">💪 Điểm mạnh</h3>
+                                                <ul className="space-y-2">
+                                                    {result.strengths.map((strength, i) => (
+                                                        <li key={i} className="text-slate-300 flex items-start gap-3">
+                                                            <span className="text-teal-400 font-bold mt-1">•</span>
+                                                            {strength}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            <div>
+                                                <h3 className="text-xl font-bold text-white mb-4">🎯 Trường hợp sử dụng tốt nhất</h3>
+                                                <ul className="space-y-2">
+                                                    {result.useCases.map((useCase, i) => (
+                                                        <li key={i} className="text-slate-300 flex items-start gap-3">
+                                                            <span className="text-amber-400 font-bold mt-1">→</span>
+                                                            {useCase}
+                                                        </li>
+                                                    ))}
+                                                </ul>
+                                            </div>
+
+                                            <div className="bg-slate-700 bg-opacity-50 p-4 rounded-lg border-l-4 border-amber-400">
+                                                <p className="text-sm text-slate-300">
+                                                    <span className="font-bold">⚡ Khi nào chuyển sang nền tảng kia:</span><br />
+                                                    {result.platform.includes('Cowork')
+                                                        ? 'Nếu cần custom code, xử lý dữ liệu phức tạp, hoặc tích hợp nhiều hệ thống → Claude Code'
+                                                        : 'Nếu chỉ cần tạo file đơn giản hoặc không code → Cowork'}
+                                                </p>
+                                            </div>
+
+                                            <button
+                                                onClick={reset}
+                                                className="w-full px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-lg font-medium transition-all"
+                                            >
+                                                🔄 Thử lại
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Comparison Table (always visible) */}
+                            <div className="fade-in lg:col-span-3">
+                                <div className="bg-slate-800 rounded-xl border border-slate-700 p-6 overflow-x-auto">
+                                    <h3 className="text-xl font-bold text-white mb-4">📊 Bảng so sánh</h3>
+                                    <table className="w-full text-sm">
+                                        <thead>
+                                            <tr className="border-b border-slate-700">
+                                                <th className="text-left py-3 px-2 font-bold text-slate-300">Tiêu chí</th>
+                                                <th className="text-center py-3 px-2 font-bold text-teal-400">🚀 Cowork</th>
+                                                <th className="text-center py-3 px-2 font-bold text-purple-400">💻 Claude Code</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody className="divide-y divide-slate-700">
+                                            <tr>
+                                                <td className="py-3 px-2 text-slate-300">Dễ dùng</td>
+                                                <td className="text-center text-green-400 font-bold">⭐⭐⭐⭐⭐</td>
+                                                <td className="text-center text-yellow-400 font-bold">⭐⭐⭐</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-3 px-2 text-slate-300">Cần kỹ năng code</td>
+                                                <td className="text-center text-green-400">Không</td>
+                                                <td className="text-center text-yellow-400">Có</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-3 px-2 text-slate-300">Tạo file nhanh</td>
+                                                <td className="text-center text-green-400 font-bold">⭐⭐⭐⭐⭐</td>
+                                                <td className="text-center text-slate-500">-</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-3 px-2 text-slate-300">Xử lý dữ liệu phức tạp</td>
+                                                <td className="text-center text-slate-500">-</td>
+                                                <td className="text-center text-purple-400 font-bold">⭐⭐⭐⭐⭐</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-3 px-2 text-slate-300">Tích hợp APIs</td>
+                                                <td className="text-center text-yellow-400">⭐⭐</td>
+                                                <td className="text-center text-purple-400 font-bold">⭐⭐⭐⭐⭐</td>
+                                            </tr>
+                                            <tr>
+                                                <td className="py-3 px-2 text-slate-300">Team phi kỹ thuật</td>
+                                                <td className="text-center text-green-400 font-bold">✓ Tốt</td>
+                                                <td className="text-center text-slate-500">Không đủ</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<PlatformPicker />);
+    </script>
+</body>
+</html>

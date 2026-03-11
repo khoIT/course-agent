@@ -1,6 +1,6 @@
 # Course Design Quality Evaluation Criteria
 
-> Source: LearnSmart - "Danh gia chat luong thiet ke khoa hoc"
+> Source: LearnSmart - "Danh gia chat luong thiet ke khoa hoc" (extended with accessibility criterion)
 > Rating scale: P (Pass) | NI (Needs Improvement) | NA (Not Addressed)
 
 ## How to Use This Checklist
@@ -184,6 +184,21 @@ Evaluate each criterion against the course materials. For each criterion, assign
 
 ---
 
+## VII. Accessibility & Inclusion (Criterion 19)
+
+### Criterion 19: Accessible and Inclusive Design
+- Slides use sufficient color contrast (WCAG AA: 4.5:1 for text, 3:1 for large text)
+- Meaning is never conveyed by color alone (use shapes, labels, or patterns alongside color)
+- Activities offer multi-modal alternatives (not all visual, not all verbal, not all physical)
+- Language is inclusive and avoids unnecessary jargon or culturally specific idioms without explanation
+- Handouts and materials are readable by screen readers (proper heading hierarchy, alt-text guidance for images)
+- Considers diverse learner needs: language proficiency, physical abilities, neurodiversity
+- **Pass**: Materials demonstrate conscious accessibility choices across slides, activities, and handouts
+- **Needs Improvement**: Some accessibility considered but gaps remain (e.g., color-only indicators, single-modality activities)
+- **Not Addressed**: No accessibility considerations in any materials
+
+---
+
 ## Evaluation Summary Template
 
 | Group | Criteria | Rating | Comments |
@@ -206,6 +221,7 @@ Evaluate each criterion against the course materials. For each criterion, assign
 | | 16. Detailed procedures | | |
 | | 17. Complete materials | | |
 | | 18. Debrief connects to content | | |
+| VII. Accessibility | 19. Accessible & inclusive design | | |
 
 **Overall Assessment:**
 

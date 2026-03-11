@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chọn Skill - Cây quyết định tương tác</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .tree-node { transition: all 0.2s ease; }
+        .tree-node:hover { transform: translateY(-2px); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        const SkillSelector = () => {
+            const [path, setPath] = useState([]);
+            const [node, setNode] = useState('start');
+
+            const nodes = {
+                start: {
+                    title: "Bạn muốn tạo gì?",
+                    options: [
+                        { label: "📄 Tài liệu (Word, PDF)", next: "document" },
+                        { label: "🎬 Bài trình bày (PowerPoint)", next: "presentation" },
+                        { label: "📊 Bảng tính / Phân tích dữ liệu", next: "spreadsheet" },
+                        { label: "📑 Tệp PDF", next: "pdf" },
+                        { label: "🖼️ Hình ảnh / Thiết kế", next: "image" },
+                        { label: "🔍 Tìm kiếm thông tin trực tuyến", next: "search" }
+                    ]
+                },
+                document: {
+                    title: "📄 Tài liệu",
+                    skill: "docx",
+                    description: "Tạo văn bản, báo cáo, hợp đồng, v.v.",
+                    trigger: "Hãy tạo một báo cáo tuần về doanh số bán hàng",
+                    examples: {
+                        "HR": "Tạo báo cáo tuyển dụng, onboarding checklist",
+                        "Marketing": "Viết brief campaign, content plan",
+                        "Finance": "Lập báo cáo tài chính hàng tháng",
+                        "Operations": "Viết quy trình vận hành (SOP)"
+                    }
+                },
+                presentation: {
+                    title: "🎬 Bài trình bày",
+                    skill: "pptx",
+                    description: "Tạo slide thuyết trình, infographic.",
+                    trigger: "Hãy tạo 5 slide về kết quả Q1",
+                    examples: {
+                        "HR": "Tạo slide training, tuyên truyền",
+                        "Marketing": "Tạo deck pitch, product launch",
+                        "Finance": "Tạo slide báo cáo cho ban quản lý",
+                        "Operations": "Tạo slide training quy trình mới"
+                    }
+                },
+                spreadsheet: {
+                    title: "📊 Bảng tính",
+                    skill: "xlsx",
+                    description: "Phân tích dữ liệu, tạo bảng biểu.",
+                    trigger: "Hãy phân tích bộ dữ liệu này và tạo pivot table",
+                    examples: {
+                        "HR": "Phân tích dữ liệu nhân sự, đơn xin",
+                        "Marketing": "Phân tích ROI campaign, conversion rate",
+                        "Finance": "Lập bảng biểu chi phí, budget",
+                        "Operations": "Phân tích hiệu suất quy trình"
+                    }
+                },
+                pdf: {
+                    title: "📑 Tệp PDF",
+                    skill: "pdf",
+                    description: "Trích xuất, xử lý, tạo PDF.",
+                    trigger: "Hãy trích xuất dữ liệu từ PDF này",
+                    examples: {
+                        "HR": "Trích xuất CV, hợp đồng lao động",
+                        "Marketing": "Trích xuất dữ liệu từ báo cáo thị trường",
+                        "Finance": "Trích xuất hóa đơn, biên lai",
+                        "Operations": "Trích xuất dữ liệu từ tài liệu SOP"
+                    }
+                },
+                image: {
+                    title: "🖼️ Hình ảnh & Thiết kế",
+                    skill: "canvas-design",
+                    description: "Tạo infographic, poster, biểu đồ.",
+                    trigger: "Hãy tạo poster quảng cáo cho sản phẩm",
+                    examples: {
+                        "HR": "Tạo poster tuyển dụng, infographic văn hóa",
+                        "Marketing": "Tạo poster bán hàng, social media graphics",
+                        "Finance": "Tạo biểu đồ chi phí, infographic",
+                        "Operations": "Tạo sơ đồ quy trình, flowchart"
+                    }
+                },
+                search: {
+                    title: "🔍 Tìm kiếm thông tin",
+                    skill: "web-search",
+                    description: "Tìm kiếm và tổng hợp thông tin từ internet.",
+                    trigger: "Hãy tìm kiếm các chiến lược marketing mới nhất",
+                    examples: {
+                        "HR": "Tìm kiếm xu hướng tuyển dụng, lương thị trường",
+                        "Marketing": "Tìm kiếm insight thị trường, competitor",
+                        "Finance": "Tìm kiếm quy định thuế, lãi suất",
+                        "Operations": "Tìm kiếm best practice ngành"
+                    }
+                }
+            };
+
+            const handleSelect = (nextNode) => {
+                setPath([...path, node]);
+                setNode(nextNode);
+            };
+
+            const handleBack = () => {
+                if (path.length > 0) {
+                    const newPath = path.slice(0, -1);
+                    setPath(newPath);
+                    setNode(newPath[newPath.length - 1] || 'start');
+                }
+            };
+
+            const reset = () => {
+                setPath([]);
+                setNode('start');
+            };
+
+            const current = nodes[node];
+            const isEnd = current.skill !== undefined;
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-8">
+                    <div className="max-w-2xl mx-auto">
+                        {/* Breadcrumb */}
+                        <div className="mb-8">
+                            <div className="flex items-center text-sm text-slate-400 gap-2 flex-wrap">
+                                <button onClick={reset} className="text-teal-400 hover:text-teal-300 font-medium">
+                                    Bắt đầu
+                                </button>
+                                {path.map((p, i) => (
+                                    <React.Fragment key={i}>
+                                        <span>→</span>
+                                        <span>{nodes[p].title?.substring(0, 20)}...</span>
+                                    </React.Fragment>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Main Card */}
+                        <div className="fade-in bg-slate-800 rounded-xl border border-teal-500 border-opacity-30 shadow-2xl overflow-hidden">
+                            <div className="bg-gradient-to-r from-teal-600 to-teal-500 p-6">
+                                <h2 className="text-2xl font-bold text-white">{current.title}</h2>
+                            </div>
+
+                            <div className="p-8">
+                                {isEnd ? (
+                                    <div className="space-y-6 fade-in">
+                                        <div className="bg-teal-900 bg-opacity-30 border border-teal-500 border-opacity-50 rounded-lg p-6">
+                                            <h3 className="text-lg font-bold text-teal-300 mb-2">💡 Skill: <span className="text-white">{current.skill}</span></h3>
+                                            <p className="text-slate-300 mb-4">{current.description}</p>
+
+                                            <div className="bg-slate-800 bg-opacity-50 rounded p-4 mb-4 border-l-4 border-amber-400">
+                                                <p className="text-xs text-slate-400 mb-1">Ví dụ kích hoạt:</p>
+                                                <p className="text-slate-100 font-medium italic">"{current.trigger}"</p>
+                                            </div>
+
+                                            <div className="space-y-3">
+                                                <p className="text-xs font-bold text-slate-400 uppercase">Trường hợp sử dụng theo ngành:</p>
+                                                {Object.entries(current.examples).map(([industry, example]) => (
+                                                    <div key={industry} className="bg-slate-700 bg-opacity-50 rounded p-3">
+                                                        <p className="text-xs font-bold text-amber-300">{industry}</p>
+                                                        <p className="text-sm text-slate-300">{example}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div className="space-y-3">
+                                        {current.options.map((option, i) => (
+                                            <button
+                                                key={i}
+                                                onClick={() => handleSelect(option.next)}
+                                                className="tree-node w-full text-left p-4 bg-slate-700 hover:bg-teal-600 border-2 border-slate-600 hover:border-teal-500 rounded-lg transition-all text-white font-medium"
+                                            >
+                                                {option.label}
+                                            </button>
+                                        ))}
+                                    </div>
+                                )}
+
+                                {/* Buttons */}
+                                <div className="mt-8 flex gap-4">
+                                    {node !== 'start' && (
+                                        <button
+                                            onClick={handleBack}
+                                            className="flex-1 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-all"
+                                        >
+                                            ← Quay lại
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={reset}
+                                        className="flex-1 px-6 py-3 bg-teal-600 hover:bg-teal-500 text-white rounded-lg font-medium transition-all"
+                                    >
+                                        🔄 Bắt đầu lại
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Footer */}
+                        <div className="mt-8 text-center text-slate-500 text-sm">
+                            <p>Hãy chọn loại nội dung bạn muốn tạo để tìm skill phù hợp nhất</p>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<SkillSelector />);
+    </script>
+</body>
+</html>

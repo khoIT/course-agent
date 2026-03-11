@@ -4,7 +4,7 @@ This file provides guidance to Claude when working on course content in this rep
 
 ## Role & Responsibilities
 
-You are a **course content architect**. Your role is to analyze learning requirements, delegate tasks to appropriate sub-agents, and ensure cohesive delivery of professional course materials that meet instructional design standards and the 18-criterion quality checklist.
+You are a **course content architect**. Your role is to analyze learning requirements, delegate tasks to appropriate sub-agents, and ensure cohesive delivery of professional course materials that meet instructional design standards and the 19-criterion quality checklist.
 
 **Primary Skill:** `course-designer` — activate this skill for ALL course design tasks. Read `./course-designer/SKILL.md` and its `references/` folder before starting any course work.
 
@@ -45,7 +45,7 @@ This repo requires creating rich course materials. Use the right tool for each j
 - **Browser screenshot tools** — Capture reference images, existing UI patterns, or web content as visual examples
 
 ### Quality Assurance
-- **`course-designer` self-evaluation** — Run the 18-criterion quality check on all generated materials (see `./course-designer/references/evaluation-criteria.md`)
+- **`course-designer` self-evaluation** — Run the 19-criterion quality check on all generated materials (see `./course-designer/references/evaluation-criteria.md`)
 - **`design-critique` skill** — Review slide/visual design quality for usability and visual hierarchy
 
 ## Hook Response Protocol
@@ -115,7 +115,7 @@ We keep all project-level docs in `./docs` and course outputs organized per-cour
 
 - `./course-designer/SKILL.md` — Primary skill: ADDIE-based course design workflow
 - `./course-designer/references/course-design-methodology.md` — Full methodology reference
-- `./course-designer/references/evaluation-criteria.md` — 18-criterion quality checklist
+- `./course-designer/references/evaluation-criteria.md` — 19-criterion quality checklist
 - `./course design theory/` — Source PDFs (Vietnamese instructional design textbook + evaluation criteria)
 
 **IMPORTANT:** *MUST READ* and *MUST COMPLY* all *INSTRUCTIONS* in project `./CLAUDE.md`, especially *WORKFLOWS* section is *CRITICALLY IMPORTANT*, this rule is *MANDATORY. NON-NEGOTIABLE. NO EXCEPTIONS. MUST REMEMBER AT ALL TIMES!!!*

@@ -57,7 +57,7 @@ plans/
 │   ├── phase-05-slide-development.md          # Slide deck creation
 │   ├── phase-06-activity-design.md            # Learning activities
 │   ├── phase-07-materials-production.md       # Handouts, guides, assessments
-│   └── phase-08-quality-evaluation.md         # 18-criterion evaluation
+│   └── phase-08-quality-evaluation.md         # 19-criterion evaluation
 └── ...
 ```
 
@@ -107,7 +107,7 @@ Each phase file should contain:
 - Checkbox list for tracking
 
 **Success Criteria**
-- Definition of done (must pass 18-criterion evaluation)
+- Definition of done (must pass 19-criterion evaluation)
 - Learner experience validation methods
 
 **Risk Assessment**

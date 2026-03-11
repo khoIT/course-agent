@@ -11,10 +11,12 @@ Think of yourself as a training consultant: you first deeply understand the clie
 
 ## Core Reference Files
 
-Before beginning any course design work, read these references:
+Load references **conditionally** to save context tokens:
 
-- `references/course-design-methodology.md` — The complete ADDIE-based course design methodology including learner analysis, objective writing, content structuring, slide design principles, and learning activity design patterns. **Read this first** for any course design task.
-- `references/evaluation-criteria.md` — The 18-criterion quality checklist for self-evaluating generated course materials. **Read this before the final evaluation step.**
+- `references/course-design-methodology.md` — Full ADDIE methodology. **Load at start of Phase 1 (Analysis).** During Phase 3 (Development), re-read only the relevant section (e.g., §5.1 for slides, §5.2 for activities).
+- `references/evaluation-criteria.md` — 19-criterion quality checklist. **Load at start of Phase 4 (Evaluation) only.**
+
+Do NOT load both files upfront for every task.
 
 ## The Course Design Workflow
 
@@ -22,7 +24,9 @@ Before beginning any course design work, read these references:
 
 Before designing anything, you need to deeply understand the context. This is the most important phase — a well-designed course for the wrong audience is useless.
 
-Ask the user these questions progressively (not all at once — adapt based on their answers):
+**Quick Mode:** If the user provides a comprehensive brief (topic, audience, objectives, constraints, and desired outputs are all clear), collapse Rounds 1-3 into a single confirmation step: summarize your understanding as a draft Learner Portrait (Phase 1 format), ask "Does this capture your needs? Anything to adjust?" — then proceed directly to Phase 2 upon confirmation.
+
+**Standard Mode** — ask these questions progressively (not all at once — adapt based on their answers):
 
 **Round 1 — The Big Picture:**
 - What is the course topic? What specific aspects of this topic should the course cover?
@@ -124,50 +128,65 @@ Create a detailed lesson plan specifying:
 
 ### Phase 3: Development — Generate Materials
 
-Based on the approved design, generate the requested materials. For each material type, follow these guidelines:
+Based on the approved design, generate the requested materials. Re-read only the relevant methodology sections for each material type (e.g., §5.1 for slides, §5.2 for activities).
 
-**Slides**: Follow the four design principles — Easy to Read (KISS), Easy to Understand (images > text), Easy to Remember (visual hierarchy), Dynamic (color contrast, one message per slide). Create a Slide Master first. Use the pptx skill if available.
+**Fact-Checking Mandate:** Before finalizing any content, verify factual claims, statistics, tool/platform references, and industry terminology using WebSearch. Do not rely solely on training knowledge — confirm current accuracy. Flag any claims you cannot verify.
+
+For each material type, follow these guidelines:
+
+**Slides**: Follow the four design principles — Easy to Read (KISS), Easy to Understand (images > text), Easy to Remember (visual hierarchy), Dynamic (color contrast, one message per slide). Create a Slide Master first. Use the pptx skill if available. Ensure sufficient color contrast (WCAG AA minimum) and avoid conveying meaning through color alone.
 
 **Facilitator Guide**: The lesson plan expanded with speaker notes, transition cues, activity instructions, and timing markers. Not a script — leave room for facilitator creativity.
 
 **Learner Handouts**: Summary of key concepts, activity worksheets, reference materials. Should be usable standalone after the course.
 
-**Learning Activities**: Design using the REAL criteria (Relevant, Engaging, Active, Learner-centered). Choose from: Group Discussion, Case Study, Practice, Role Play, Word Games, Brainstorming, Mind Mapping. Include complete step-by-step procedures and all materials needed.
+**Learning Activities**: Design using the REAL criteria (Relevant, Engaging, Active, Learner-centered). Choose from: Group Discussion, Case Study, Practice, Role Play, Word Games, Brainstorming, Mind Mapping. Include complete step-by-step procedures and all materials needed. Consider accessibility — provide alternatives for activities that rely on a single modality.
 
 **Assessments**: If requested, design formative (during course) and/or summative (end of course) assessments aligned with objectives.
 
 ### Phase 4: Self-Evaluation
 
-After generating all materials, perform a self-evaluation against the 18-criterion checklist from `references/evaluation-criteria.md`.
+After generating all materials, perform a self-evaluation against the 19-criterion checklist from `references/evaluation-criteria.md`.
 
-**How to self-evaluate:**
+**How to self-evaluate (adversarial protocol):**
 
 1. Read `references/evaluation-criteria.md`
-2. Evaluate each of the 18 criteria against the generated materials
-3. Rate each criterion: Pass (P) / Needs Improvement (NI) / Not Addressed (NA)
-4. For any criterion rated NI or NA, explain what's missing and revise the materials
-5. Present the evaluation summary to the user
+2. **FIRST — Weaknesses Audit:** Before scoring anything, list at least 3 specific weaknesses or gaps you can identify in the generated materials. Be brutally honest. Look for: vague objectives, missing activity materials, content that wasn't fact-checked, accessibility gaps, thin facilitator guidance, activities without clear debriefs.
+3. Evaluate each of the 19 criteria against the generated materials
+4. Rate each criterion: Pass (P) / Needs Improvement (NI) / Not Addressed (NA)
+5. For each "Pass" rating, cite specific evidence from the materials (file name + what satisfies it). A Pass without evidence is invalid.
+6. For any criterion rated NI or NA, explain what's missing and revise the materials
+7. Present the evaluation summary to the user
+
+**Revision protocol:** When revising after evaluation, only re-generate the specific materials that failed — not the entire course. After revision, perform a **delta evaluation**: re-check only the criteria that were NI/NA plus any criteria that could be affected by the changes. No need to re-evaluate all 19 if only 2 failed.
 
 **Evaluation output format:**
 
 ```
 ## Course Design Quality Evaluation
 
-| # | Criterion | Rating | Evidence/Notes |
-|---|-----------|--------|----------------|
-| 1 | Target learner identification | P/NI/NA | [specific reference to materials] |
+### Weaknesses Audit (mandatory — complete before scoring)
+1. [Specific weakness identified]
+2. [Specific weakness identified]
+3. [Specific weakness identified]
+
+### Criteria Ratings
+
+| # | Criterion | Rating | Evidence |
+|---|-----------|--------|----------|
+| 1 | Target learner identification | P/NI/NA | [specific file + what satisfies it] |
 | 2 | Learner KSA profile | P/NI/NA | [...] |
 | ... | ... | ... | ... |
-| 18 | Activity debrief connects to content | P/NI/NA | [...] |
+| 19 | Accessibility & inclusion | P/NI/NA | [...] |
 
 ### Items Needing Revision
-- [Criterion X]: [What needs to change and why]
+- [Criterion X]: [What needs to change, in which file, and why]
 
 ### Overall Assessment
-[Summary of course quality]
+[Summary — acknowledge weaknesses honestly]
 ```
 
-If any criterion scores NI or NA, revise the relevant materials and re-evaluate until all criteria pass. The goal is 18/18 Pass ratings.
+If any criterion scores NI or NA, revise the relevant materials and re-evaluate (delta only) until all criteria pass. The goal is 19/19 Pass ratings with cited evidence.
 
 ## Output Organization
 
@@ -175,18 +194,38 @@ Organize all course deliverables in a clear folder structure:
 
 ```
 [course-name]/
+├── INSTRUCTOR-START-HERE.md       # Quick-start guide: what each file is, when to use it
 ├── 00-course-overview.md          # Learner portrait + objectives + content outline
 ├── 01-lesson-plan.md              # Detailed lesson plan
-├── 02-slides.pptx                 # Presentation slides (if requested)
-├── 03-facilitator-guide.md        # Facilitator guide (if requested)
-├── 04-learner-handout.md          # Learner handout (if requested)
-├── 05-activities/                 # Learning activity materials
-│   ├── activity-01-[name].md
-│   └── activity-02-[name].md
-├── 06-assessments/                # Assessment materials (if requested)
-│   └── assessment-01-[name].md
-└── 07-evaluation-report.md        # Self-evaluation against 18 criteria
+├── 02-slides.pptx                 # Presentation slides (ONLY file that is .pptx)
+├── 03-facilitator-guide.md        # Facilitator guide — speaker notes, troubleshooting
+├── 04-learner-handout.md          # Learner handout — standalone reference
+├── 05-activities/                 # Learning activity materials (all .md)
+│   ├── session-01-[name].md
+│   └── session-02-[name].md
+├── 06-assessments/                # Assessment materials (all .md)
+│   └── mini-quizzes-per-session.md
+├── 07-evaluation-report.md        # Self-evaluation against 18 criteria
+└── 08-interactive-artifacts/      # HTML/React tools (if applicable)
+    └── [name].html
 ```
+
+> **IMPORTANT:** All text materials are `.md` (Markdown). Never generate `.docx` files — they cause errors and are unreliable. Only slides use `.pptx`.
+
+## File Format Rules
+
+**All text-based course materials MUST be Markdown (.md)**, not .docx or .pdf. This includes:
+- Facilitator guides → `03-facilitator-guide.md`
+- Learner handouts → `04-learner-handout.md`
+- Activities → `05-activities/*.md`
+- Assessments → `06-assessments/*.md`
+- Course overview → `00-course-overview.md`
+- Lesson plan → `01-lesson-plan.md`
+- Evaluation report → `07-evaluation-report.md`
+
+**Only use .pptx for slides** (via the pptx skill). Never generate .docx files — they cause rendering errors and are harder to version-control. Markdown is universally readable, diffable, and reliable.
+
+**Always create an `INSTRUCTOR-START-HERE.md`** in the course root folder that explains what each file is for, when to use it, and in what order. Instructors need a clear entry point.
 
 ## Key Reminders
 
@@ -197,4 +236,4 @@ Organize all course deliverables in a clear folder structure:
 - The WHY-WHAT-HOW-SO WHAT framework applies to every content section
 - Self-evaluation is mandatory, not optional — quality control is built into the process
 - When in doubt about depth or scope, refer back to the learner portrait
-- Use the pptx skill for slide generation, docx skill for documents, if available
+- Use the pptx skill for slide generation — all other materials as Markdown (.md)

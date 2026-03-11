@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKILL.md Builder - Tạo Skill từng bước</title>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+        * { font-family: 'Inter', sans-serif; }
+        code, pre { font-family: 'JetBrains Mono', monospace; }
+        .fade-in { animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .validation-pass { background-color: rgba(34, 197, 94, 0.1); border-color: rgba(34, 197, 94, 0.5); }
+        .validation-warn { background-color: rgba(245, 158, 11, 0.1); border-color: rgba(245, 158, 11, 0.5); }
+        .validation-error { background-color: rgba(239, 68, 68, 0.1); border-color: rgba(239, 68, 68, 0.5); }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        const { useState } = React;
+
+        const SKILLBuilder = () => {
+            const [step, setStep] = useState(0);
+            const [industry, setIndustry] = useState('');
+            const [skillName, setSkillName] = useState('');
+            const [description, setDescription] = useState('');
+            const [body, setBody] = useState('');
+
+            const scenarios = {
+                hr: {
+                    name: 'HR',
+                    skillName: 'jd-generator',
+                    description: 'Tạo mô tả công việc (JD) theo chuẩn công ty. Nhập thông tin về vị trí, kỹ năng cần thiết, và trách nhiệm.',
+                    body: 'Bạn là chuyên gia tuyển dụng. Hãy tạo một Job Description chuyên nghiệp dựa trên thông tin được cung cấp. Đảm bảo JD có:\n- Tiêu đề công việc rõ ràng\n- Mô tả công việc chi tiết\n- Yêu cầu kỹ năng (bắt buộc & mong muốn)\n- Quyền lợi và lương thưởng\n- Quy trình ứng tuyển'
+                },
+                marketing: {
+                    name: 'Marketing',
+                    skillName: 'social-post-creator',
+                    description: 'Viết bài đăng mạng xã hội theo brand voice của công ty. Tạo nội dung thu hút, có hashtag, và gọi-hành-động.',
+                    body: 'Bạn là content creator chuyên nghiệp. Hãy viết bài đăng cho mạng xã hội với phong cách vui nhộn, chuyên nghiệp nhưng thân thiện. Bài đăng phải:\n- Có hook mạnh ở dòng đầu\n- Rõ ràng about giá trị sản phẩm\n- Có 3-5 hashtag phù hợp\n- Có Call-To-Action rõ ràng (CTA)\n- Phù hợp với brand voice của công ty'
+                },
+                finance: {
+                    name: 'Finance',
+                    skillName: 'expense-report-analyzer',
+                    description: 'Phân tích báo cáo chi phí và cảnh báo vượt ngân sách. Tạo tóm tắt chi tiết với khuyến nghị tiết kiệm.',
+                    body: 'Bạn là chuyên gia phân tích tài chính. Hãy phân tích báo cáo chi phí được cung cấp và:\n- Tóm tắt tổng chi phí theo danh mục\n- Xác định chi phí bất thường hoặc vượt mức\n- Đề xuất cách tiết kiệm\n- Hiển thị thị phần chi phí\n- Cảnh báo nếu vượt ngân sách'
+                },
+                operations: {
+                    name: 'Operations',
+                    skillName: 'sop-writer',
+                    description: 'Viết Quy trình vận hành (SOP) chi tiết, dễ theo dõi. Bao gồm các bước, định nghĩa, và hình ảnh minh họa.',
+                    body: 'Bạn là chuyên gia tối ưu hóa quy trình. Hãy viết SOP chi tiết cho quy trình được mô tả. SOP phải:\n- Có tiêu đề rõ ràng và mục đích\n- Liệt kê các bước từng bước\n- Bao gồm thời gian ước tính\n- Xác định các rủi ro và cách giảm thiểu\n- Có phần FAQ cho các câu hỏi thường gặp'
+                }
+            };
+
+            const industryList = [
+                { id: 'hr', label: '👥 Nhân sự (HR)' },
+                { id: 'marketing', label: '📢 Marketing' },
+                { id: 'finance', label: '💰 Tài chính' },
+                { id: 'operations', label: '⚙️ Vận hành' }
+            ];
+
+            const handleSelectIndustry = (id) => {
+                setIndustry(id);
+                const scenario = scenarios[id];
+                setSkillName(scenario.skillName);
+                setDescription(scenario.description);
+                setBody(scenario.body);
+                setStep(1);
+            };
+
+            const validateSkillName = (name) => {
+                return /^[a-z0-9-]+$/.test(name) && name.length > 0 && !name.endsWith('-');
+            };
+
+            const descriptionLength = description.length;
+            const isBusyDescription = descriptionLength >= 80;
+
+            const validateBody = body.trim().length >= 50;
+
+            const skillNameValid = validateSkillName(skillName);
+            const descriptionValid = isBusyDescription;
+            const bodyValid = validateBody;
+
+            const canExport = skillNameValid && descriptionValid && bodyValid;
+
+            const skillContent = `---
+name: ${skillName}
+description: ${description}
+---
+
+# Skill: ${skillName}
+
+${body}
+
+## Kích hoạt
+
+Gõ: "Hãy dùng ${skillName} skill để..."
+
+## Ví dụ
+
+\`\`\`
+Hãy dùng ${skillName} skill để tạo ra [kết quả cụ thể]
+\`\`\`
+`;
+
+            const handleCopyToClipboard = () => {
+                navigator.clipboard.writeText(skillContent);
+                alert('✓ Đã copy SKILL.md vào clipboard!');
+            };
+
+            return (
+                <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 p-6">
+                    <div className="max-w-6xl mx-auto">
+                        {/* Header */}
+                        <div className="mb-8 text-center">
+                            <h1 className="text-4xl font-bold text-white mb-2">📝 SKILL.md Builder</h1>
+                            <p className="text-slate-400">Tạo Skill của bạn từng bước một</p>
+                        </div>
+
+                        {/* Step Indicator */}
+                        <div className="mb-8 flex justify-center gap-4">
+                            {[0, 1, 2, 3].map((i) => (
+                                <div
+                                    key={i}
+                                    className={`w-12 h-12 rounded-full flex items-center justify-center font-bold text-lg transition-all ${
+                                        i === step
+                                            ? 'bg-teal-600 text-white scale-110'
+                                            : i < step
+                                            ? 'bg-green-600 text-white'
+                                            : 'bg-slate-700 text-slate-400'
+                                    }`}
+                                >
+                                    {i < step ? '✓' : i + 1}
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Content */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                            {/* Left: Form */}
+                            <div className="fade-in">
+                                <div className="bg-slate-800 rounded-xl border border-teal-500 border-opacity-30 p-8">
+                                    {step === 0 && (
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-white mb-6">Chọn ngành</h2>
+                                            <div className="space-y-3">
+                                                {industryList.map((ind) => (
+                                                    <button
+                                                        key={ind.id}
+                                                        onClick={() => handleSelectIndustry(ind.id)}
+                                                        className="w-full p-4 text-left bg-slate-700 hover:bg-teal-600 border-2 border-slate-600 hover:border-teal-500 rounded-lg text-white font-medium transition-all"
+                                                    >
+                                                        {ind.label}
+                                                    </button>
+                                                ))}
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {step === 1 && (
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-white mb-6">Bước 1: Tên Skill</h2>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                                        Tên Skill (kebab-case)
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={skillName}
+                                                        onChange={(e) => setSkillName(e.target.value.toLowerCase())}
+                                                        placeholder="vd: my-awesome-skill"
+                                                        className="w-full px-4 py-3 bg-slate-700 border-2 rounded-lg text-white placeholder-slate-500 focus:outline-none"
+                                                    />
+                                                    <div className="mt-2 text-xs">
+                                                        {skillNameValid ? (
+                                                            <p className="text-green-400">✓ Tên hợp lệ</p>
+                                                        ) : (
+                                                            <p className="text-red-400">✗ Chỉ dùng chữ thường, số, và gạch ngang</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="bg-slate-700 bg-opacity-50 p-3 rounded text-sm text-slate-300">
+                                                    <p className="font-bold mb-1">💡 Gợi ý:</p>
+                                                    <p>Tên skill phải gợi ý chức năng (vd: "email-writer", "data-analyzer")</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {step === 2 && (
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-white mb-6">Bước 2: Mô tả (Description)</h2>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                                        Mô tả Skill
+                                                    </label>
+                                                    <textarea
+                                                        value={description}
+                                                        onChange={(e) => setDescription(e.target.value)}
+                                                        placeholder="Mô tả skill của bạn..."
+                                                        rows="5"
+                                                        className="w-full px-4 py-3 bg-slate-700 border-2 rounded-lg text-white placeholder-slate-500 focus:outline-none font-mono text-sm"
+                                                    />
+                                                    <div className="mt-2 flex justify-between text-xs">
+                                                        <span className="text-slate-400">{descriptionLength} ký tự</span>
+                                                        {isBusyDescription ? (
+                                                            <span className="text-green-400">✓ Đủ chi tiết</span>
+                                                        ) : (
+                                                            <span className="text-amber-400">Nên có ≥80 ký tự</span>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="bg-amber-900 bg-opacity-30 border border-amber-600 border-opacity-50 p-3 rounded text-sm text-amber-200">
+                                                    <p className="font-bold mb-1">🔥 "Pushy" mô tả:</p>
+                                                    <p>Viết theo cách gợi ý "bạn cần cái này ngay". Ví dụ: "Tạo email chuyên nghiệp... dễ dàng"</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {step === 3 && (
+                                        <div>
+                                            <h2 className="text-2xl font-bold text-white mb-6">Bước 3: Nội dung (Body)</h2>
+                                            <div className="space-y-4">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-slate-300 mb-2">
+                                                        Hướng dẫn chi tiết
+                                                    </label>
+                                                    <textarea
+                                                        value={body}
+                                                        onChange={(e) => setBody(e.target.value)}
+                                                        placeholder="Hướng dẫn chi tiết..."
+                                                        rows="8"
+                                                        className="w-full px-4 py-3 bg-slate-700 border-2 rounded-lg text-white placeholder-slate-500 focus:outline-none font-mono text-sm"
+                                                    />
+                                                    <div className="mt-2 text-xs">
+                                                        {bodyValid ? (
+                                                            <p className="text-green-400">✓ Nội dung tốt</p>
+                                                        ) : (
+                                                            <p className="text-amber-400">Nên có ≥50 ký tự</p>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                                <div className="bg-slate-700 bg-opacity-50 p-3 rounded text-sm text-slate-300">
+                                                    <p className="font-bold mb-1">📋 Gợi ý:</p>
+                                                    <p>Viết rõ ràng cách skill hoạt động, input cần có, output sẽ như thế nào</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    )}
+
+                                    {/* Navigation */}
+                                    <div className="mt-8 flex gap-4">
+                                        {step > 0 && (
+                                            <button
+                                                onClick={() => setStep(step - 1)}
+                                                className="flex-1 px-6 py-3 bg-slate-700 hover:bg-slate-600 text-white rounded-lg font-medium transition-all"
+                                            >
+                                                ← Trước
+                                            </button>
+                                        )}
+                                        {step < 3 && (
+                                            <button
+                                                onClick={() => setStep(step + 1)}
+                                                disabled={
+                                                    (step === 1 && !skillNameValid) ||
+                                                    (step === 2 && !descriptionValid)
+                                                }
+                                                className="flex-1 px-6 py-3 bg-teal-600 hover:bg-teal-500 disabled:bg-slate-600 disabled:opacity-50 text-white rounded-lg font-medium transition-all"
+                                            >
+                                                Tiếp theo →
+                                            </button>
+                                        )}
+                                        {step === 3 && (
+                                            <button
+                                                onClick={handleCopyToClipboard}
+                                                disabled={!canExport}
+                                                className="flex-1 px-6 py-3 bg-green-600 hover:bg-green-500 disabled:bg-slate-600 disabled:opacity-50 text-white rounded-lg font-medium transition-all"
+                                            >
+                                                📋 Copy SKILL.md
+                                            </button>
+                                        )}
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Right: Preview */}
+                            <div className="fade-in sticky top-8 h-fit">
+                                <div className="bg-slate-900 rounded-xl border border-slate-700 p-6">
+                                    <h3 className="text-lg font-bold text-slate-300 mb-4">📄 Preview SKILL.md</h3>
+                                    <pre className="bg-slate-800 rounded p-4 overflow-auto max-h-96 text-xs text-slate-300 font-mono">
+{`---
+name: ${skillName || '[tên skill]'}
+description: ${description.substring(0, 60) || '[mô tả skill]'}...
+---
+
+# Skill: ${skillName || 'skill-name'}
+
+${body || '[nội dung hướng dẫn]'}
+
+## Kích hoạt
+
+Gõ: "Hãy dùng ${skillName || 'skill-name'} skill để..."
+`}
+                                    </pre>
+                                    <div className="mt-4 p-4 bg-slate-700 bg-opacity-50 rounded text-sm text-slate-300 border-l-4 border-teal-500">
+                                        <p className="font-bold mb-2">💾 Cách sử dụng:</p>
+                                        <ol className="list-decimal list-inside space-y-1 text-xs">
+                                            <li>Copy nội dung SKILL.md</li>
+                                            <li>Tạo file mới trong thư mục Cowork</li>
+                                            <li>Dán nội dung và lưu</li>
+                                            <li>Kích hoạt skill và test</li>
+                                        </ol>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.createRoot(document.getElementById('root')).render(<SKILLBuilder />);
+    </script>
+</body>
+</html>

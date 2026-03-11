@@ -45,12 +45,12 @@ created: {YYYY-MM-DD}
 | 5 | Slide Development | ☐ Pending | Slide deck (.pptx) | [phase-05](./phase-05-slide-development.md) |
 | 6 | Activity Design | ☐ Pending | Activities with worksheets | [phase-06](./phase-06-activity-design.md) |
 | 7 | Materials Production | ☐ Pending | Guide + handout + assessments | [phase-07](./phase-07-materials-production.md) |
-| 8 | Quality Evaluation | ☐ Pending | 18-criterion evaluation | [phase-08](./phase-08-quality-evaluation.md) |
+| 8 | Quality Evaluation | ☐ Pending | 19-criterion evaluation | [phase-08](./phase-08-quality-evaluation.md) |
 
 ## Key Dependencies
 - `course-designer` skill for ADDIE methodology
 - `pptx` skill for slide generation
-- 18-criterion evaluation checklist
+- 19-criterion evaluation checklist
 
 ## Course Output Location
 `courses/{course-slug}/`
@@ -272,7 +272,7 @@ Build minute-by-minute lesson plan with delivery approaches and resources.
 **Status:** ☐ Pending | **Priority:** P1 | **Depends on:** All phases
 
 ## Overview
-Run 18-criterion self-evaluation. Fix any NI/NA criteria. Repeat until 18/18 Pass.
+Run 19-criterion self-evaluation. Fix any NI/NA criteria. Repeat until 18/18 Pass.
 
 ## Todo
 - [ ] Evaluate all 18 criteria with evidence
