@@ -1,0 +1,5 @@
+{
+  "captureFilter": { "domains": [], "excludePatterns": [] },
+  "schema": { "outputDir": ".neo/schemas" },
+  "proxy": { "port": 3456 }
+}
