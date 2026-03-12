@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Code — Framework Decision Tree</title>
+<style>
+  :root { --primary: #6C63FF; --accent: #FF6584; --bg: #0F0E17; --card: #1A1932; --text: #FFFFFE; --muted: #A7A9BE; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: 2rem 1rem; }
+  h1 { font-size: 1.8rem; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary), var(--accent)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+  .subtitle { color: var(--muted); margin-bottom: 2rem; font-size: 0.95rem; }
+  .tree { display: flex; flex-direction: column; align-items: center; gap: 1rem; max-width: 600px; width: 100%; }
+  .node { background: var(--card); border: 2px solid var(--primary); border-radius: 12px; padding: 1.2rem 1.5rem; width: 100%; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; }
+  .node:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(108,99,255,0.3); }
+  .node.question { border-color: var(--primary); }
+  .node.answer { border-color: var(--accent); background: linear-gradient(135deg, #1A1932, #2D1B3D); }
+  .node .q { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.8rem; }
+  .node .hint { font-size: 0.85rem; color: var(--muted); }
+  .buttons { display: flex; gap: 1rem; margin-top: 0.8rem; justify-content: center; }
+  .btn { padding: 0.6rem 1.5rem; border-radius: 8px; border: none; font-size: 0.95rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-yes { background: var(--primary); color: white; }
+  .btn-no { background: transparent; border: 2px solid var(--accent); color: var(--accent); }
+  .btn:hover { transform: scale(1.05); }
+  .result { padding: 1.5rem; border-radius: 12px; text-align: left; width: 100%; }
+  .result h3 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+  .result .framework { font-size: 1.5rem; font-weight: 700; margin-bottom: 0.8rem; }
+  .result .template { background: #0D0C14; border-radius: 8px; padding: 1rem; font-family: 'Courier New', monospace; font-size: 0.85rem; white-space: pre-wrap; margin-top: 0.8rem; border-left: 3px solid var(--primary); }
+  .result ul { padding-left: 1.2rem; margin-top: 0.5rem; }
+  .result li { margin-bottom: 0.3rem; color: var(--muted); }
+  .restart { margin-top: 1.5rem; padding: 0.8rem 2rem; background: transparent; border: 2px solid var(--muted); color: var(--muted); border-radius: 8px; cursor: pointer; font-size: 0.9rem; }
+  .restart:hover { border-color: var(--text); color: var(--text); }
+  .hidden { display: none; }
+  .connector { width: 2px; height: 20px; background: var(--primary); }
+  .tag { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 4px; font-size: 0.75rem; font-weight: 600; margin-right: 0.3rem; }
+  .tag-rtt { background: rgba(108,99,255,0.2); color: var(--primary); }
+  .tag-costar { background: rgba(255,101,132,0.2); color: var(--accent); }
+  .tag-claudemd { background: rgba(0,200,150,0.2); color: #00C896; }
+</style>
+</head>
+<body>
+<h1>🌳 Framework Decision Tree</h1>
+<p class="subtitle">Chọn framework phù hợp cho task của bạn trong Claude Code</p>
+
+<div class="tree" id="tree">
+  <!-- Dynamic content rendered by JS -->
+</div>
+
+<button class="restart hidden" id="restartBtn" onclick="restart()">↺ Bắt đầu lại</button>
+
+<script>
+const questions = {
+  q1: {
+    q: "Task cần hoàn thành trong < 5 phút?",
+    hint: "Email reply, meeting summary, quick data check...",
+    yes: "q2", no: "q3"
+  },
+  q2: {
+    q: "Task này lặp lại hàng tuần?",
+    hint: "Weekly report, daily standup notes, recurring emails...",
+    yes: "r_rtt_template", no: "r_rtt"
+  },
+  q3: {
+    q: "Output cần stakeholder review? (sếp, khách hàng, board)",
+    hint: "Quarterly report, proposal, strategy doc...",
+    yes: "q4", no: "q5"
+  },
+  q4: {
+    q: "Bạn đã có CLAUDE.md cho project này?",
+    hint: "File CLAUDE.md trong folder dự án với context + rules",
+    yes: "r_costar_claudemd", no: "r_costar"
+  },
+  q5: {
+    q: "Task cần AI phân tích từng bước? (so sánh, đánh giá, ra quyết định)",
+    hint: "Vendor comparison, risk assessment, budget analysis...",
+    yes: "r_cot", no: "r_rtt_upgrade"
+  }
+};
+
+const results = {
+  r_rtt: {
+    framework: "RTT (Role-Task-Tone)",
+    tags: ["rtt"],
+    desc: "Đủ cho 70% task routine. Nhanh, hiệu quả.",
+    template: `Role: Bạn là [vai trò] senior tại [company type]\nTask: [mô tả task cụ thể]\nTone: [formal/casual/technical/empathetic]`,
+    tips: ["Gõ trực tiếp trong Claude Code", "Không cần CLAUDE.md cho one-off tasks", "Nếu output chưa đủ → upgrade lên CO-STAR"]
+  },
+  r_rtt_template: {
+    framework: "RTT + Template + CLAUDE.md",
+    tags: ["rtt", "claudemd"],
+    desc: "Task lặp lại → tạo template, lưu trong CLAUDE.md.",
+    template: `# Trong CLAUDE.md:\n## Weekly Report Template\nRole: Finance analyst tại [COMPANY]\nTask: Tóm tắt [DATA_SOURCE] thành summary\nTone: Professional, data-driven\n\n# Trong Claude Code:\n> Chạy weekly report template với data tuần này`,
+    tips: ["Lưu template trong CLAUDE.md = dùng lại mãi", "Đánh dấu [BIẾN] bằng brackets", "Test template ≥3 lần trước khi share team"]
+  },
+  r_costar: {
+    framework: "CO-STAR",
+    tags: ["costar"],
+    desc: "Task quan trọng, cần chi tiết, có audience cụ thể.",
+    template: `Context: [bối cảnh + data + constraints]\nObjective: [mục đích — output DÙNG để làm gì?]\nStyle: [báo cáo/email/presentation/memo]\nTone: [formal/confident/cautious/empathetic]\nAudience: [ai sẽ ĐỌC output?]\nResponse: [format: table/bullets/paragraph, max words]`,
+    tips: ["CO-STAR cho 30% task quan trọng", "Audience field = secret weapon (AI adjust tone cho đúng người đọc)", "Kết hợp với /compact để giữ context dài"]
+  },
+  r_costar_claudemd: {
+    framework: "CO-STAR + CLAUDE.md Context",
+    tags: ["costar", "claudemd"],
+    desc: "Maximum power: CO-STAR framework + project context từ CLAUDE.md.",
+    template: `# CLAUDE.md đã có: company info, style guide, terminology\n# Bạn chỉ cần gõ CO-STAR cho task cụ thể:\n\nContext: Q4 report data [đã có trong CLAUDE.md context]\nObjective: Executive summary cho Board meeting ngày [DATE]\nStyle: Theo company template [CLAUDE.md biết format]\nTone: Confident, highlight wins, honest về challenges\nAudience: Board of Directors\nResponse: 1 trang, 3 sections: Highlights, Concerns, Next Steps`,
+    tips: ["CLAUDE.md = context cố định (company, style, rules)", "CO-STAR = context task cụ thể", "Combo = output chuẩn nhất, ít iterate nhất"]
+  },
+  r_cot: {
+    framework: "Chain-of-Thought + CO-STAR",
+    tags: ["costar"],
+    desc: "Task phân tích phức tạp → yêu cầu AI suy nghĩ từng bước.",
+    template: `[CO-STAR header cho context]\n\nHãy phân tích theo các bước:\n1. Liệt kê các yếu tố cần xem xét\n2. Đánh giá từng yếu tố (ưu/nhược)\n3. So sánh side-by-side\n4. Recommendation kèm reasoning\n\nSau khi phân tích, tóm tắt trong 3 bullet points.`,
+    tips: ["'Hãy suy nghĩ từng bước' = magic phrase", "Specify các bước phân tích cho output structured", "Dùng /compact nếu analysis output quá dài"]
+  },
+  r_rtt_upgrade: {
+    framework: "Bắt đầu RTT → Upgrade nếu cần",
+    tags: ["rtt", "costar"],
+    desc: "Không chắc? Bắt đầu đơn giản, nâng cấp khi output chưa đủ.",
+    template: `# Bước 1: Thử RTT\nRole: [vai trò]\nTask: [task]\nTone: [tone]\n\n# Nếu output chưa đủ → Bước 2: Thêm CO-STAR elements\n+ Context: [bối cảnh chi tiết hơn]\n+ Audience: [ai đọc?]\n+ Response: [format cụ thể]`,
+    tips: ["RTT first = nhanh hơn 2x", "Chỉ upgrade khi output thiếu — đừng over-engineer", "Mỗi lần iterate, thay đổi 1 element → biết gì tạo khác biệt"]
+  }
+};
+
+let history = [];
+
+function render(nodeId) {
+  const tree = document.getElementById('tree');
+  const btn = document.getElementById('restartBtn');
+
+  if (questions[nodeId]) {
+    const q = questions[nodeId];
+    tree.innerHTML = `
+      ${history.length > 0 ? '<div class="connector"></div>' : ''}
+      <div class="node question">
+        <div class="q">${q.q}</div>
+        <div class="hint">${q.hint}</div>
+        <div class="buttons">
+          <button class="btn btn-yes" onclick="answer('${nodeId}', 'yes')">✓ Có</button>
+          <button class="btn btn-no" onclick="answer('${nodeId}', 'no')">✗ Không</button>
+        </div>
+      </div>`;
+    btn.classList.add('hidden');
+  } else {
+    const r = results[nodeId];
+    const tagHtml = r.tags.map(t => `<span class="tag tag-${t}">${t.toUpperCase()}</span>`).join('');
+    tree.innerHTML = `
+      <div class="connector"></div>
+      <div class="node answer result">
+        <div>${tagHtml}</div>
+        <div class="framework">${r.framework}</div>
+        <p>${r.desc}</p>
+        <div class="template">${r.template}</div>
+        <h3 style="margin-top:1rem">💡 Tips:</h3>
+        <ul>${r.tips.map(t => `<li>${t}</li>`).join('')}</ul>
+      </div>`;
+    btn.classList.remove('hidden');
+  }
+}
+
+function answer(qId, choice) {
+  history.push(qId);
+  const next = questions[qId][choice];
+  render(next);
+}
+
+function restart() {
+  history = [];
+  render('q1');
+}
+
+render('q1');
+</script>
+</body>
+</html>

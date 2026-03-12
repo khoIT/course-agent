@@ -10,8 +10,26 @@ Rules for agents operating as teammates within an Agent Team.
 - Each teammate MUST own distinct files — no overlapping edits
 - Define ownership via glob patterns in task descriptions: `File ownership: courses/onboarding/05-activities/*, courses/onboarding/02-slides.*`
 - Lead resolves ownership conflicts by restructuring tasks or handling shared files directly
-- Reviewer/evaluator reads course files but never edits them directly
+- Content Reviewer (`code-reviewer`) and Quality Evaluator (`tester`) READ course files but never edit them directly — they report findings
+- Content Developer (`fullstack-developer`) agents MUST have non-overlapping file ownership when running in parallel
 - If ownership violation detected: STOP and report to lead immediately
+
+### Typical Team Composition for Course Production
+- **Lead**: Orchestrator (you) — coordinates phases, resolves conflicts, owns plan files
+- **Researcher** (`researcher` agent): Owns `research/` directory files
+- **Content Developer A** (`fullstack-developer`): Owns specific sessions/modules (e.g., `session-01-*`, `session-02-*`)
+- **Content Developer B** (`fullstack-developer`): Owns different sessions/modules (e.g., `session-03-*`, `session-04-*`)
+- **Visual Designer** (`ui-ux-designer`): Owns slide decks, infographics, visual assets
+- **Quality Evaluator** (`tester`): Read-only on all materials, owns evaluation reports
+- **Content Reviewer** (`code-reviewer`): Read-only on all materials, owns review reports
+
+```
+Example ownership assignment:
+- Content Developer A: `File ownership: courses/onboarding/05-activities/session-01-*, courses/onboarding/03-facilitator-guide-session-01.md`
+- Content Developer B: `File ownership: courses/onboarding/05-activities/session-02-*, courses/onboarding/03-facilitator-guide-session-02.md`
+- Visual Designer: `File ownership: courses/onboarding/02-slides.pptx, courses/onboarding/08-interactive-artifacts/*`
+BAD: Two developers both own `courses/onboarding/03-facilitator-guide.md` (single file, guaranteed conflict)
+```
 
 ## Git Safety
 
@@ -27,6 +45,12 @@ Rules for agents operating as teammates within an Agent Team.
 - Use `SendMessage(type: "broadcast")` ONLY for critical blocking issues affecting entire team
 - Mark tasks completed via `TaskUpdate` BEFORE sending completion message to lead
 - Include actionable findings in messages, not just "I'm done"
+  ```
+  Example peer message (Content Developer → Lead):
+  "Session 2 facilitator guide complete. 3 activities with REAL criteria met.
+  One concern: Activity 2 role-play needs 4 people minimum — should I add a 3-person variant?
+  File: courses/onboarding/03-facilitator-guide-session-02.md"
+  ```
 - Never send structured JSON status messages — use plain text
 
 ## CK Stack Conventions

@@ -39,12 +39,12 @@ Execute the tool calls in order. Report progress after each major step.
 
 ---
 
-## CK Context Block
+## KK Context Block
 
 Every teammate spawn prompt MUST include this context at the end:
 
 ```
-CK Context:
+KK Context:
 - Work dir: {CK_PROJECT_ROOT or CWD}
 - Reports: {CK_REPORTS_PATH or "plans/reports/"}
 - Plans: {CK_PLANS_PATH or "plans/"}

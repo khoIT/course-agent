@@ -18,6 +18,13 @@
 
 ## General
 - **File Naming**: Use kebab-case for file names with a meaningful name that describes the purpose of the file. Long file names are fine — they ensure LLMs can understand the purpose via Grep/Glob without reading contents.
+  ```
+  Examples:
+    Good: session-02-handling-difficult-customers-roleplay.md
+    Good: 05-activities/activity-03-empathy-mapping-exercise.md
+    Bad:  s2-act.md (cryptic, no context for LLM tools)
+    Bad:  session2.md (no description of content)
+  ```
 - **File Size Management**: Keep individual content files under 200 lines for optimal context management
   - Split large course materials into per-session or per-topic modules
   - Separate activities into individual files
@@ -43,6 +50,24 @@
 - Every activity must meet REAL criteria: Relevant, Engaging, Active, Learner-centered
 - Use the `course-designer` skill's self-evaluation workflow after every major deliverable
 - Use `design-critique` skill to review visual quality of slides and materials
+
+## Subagent Usage in Content Creation
+- **Content writing tasks** → delegate to `fullstack-developer` agent (framed as Content Developer)
+- **Review tasks** → delegate to `code-reviewer` agent (framed as Content Reviewer)
+- **Quality checks** → delegate to `tester` agent (framed as Quality Evaluator against 19-criterion checklist)
+- **Research tasks** → delegate to `researcher` agent (framed as Subject Matter Researcher with WebSearch mandate)
+- **Debugging content issues** → delegate to `debugger` agent (framed as Content Debugger for root cause analysis)
+- **Visual design** → delegate to `ui-ux-designer` agent (framed as Visual Designer for slides, infographics)
+- Always frame agent prompts in course design language — see `CLAUDE.md` → "Subagent Role Mapping"
+- Include file ownership boundaries when spawning parallel content agents to avoid conflicts
+
+<example title="Delegating content writing to fullstack-developer agent">
+Prompt: "Write the facilitator guide for Session 2: Handling Difficult Customers.
+Role: Content Developer. File ownership: courses/customer-service/03-facilitator-guide-session-02.md
+Requirements: timing table, speaker scripts, ≥2 troubleshooting scenarios, transition cues.
+Reference: courses/customer-service/01-lesson-plan.md (Session 2 section)
+Methodology: .claude/skills/course-designer/references/methodology-development.md"
+</example>
 
 ## Pre-commit/Push Rules
 - Run quality check (19-criterion evaluation) before finalizing deliverables

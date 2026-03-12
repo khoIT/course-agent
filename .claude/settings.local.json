@@ -3,7 +3,18 @@
     "allow": [
       "Bash(powershell -Command \"Get-NetAdapter | Where-Object { \\\\$_.InterfaceDescription -like '*Realtek*' } | Format-Table Name, InterfaceDescription, Status\")",
       "Bash(powershell.exe -NoProfile -Command \"Get-NetAdapter | Where-Object { $_.InterfaceDescription -like '*Realtek*' } | Format-Table Name, InterfaceDescription, Status\")",
-      "Bash(powershell.exe -NoProfile -Command \"schtasks /Query /TN 'Reset Ethernet on Wake'\" 2>&1; echo \"exit: $?\")"
+      "Bash(powershell.exe -NoProfile -Command \"schtasks /Query /TN 'Reset Ethernet on Wake'\" 2>&1; echo \"exit: $?\")",
+      "Bash(python \"C:/Users/CPU12830-local/code/claude-cowork-course/.claude/skills/skill-creator/scripts/package_skill.py\" \"C:/Users/CPU12830-local/code/claude-cowork-course/course-designer\" 2>&1)",
+      "Bash(gh api:*)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(curl -sL \"https://raw.githubusercontent.com/anthropics/claude-plugins-official/main/plugins/skill-creator/skills/skill-creator/scripts/__init__.py\" 2>/dev/null | head -5)",
+      "Bash(cp \"C:/Users/CPU12830-local/code/claude-cowork-course/.claude/skills/new-skill-creator/skill-creator/eval-viewer/viewer.html\" \"C:/Users/CPU12830-local/code/claude-cowork-course/.claude/skills/new-skill-creator/eval-viewer/viewer.html\" && cp \"C:/Users/CPU12830-local/code/claude-cowork-course/.claude/skills/new-skill-creator/skill-creator/assets/eval_review.html\" \"C:/Users/CPU12830-local/code/claude-cowork-course/.claude/skills/new-skill-creator/assets/eval_review.html\" && echo \"Files copied\")",
+      "Bash(find \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/02-slides/\" -type f 2>/dev/null && find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"*.pptx\" -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/07-evaluation-report.md\" 2>/dev/null | head -10)",
+      "Bash(find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"*.pptx\" -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/01-lesson-plan.md\" 2>/dev/null && find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"session-*.pptx\" 2>/dev/null && find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"*.html\" -path \"*/02-slides/*\" 2>/dev/null | head -20)",
+      "Bash(find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"*.pptx\" 2>/dev/null && find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/07-evaluation-report.md\" -type f 2>/dev/null | grep -v \".output\" | grep -v \"__pycache__\" | head -20)",
+      "Bash(find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"slide*.html\" -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/07-evaluation-report.md\" 2>/dev/null | head -20 && find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"workspace\" -type d -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/07-evaluation-report.md\" 2>/dev/null | head -5)",
+      "Bash(cd C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/02-slides/workspace && node generate-all-slides.js)",
+      "Bash(ls -la C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/02-slides/*.pptx 2>/dev/null)"
     ]
   }
 }

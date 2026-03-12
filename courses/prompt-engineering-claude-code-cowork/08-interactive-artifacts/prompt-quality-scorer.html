@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Prompt Quality Scorer — Đánh giá chất lượng output</title>
+<style>
+  :root { --pri: #6C63FF; --acc: #00C896; --warn: #FF6584; --gold: #FFD93D; --bg: #0F0E17; --card: #1A1932; --text: #FFFFFE; --muted: #A7A9BE; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 2rem 1rem; }
+  .container { max-width: 700px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; background: linear-gradient(135deg, var(--gold), var(--acc)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; }
+  .sub { color: var(--muted); margin-bottom: 2rem; }
+  .criteria { background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .criteria h3 { font-size: 1rem; margin-bottom: 0.3rem; }
+  .criteria .desc { font-size: 0.82rem; color: var(--muted); margin-bottom: 0.8rem; }
+  .stars { display: flex; gap: 0.4rem; }
+  .star { width: 36px; height: 36px; border-radius: 8px; border: 2px solid #2D2B4A; background: var(--bg); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1rem; transition: all 0.2s; }
+  .star:hover { border-color: var(--gold); transform: scale(1.1); }
+  .star.active { background: var(--gold); border-color: var(--gold); color: var(--bg); }
+  .star-labels { display: flex; justify-content: space-between; font-size: 0.7rem; color: var(--muted); margin-top: 0.3rem; padding: 0 0.2rem; }
+  .result-panel { background: linear-gradient(135deg, var(--card), #2D1B3D); border: 2px solid var(--pri); border-radius: 16px; padding: 2rem; text-align: center; margin-top: 1.5rem; }
+  .score-big { font-size: 4rem; font-weight: 800; }
+  .score-label { font-size: 1.2rem; font-weight: 600; margin: 0.5rem 0; }
+  .bar-container { background: #0D0C14; border-radius: 8px; height: 12px; margin: 1rem 0; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 8px; transition: width 0.5s, background 0.5s; }
+  .verdict { font-size: 0.95rem; color: var(--muted); margin-top: 1rem; padding: 1rem; background: var(--bg); border-radius: 8px; text-align: left; }
+  .verdict strong { color: var(--text); }
+  .actions { display: flex; gap: 1rem; justify-content: center; margin-top: 1.5rem; }
+  .btn { padding: 0.7rem 1.5rem; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; }
+  .btn-reset { background: transparent; border: 2px solid var(--muted); color: var(--muted); }
+  .btn-reset:hover { border-color: var(--text); color: var(--text); }
+  .notes-section { margin-top: 1.5rem; }
+  .notes-section textarea { width: 100%; background: var(--card); border: 1px solid #2D2B4A; border-radius: 8px; padding: 0.8rem; color: var(--text); font-family: inherit; font-size: 0.9rem; min-height: 60px; resize: vertical; }
+  .notes-section label { display: block; color: var(--muted); font-size: 0.85rem; margin-bottom: 0.3rem; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>⭐ Prompt Quality Scorer</h1>
+<p class="sub">Đánh giá output từ Claude Code — 4 tiêu chí, mỗi tiêu chí 1-5 điểm</p>
+
+<div id="criteriaList"></div>
+
+<div class="result-panel">
+  <div class="score-big" id="totalScore">0</div>
+  <div class="score-label" id="scoreLabel">/ 20</div>
+  <div class="bar-container"><div class="bar-fill" id="barFill" style="width:0%"></div></div>
+  <div id="verdict" class="verdict"></div>
+</div>
+
+<div class="notes-section">
+  <label>📝 Ghi chú cải thiện (dùng cho iteration loop)</label>
+  <textarea id="notes" placeholder="VD: Thiếu context phòng ban → thêm vào CLAUDE.md. Tone quá formal → đổi thành friendly trong prompt."></textarea>
+</div>
+
+<div class="actions">
+  <button class="btn btn-reset" onclick="resetAll()">↺ Reset</button>
+</div>
+</div>
+
+<script>
+const criteria = [
+  { id: 'accuracy', name: 'Accuracy — Chính xác', desc: 'Thông tin đúng không? Có bịa data không? Đúng context chuyên ngành?', low: 'Sai/bịa', high: 'Chính xác 100%' },
+  { id: 'completeness', name: 'Completeness — Đầy đủ', desc: 'Đủ chi tiết chưa? Thiếu phần quan trọng nào? Không thừa không thiếu?', low: 'Thiếu nhiều', high: 'Đầy đủ, cân đối' },
+  { id: 'tone', name: 'Tone — Giọng điệu', desc: 'Phù hợp audience không? Consistent trong toàn bộ output? Đúng style yêu cầu?', low: 'Sai giọng', high: 'Chuẩn tone' },
+  { id: 'actionability', name: 'Actionability — Hành động được', desc: 'Người đọc biết next step? Dùng được ngay hay cần sửa nhiều? Có rõ ai làm gì?', low: 'Không dùng được', high: 'Dùng ngay' }
+];
+
+const scores = {};
+
+function renderCriteria() {
+  const container = document.getElementById('criteriaList');
+  container.innerHTML = criteria.map(c => `
+    <div class="criteria">
+      <h3>${c.name}</h3>
+      <div class="desc">${c.desc}</div>
+      <div class="stars" id="stars-${c.id}">
+        ${[1,2,3,4,5].map(n => `<div class="star" data-id="${c.id}" data-val="${n}" onclick="rate('${c.id}',${n})">${n}</div>`).join('')}
+      </div>
+      <div class="star-labels"><span>${c.low}</span><span>${c.high}</span></div>
+    </div>
+  `).join('');
+}
+
+function rate(id, val) {
+  scores[id] = val;
+  document.querySelectorAll(`#stars-${id} .star`).forEach(s => {
+    s.classList.toggle('active', parseInt(s.dataset.val) <= val);
+  });
+  updateResult();
+}
+
+function updateResult() {
+  const total = Object.values(scores).reduce((a, b) => a + b, 0);
+  const max = criteria.length * 5;
+  const pct = Math.round((total / max) * 100);
+
+  document.getElementById('totalScore').textContent = total;
+
+  const bar = document.getElementById('barFill');
+  bar.style.width = pct + '%';
+
+  let color, label, advice;
+  if (pct >= 80) {
+    color = 'var(--acc)'; label = '✓ Xuất sắc — Dùng được ngay!';
+    advice = `<strong>Output đạt chuẩn.</strong> Có thể gửi cho stakeholder. Lưu prompt vào template library để dùng lại.`;
+  } else if (pct >= 60) {
+    color = 'var(--gold)'; label = '△ Khá — Cần iterate 1-2 lần';
+    const weak = criteria.filter(c => (scores[c.id] || 0) <= 3).map(c => c.name.split('—')[0].trim());
+    advice = `<strong>Cần cải thiện:</strong> ${weak.join(', ') || 'Xem lại từng criteria'}.<br>
+    <strong>Next step:</strong> Trong Claude Code, sửa prompt → /clear → test lại. Mỗi lần chỉ thay 1 element.`;
+  } else {
+    color = 'var(--warn)'; label = '✗ Cần cải thiện nhiều';
+    advice = `<strong>Output chưa đạt.</strong> Check theo thứ tự:<br>
+    1. Context thiếu? → Thêm vào prompt hoặc CLAUDE.md<br>
+    2. Role sai? → Thay đổi expertise level<br>
+    3. Format chưa rõ? → Specify output structure<br>
+    4. Thiếu ví dụ? → Thêm few-shot examples<br>
+    <strong>Dùng /clear trong Claude Code rồi test lại.</strong>`;
+  }
+
+  bar.style.background = color;
+  document.getElementById('scoreLabel').textContent = `/ ${max}  —  ${label}`;
+  document.getElementById('verdict').innerHTML = advice;
+}
+
+function resetAll() {
+  Object.keys(scores).forEach(k => delete scores[k]);
+  document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+  document.getElementById('totalScore').textContent = '0';
+  document.getElementById('scoreLabel').textContent = '/ 20';
+  document.getElementById('barFill').style.width = '0%';
+  document.getElementById('verdict').innerHTML = '';
+  document.getElementById('notes').value = '';
+}
+
+renderCriteria();
+</script>
+</body>
+</html>

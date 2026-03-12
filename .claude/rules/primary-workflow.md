@@ -9,6 +9,20 @@
 1. **Create plan directory**: `plans/{YYMMDD}-{HHMM}-{course-slug}/` (e.g., `plans/260311-1505-customer-service-course-design/`)
 2. **Use template**: Copy structure from `plans/templates/course-design-template.md` — adapt for the specific course
 3. **Create plan.md**: Overview with YAML frontmatter (status, priority, tags), phase table, target learner summary
+   ```yaml
+   # Example plan.md frontmatter + phase table:
+   ---
+   status: in-progress
+   priority: high
+   course: customer-service-excellence
+   target-learners: frontline support staff (6mo–2yr experience)
+   ---
+   | Phase | Status | File |
+   |-------|--------|------|
+   | Discovery & Analysis | Complete | phase-01-discovery-and-analysis.md |
+   | Learning Objectives | In Progress | phase-02-learning-objectives.md |
+   | Content Structure | Not Started | phase-03-content-structure.md |
+   ```
 4. **Create 8 phase files**: `phase-01-discovery-and-analysis.md` through `phase-08-quality-evaluation.md`
    - Each phase file has: Status, Overview, Key Insights, Requirements, Todo checkboxes, Success Criteria
 5. **Update phase status as work progresses**: After completing each ADDIE phase, update the phase file's status field and check off todo items
@@ -17,6 +31,8 @@
 **Rule:** Never rely solely on TodoWrite for course production state. TodoWrite is session-scoped; plan files persist on disk.
 
 #### 1. Research & Discovery (Web Search MANDATORY)
+**Primary agents:** `researcher` (Subject Matter Researcher), `Explore` (Content Scout)
+
 - **Use `WebSearch` tool** (Claude's default) for ALL subject matter research:
   - Research topic content, best practices, industry standards
   - Find reference courses, training frameworks, and pedagogical approaches
@@ -27,12 +43,24 @@
   - Taking screenshots of exemplary slide designs, layouts, or infographics for inspiration
   - Capturing visual reference materials for slide and handout design
 - **Use uploaded materials**: Extract content from PDFs, documents, and reference files provided by user
-- When in planning phase, use multiple `researcher` agents in parallel to cover different research angles
+- Spawn multiple `researcher` agents in parallel for different research angles (content vs. pedagogy vs. visual references)
+  ```
+  Example: spawn 2 researcher agents in parallel:
+  - Agent A: "Research effective role-play exercises for customer complaint handling.
+    Find 3+ published frameworks with evidence of effectiveness. WebSearch mandatory."
+  - Agent B: "Research common mistakes in customer service training programs.
+    Find post-mortems or case studies showing what fails and why. WebSearch mandatory."
+  ```
+- Use `brainstormer` agent for creative ideation on activities and engagement strategies
 - Report all research findings into the plan's `research/` directory and phase files
 - **[IMPORTANT]** Always cite sources and verify accuracy of researched content
 
 #### 2. Course Content Creation
+**Primary agents:** `planner` (Course Architect), `fullstack-developer` (Content Developer)
+
 - Activate `course-designer` skill to drive the ADDIE workflow
+- Use `planner` agent for objectives design, content structuring, and lesson plan creation
+- Use `fullstack-developer` agent for writing actual course content (guides, handouts, activities)
 - Follow the learner-centered methodology from `./course-designer/references/course-design-methodology.md`
 - **Follow the plan**: Work through phases in order, updating phase file status as each completes
 - **DO NOT** create duplicate enhanced files — update existing files directly.
@@ -40,19 +68,38 @@
 - **[IMPORTANT]** Use `WebSearch` to fact-check key claims during content writing — not just during research phase.
 
 #### 3. Material Generation
+**Primary agents:** `fullstack-developer` (Content Developer), `ui-ux-designer` (Visual Designer)
+
 - Based on the approved lesson plan, generate all required materials:
   - **Slides** → Use `pptx` skill. Follow the 4 design principles (KISS, Easy to Understand, Easy to Remember, Dynamic)
   - **Facilitator Guide** → Markdown (.md). Include speaker notes, timing, transition cues
   - **Learner Handout** → Markdown (.md). Standalone-usable summary + worksheets
   - **Activities** → Design using REAL criteria. Include complete step-by-step procedures and all materials
   - **Assessments** → Align with learning objectives. Include rubrics if applicable
-  - **Illustrations** → Use `canvas-design` skill for infographics, diagrams, poster visuals
+  - **Illustrations** → Use `canvas-design` skill via `ui-ux-designer` agent for infographics, diagrams, poster visuals
+- Spawn parallel `fullstack-developer` agents for independent materials (slides, handouts, activities) with distinct file ownership
 - For each material, ensure it traces back to the learner portrait and learning objectives.
 - **Use `WebSearch`** when generating content that references specific tools, platforms, or techniques — verify current accuracy.
 
 #### 4. Quality Evaluation
-- After generating materials, run the **19-criterion self-evaluation** from `./course-designer/references/evaluation-criteria.md`
+**Primary agents:** `tester` (Quality Evaluator), `code-reviewer` (Content Reviewer)
+
+- Spawn `tester` agent to run the **19-criterion self-evaluation** from `./course-designer/references/evaluation-criteria.md`
+- Spawn `code-reviewer` agent in parallel to review content for accuracy, consistency, and pedagogical soundness
 - Rate each criterion: Pass / Needs Improvement / Not Addressed
+  ```
+  Example 19-criterion evaluation output:
+  | # | Criterion           | Rating | Evidence                                                    |
+  |---|---------------------|--------|-------------------------------------------------------------|
+  | 1 | Learner-centered    | Pass   | Learner portrait drives all activity choices (see phase-01) |
+  | 5 | Activity engagement | NI     | Session 3 activity is lecture-only, no hands-on practice    |
+  | 12| Assessment alignment| NA     | No assessment created yet for Module 2 objectives           |
+
+  Weaknesses (listed before scoring):
+  1. Session 3 relies on passive listening — violates REAL criteria (Active)
+  2. Assumes all learners have prior CRM experience — mixed-group risk
+  3. Facilitator guide Session 4 has 2 lines vs. Session 1's full page — unequal depth
+  ```
 - For any criterion rated NI or NA, revise the materials and re-evaluate
 - Use `design-critique` skill to review visual quality of slides and visuals
 - **DO NOT** skip evaluation just to mark tasks complete.
@@ -60,20 +107,25 @@
 - **Update plan**: Mark `phase-08-quality-evaluation.md` with results and final status.
 
 #### 5. Integration & Consistency
+**Primary agents:** `project-manager` (Production Manager), `docs-manager` (Documentation Manager)
+
 - Always follow the plan — the plan.md + phase files are the authoritative reference
 - Ensure seamless consistency across all course materials (slides match handouts match facilitator guide)
 - Verify learning objectives thread through all materials
 - Maintain consistent branding, terminology, and visual style
 - Delegate to `docs-manager` agent to update docs in `./docs` directory if any.
+- Use `project-manager` agent for progress tracking and status reporting across phases
 - **Update plan**: Set plan.md status to `completed` when all phases pass evaluation.
 
 #### 6. Revision & Debugging
+**Primary agents:** `debugger` (Content Debugger), `researcher` (fact-checking)
+
 - When a user reports issues with course materials (factual errors, unclear content, missing activities):
-  - Review the specific materials against the lesson plan and objectives
+  - Use `debugger` agent to diagnose content gaps, sequencing issues, or activity mismatches
   - Identify root cause (content gap, sequencing issue, activity mismatch)
-  - **Use `WebSearch`** to verify corrected content is factually accurate
-  - Implement the fix in the actual material files
-  - Re-run the 19-criterion evaluation on affected materials
+  - Spawn `researcher` agent with `WebSearch` to verify corrected content is factually accurate
+  - Implement the fix in the actual material files via `fullstack-developer` agent
+  - Re-run the 19-criterion evaluation via `tester` agent on affected materials
   - If evaluation reveals new issues, fix them and repeat from **Step 4**
 
 #### 7. Visual Explanations

@@ -94,7 +94,7 @@ Instead of polling TaskList, lead receives automatic context injection:
 - **TaskCompleted** — fires when any teammate completes a task. Lead gets progress counts.
 - **TeammateIdle** — fires when teammate turn ends. Lead gets available task info.
 
-CK hooks (`task-completed-handler.cjs`, `teammate-idle-handler.cjs`) process these events and inject summary into lead's context.
+KK hooks (`task-completed-handler.cjs`, `teammate-idle-handler.cjs`) process these events and inject summary into lead's context.
 
 ### Recommended Pattern
 

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CLAUDE.md Builder — Tạo project config cho Claude Code</title>
+<style>
+  :root { --pri: #6C63FF; --acc: #00C896; --warn: #FF6584; --bg: #0F0E17; --card: #1A1932; --input-bg: #12111F; --text: #FFFFFE; --muted: #A7A9BE; }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'Segoe UI', system-ui, sans-serif; background: var(--bg); color: var(--text); padding: 2rem 1rem; }
+  .container { max-width: 900px; margin: 0 auto; }
+  h1 { font-size: 1.8rem; background: linear-gradient(135deg, var(--pri), var(--acc)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 0.3rem; }
+  .sub { color: var(--muted); margin-bottom: 2rem; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem; }
+  @media (max-width: 768px) { .grid { grid-template-columns: 1fr; } }
+  .form-section { background: var(--card); border-radius: 12px; padding: 1.5rem; margin-bottom: 1rem; }
+  .form-section h2 { font-size: 1.1rem; margin-bottom: 0.3rem; color: var(--acc); }
+  .form-section .hint { font-size: 0.8rem; color: var(--muted); margin-bottom: 0.8rem; }
+  label { display: block; font-size: 0.85rem; color: var(--muted); margin-bottom: 0.3rem; margin-top: 0.6rem; }
+  input, textarea, select { width: 100%; background: var(--input-bg); border: 1px solid #2D2B4A; border-radius: 8px; padding: 0.6rem 0.8rem; color: var(--text); font-family: inherit; font-size: 0.9rem; }
+  input:focus, textarea:focus, select:focus { outline: none; border-color: var(--pri); }
+  textarea { resize: vertical; min-height: 60px; }
+  .preview-panel { position: sticky; top: 1rem; }
+  .preview-box { background: var(--input-bg); border: 2px solid var(--pri); border-radius: 12px; padding: 1.5rem; font-family: 'Courier New', monospace; font-size: 0.85rem; white-space: pre-wrap; line-height: 1.6; max-height: 70vh; overflow-y: auto; }
+  .preview-box .comment { color: var(--muted); }
+  .preview-box .heading { color: var(--acc); font-weight: bold; }
+  .preview-box .value { color: var(--text); }
+  .actions { display: flex; gap: 1rem; margin-top: 1rem; }
+  .btn { padding: 0.7rem 1.5rem; border-radius: 8px; border: none; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+  .btn-primary { background: var(--pri); color: white; }
+  .btn-secondary { background: transparent; border: 2px solid var(--acc); color: var(--acc); }
+  .btn:hover { transform: scale(1.03); opacity: 0.9; }
+  .copied { position: fixed; top: 1rem; right: 1rem; background: var(--acc); color: var(--bg); padding: 0.8rem 1.5rem; border-radius: 8px; font-weight: 600; opacity: 0; transition: opacity 0.3s; z-index: 100; }
+  .copied.show { opacity: 1; }
+  .example-btn { display: inline-block; padding: 0.3rem 0.8rem; background: rgba(108,99,255,0.15); color: var(--pri); border-radius: 6px; font-size: 0.78rem; cursor: pointer; border: none; margin-right: 0.3rem; margin-top: 0.3rem; }
+  .example-btn:hover { background: rgba(108,99,255,0.3); }
+  .counter { font-size: 0.75rem; color: var(--muted); text-align: right; margin-top: 0.2rem; }
+</style>
+</head>
+<body>
+<div class="container">
+<h1>📄 CLAUDE.md Builder</h1>
+<p class="sub">Tạo file CLAUDE.md cho project — Claude Code sẽ tự động đọc và áp dụng</p>
+
+<div class="grid">
+<div class="form-col">
+  <div class="form-section">
+    <h2>1. Thông tin Project</h2>
+    <div class="hint">Claude Code đọc phần này để hiểu bạn làm gì</div>
+    <label>Tên project / phòng ban</label>
+    <input id="projectName" placeholder="VD: Phòng Marketing — Campaign Management" oninput="update()">
+    <label>Mô tả ngắn (1-2 câu)</label>
+    <textarea id="projectDesc" rows="2" placeholder="VD: Quản lý content marketing cho sản phẩm SaaS B2B, target SME Việt Nam" oninput="update()"></textarea>
+    <label>Ngành</label>
+    <select id="industry" onchange="update()">
+      <option value="">— Chọn ngành —</option>
+      <option value="HR">HR / Nhân sự</option>
+      <option value="Marketing">Marketing</option>
+      <option value="Finance">Finance / Tài chính</option>
+      <option value="Operations">Operations / Vận hành</option>
+      <option value="Sales">Sales / Kinh doanh</option>
+      <option value="Other">Khác</option>
+    </select>
+    <div style="margin-top:0.5rem">
+      <span class="example-btn" onclick="loadExample('hr')">📋 Ví dụ HR</span>
+      <span class="example-btn" onclick="loadExample('mkt')">📋 Ví dụ Marketing</span>
+      <span class="example-btn" onclick="loadExample('fin')">📋 Ví dụ Finance</span>
+    </div>
+  </div>
+
+  <div class="form-section">
+    <h2>2. Rules & Style Guide</h2>
+    <div class="hint">Quy tắc Claude Code phải tuân theo khi tạo output</div>
+    <label>Tone mặc định</label>
+    <select id="tone" onchange="update()">
+      <option value="professional">Professional (chuyên nghiệp)</option>
+      <option value="friendly">Friendly (thân thiện)</option>
+      <option value="formal">Formal (trang trọng)</option>
+      <option value="casual">Casual (thoải mái)</option>
+    </select>
+    <label>Ngôn ngữ output</label>
+    <select id="language" onchange="update()">
+      <option value="Vietnamese">Tiếng Việt</option>
+      <option value="English">English</option>
+      <option value="Bilingual">Song ngữ</option>
+    </select>
+    <label>Quy tắc cụ thể (mỗi dòng 1 rule)</label>
+    <textarea id="rules" rows="3" placeholder="VD: Dùng 'bạn' thay vì 'quý khách'&#10;Không dùng emoji trong email chính thức&#10;Luôn kết thúc email bằng 'Trân trọng'" oninput="update()"></textarea>
+  </div>
+
+  <div class="form-section">
+    <h2>3. Thuật ngữ chuyên ngành</h2>
+    <div class="hint">Từ ngữ riêng mà Claude Code cần biết để output chính xác</div>
+    <textarea id="terms" rows="3" placeholder="VD: KPI = Key Performance Indicator&#10;CTR = Click-Through Rate&#10;MoM = Month-over-Month" oninput="update()"></textarea>
+  </div>
+
+  <div class="form-section">
+    <h2>4. Few-shot Examples (tuỳ chọn)</h2>
+    <div class="hint">Ví dụ input/output để Claude Code học format mong muốn</div>
+    <label>Task description</label>
+    <input id="exTask" placeholder="VD: Phân loại feedback khách hàng" oninput="update()">
+    <label>Example Input</label>
+    <textarea id="exInput" rows="2" placeholder="VD: 'Sản phẩm tốt nhưng giao hàng chậm quá'" oninput="update()"></textarea>
+    <label>Example Output</label>
+    <textarea id="exOutput" rows="2" placeholder="VD: Category: Logistics | Sentiment: Mixed | Priority: Medium" oninput="update()"></textarea>
+  </div>
+</div>
+
+<div class="preview-col preview-panel">
+  <h2 style="margin-bottom:0.8rem; color: var(--acc);">Preview: CLAUDE.md</h2>
+  <div class="preview-box" id="preview">
+    <span class="comment"># Điền form bên trái để generate...</span>
+  </div>
+  <div class="counter" id="lineCount">0 lines</div>
+  <div class="actions">
+    <button class="btn btn-primary" onclick="copyToClipboard()">📋 Copy</button>
+    <button class="btn btn-secondary" onclick="downloadFile()">💾 Download .md</button>
+  </div>
+</div>
+</div>
+</div>
+
+<div class="copied" id="copiedMsg">✓ Copied to clipboard!</div>
+
+<script>
+const examples = {
+  hr: { projectName: "Phòng Nhân sự — Tuyển dụng & Onboarding", projectDesc: "Quản lý quy trình tuyển dụng từ đăng tin đến onboarding cho công ty tech 200 người", industry: "HR", tone: "professional", language: "Vietnamese", rules: "Dùng 'ứng viên' thay vì 'candidate'\nTuân thủ Luật Lao động Việt Nam 2019\nKhông hỏi về tình trạng hôn nhân trong JD\nEmail offer phải có thời hạn phản hồi 5 ngày", terms: "JD = Job Description\nPIP = Performance Improvement Plan\nProbation = Thử việc (60 ngày theo luật VN)\nC&B = Compensation & Benefits", exTask: "Viết email phản hồi ứng viên", exInput: "Ứng viên Nguyễn Văn A ứng tuyển Senior Dev, pass phỏng vấn vòng 2", exOutput: "Subject: Kết quả phỏng vấn — [Tên vị trí]\nBody: Chào [Tên], cảm ơn... mời vòng tiếp theo ngày [DATE]...\nTone: warm, professional" },
+  mkt: { projectName: "Phòng Marketing — Content & Campaign", projectDesc: "Content marketing cho sản phẩm SaaS B2B, target SME Việt Nam, focus SEO + email", industry: "Marketing", tone: "friendly", language: "Vietnamese", rules: "Viết content theo tone brand: thân thiện, không quá formal\nMọi số liệu phải có nguồn\nCTA rõ ràng trong mọi content\nSEO: luôn suggest meta title + description", terms: "CTR = Click-Through Rate\nCAC = Customer Acquisition Cost\nMQL = Marketing Qualified Lead\nCMS = Content Management System", exTask: "Viết social media post", exInput: "Sản phẩm mới: AI chatbot cho CS team, giá từ 2M/tháng", exOutput: "Hook: Giảm 50% thời gian trả lời khách hàng?\nBody: [3 dòng giá trị]...\nCTA: Đăng ký demo miễn phí\nHashtags: #AIforBusiness #CustomerService" },
+  fin: { projectName: "Phòng Tài chính — Reporting & Analysis", projectDesc: "Báo cáo tài chính, phân tích budget, forecast cho công ty thương mại điện tử", industry: "Finance", tone: "formal", language: "Bilingual", rules: "Số liệu format: 1,000,000 VND (có dấu phẩy)\nLuôn so sánh YoY và MoM\nBáo cáo phải có Executive Summary ở đầu\nKhông dùng từ 'thua lỗ' — dùng 'chênh lệch âm'", terms: "OPEX = Operating Expenses\nCOGS = Cost of Goods Sold\nGM = Gross Margin\nP&L = Profit & Loss Statement\nYoY = Year-over-Year", exTask: "Tóm tắt monthly P&L", exInput: "Revenue: 5.2B (+12% MoM), COGS: 2.8B, OPEX: 1.9B, Marketing: 800M", exOutput: "Executive Summary: Revenue tăng 12% MoM đạt 5.2B VND...\nGM: 46.2% (target: 45%) ✓\nKey concern: OPEX/Revenue ratio 36.5% (tăng từ 34%)\nRecommendation: Review marketing spend efficiency" }
+};
+
+function loadExample(key) {
+  const e = examples[key];
+  document.getElementById('projectName').value = e.projectName;
+  document.getElementById('projectDesc').value = e.projectDesc;
+  document.getElementById('industry').value = e.industry;
+  document.getElementById('tone').value = e.tone;
+  document.getElementById('language').value = e.language;
+  document.getElementById('rules').value = e.rules;
+  document.getElementById('terms').value = e.terms;
+  document.getElementById('exTask').value = e.exTask;
+  document.getElementById('exInput').value = e.exInput;
+  document.getElementById('exOutput').value = e.exOutput;
+  update();
+}
+
+function update() {
+  const name = document.getElementById('projectName').value;
+  const desc = document.getElementById('projectDesc').value;
+  const industry = document.getElementById('industry').value;
+  const tone = document.getElementById('tone').value;
+  const lang = document.getElementById('language').value;
+  const rules = document.getElementById('rules').value;
+  const terms = document.getElementById('terms').value;
+  const exTask = document.getElementById('exTask').value;
+  const exInput = document.getElementById('exInput').value;
+  const exOutput = document.getElementById('exOutput').value;
+
+  let md = '';
+  md += `# CLAUDE.md\n\n`;
+
+  if (name || desc) {
+    md += `## Project\n`;
+    if (name) md += `${name}\n`;
+    if (desc) md += `${desc}\n`;
+    if (industry) md += `Ngành: ${industry}\n`;
+    md += `\n`;
+  }
+
+  md += `## Rules\n`;
+  md += `- Tone: ${tone}\n`;
+  md += `- Output language: ${lang}\n`;
+  if (rules) {
+    rules.split('\n').filter(r => r.trim()).forEach(r => { md += `- ${r.trim()}\n`; });
+  }
+  md += `\n`;
+
+  if (terms) {
+    md += `## Terminology\n`;
+    terms.split('\n').filter(t => t.trim()).forEach(t => { md += `- ${t.trim()}\n`; });
+    md += `\n`;
+  }
+
+  if (exTask && exInput && exOutput) {
+    md += `## Examples\n\n`;
+    md += `### ${exTask}\n`;
+    md += `**Input:** ${exInput}\n`;
+    md += `**Output:** ${exOutput}\n`;
+    md += `\n`;
+  }
+
+  // Colorize preview
+  const preview = document.getElementById('preview');
+  const colored = md
+    .replace(/^(#.*$)/gm, '<span class="heading">$1</span>')
+    .replace(/^(- .*)$/gm, '<span class="value">$1</span>')
+    .replace(/(\*\*.*?\*\*)/g, '<span style="color:var(--pri)">$1</span>');
+  preview.innerHTML = colored || '<span class="comment"># Điền form bên trái để generate...</span>';
+
+  const lines = md.split('\n').length;
+  document.getElementById('lineCount').textContent = `${lines} lines`;
+}
+
+function getMarkdown() {
+  const el = document.getElementById('preview');
+  return el.textContent || el.innerText;
+}
+
+function copyToClipboard() {
+  navigator.clipboard.writeText(getMarkdown());
+  const msg = document.getElementById('copiedMsg');
+  msg.classList.add('show');
+  setTimeout(() => msg.classList.remove('show'), 2000);
+}
+
+function downloadFile() {
+  const blob = new Blob([getMarkdown()], { type: 'text/markdown' });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'CLAUDE.md';
+  a.click();
+}
+</script>
+</body>
+</html>
