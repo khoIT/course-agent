@@ -43,25 +43,11 @@ Understand context before designing. See `references/workflow-detailed-phases.md
 - **Quick Mode:** If brief is comprehensive, summarize as Learner Portrait → confirm → proceed.
 - **Standard Mode:** 3 rounds — Big Picture → Learner Deep-Dive → Constraints & Preferences.
 
-### Phase 1: Analysis — Parallel Research Fork + Learner Portrait
-Load `references/methodology-philosophy-and-analysis.md`.
-
-**Step 1a: Spawn Parallel Researchers** (scale to complexity — 2-3 for simple, 4-5 for complex):
-
-| Researcher Role | Focus | Output File |
-|-----------------|-------|-------------|
-| Subject Matter Expert | Core content, key concepts, misconceptions, real-world examples | `research/sme-report.md` |
-| Pedagogy Researcher | Best teaching strategies for topic + audience, activity frameworks | `research/pedagogy-report.md` |
-| Audience Analyst | Learner pain points, skill gaps, motivations, prior knowledge | `research/audience-report.md` |
-| Benchmark Scout | Existing courses on topic, what works/fails, competitive gaps | `research/benchmark-report.md` |
-| Constraint Mapper | Time, format, tools, group size, venue implications | `research/constraints-report.md` |
-
-Each researcher gets a **fresh context window**, uses `WebSearch` mandatory, writes compressed findings (500-1500 tokens) to `{plan_dir}/research/`, and updates `progress.md` before returning. See `orchestration-protocol.md → Parallel Research Fork` for spawn template.
-
-**Step 1b: Build Learner Portrait** from research synthesis:
-- Build KSA (Knowledge, Skills, Attitudes) profile from audience + SME reports
-- Target learners (primary/secondary), current state, learning context, design implications
-- Present to user for confirmation before proceeding
+### Phase 1: Analysis — Learner Portrait
+Build a KSA (Knowledge, Skills, Attitudes) profile. Load `references/methodology-philosophy-and-analysis.md`.
+- Target learners (primary/secondary), current state, learning context, design implications.
+- Present to user for confirmation before proceeding.
+- **✏️ progress.md**: Update with learner portrait summary, design implications, user confirmations received.
 
 ```
 Example Learner Portrait:
@@ -69,16 +55,6 @@ Example Learner Portrait:
 - Context: 3-hour in-person workshop, groups of 12–15, post-lunch slot (energy management critical)
 - Design implication: Heavy on role-play and peer practice, light on theory lectures. Max 10min talking before an activity.
 ```
-
-**Step 1c: Research Compression → Phase Files** (Compression of Intent):
-1. Read all researcher reports from `{plan_dir}/research/`
-2. Synthesize findings into `phase-01-discovery-and-analysis.md` through `phase-04-lesson-plan.md`
-3. Write `## TL;DR (50 tokens)` header on each phase file — mandatory for cheap rehydration
-4. **Discard research from context** — from this point, implementation agents receive ONLY plan + phase files, never raw reports. Reports stay on disk as on-demand fallback.
-
-**Rule:** The plan is the compression artifact. Everything upstream (research, web searches, brainstorms) gets compressed into phase files. Implementation agents never see raw research.
-
-- **✏️ progress.md**: Update with learner portrait summary, research compression status, design implications, user confirmations received.
 
 ### Phase 2: Design — Objectives + Content + Lesson Plan
 **✏️ progress.md**: Before starting, checkpoint Phase 1 completion. After finishing, record objectives, content structure, and lesson plan decisions.
@@ -93,18 +69,6 @@ Load `references/methodology-design.md`. Four steps:
 2. Categorize content: Must Have / Should Have / Nice to Have
 3. Sequence via WHY-WHAT-HOW-SO WHAT framework
 4. Build detailed lesson plan with timing
-
-### ⛔ Plan Approval Gate (MANDATORY — Between Phase 2 and Phase 3)
-
-After Phase 2 completes but BEFORE Phase 3 begins:
-1. **Present to user**: Learning objectives, lesson plan summary, session structure, activity types, timing
-2. **Wait for explicit approval** — do NOT proceed to material generation without user confirmation
-3. **If user requests changes**: Revise plan, re-present, wait for approval again
-
-**Why this gate matters:** A flawed lesson plan produces flawed slides, a flawed facilitator guide, flawed activities, and a flawed handout — all of which must be regenerated. This gate prevents the most expensive error in course production.
-
-### Phase 2.5: Trajectory Check
-Before starting Phase 3, re-read the learner portrait (Phase 1 TL;DR) and ask: "Are Phase 1 assumptions still valid given what Phase 2 revealed?" If any assumption is falsified → flag to user before proceeding. Update `progress.md` § Decisions Made with trajectory check result.
 
 ### Phase 3: Development — Generate Materials
 **✏️ progress.md**: Before starting, checkpoint Phase 2 completion with objectives and structure decisions. After EACH material type (slides, guide, handout, activities), update with files created and cross-references.

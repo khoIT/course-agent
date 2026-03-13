@@ -89,6 +89,43 @@ Spawn multiple subagents simultaneously for independent tasks:
 - **Careful Coordination**: Ensure consistent terminology, branding, and style across parallel work
 - **Merge Strategy**: Plan integration points and quality review before combining outputs
 
+#### Parallel Research Fork (RPI Pattern)
+
+The highest-leverage parallel pattern. Spawn 3-5 `researcher` agents simultaneously at the start of every course, each investigating a different facet. Each operates in a **fresh context window** (Smart Zone), returns a compressed report, and the orchestrator synthesizes them into the plan.
+
+**Why fork research?** Research is context-expensive (web search results, file reads, reasoning). If one agent does all research sequentially, it enters the Dumb Zone before planning even starts. Parallel researchers each stay lean.
+
+**Standard researcher roles for course design:**
+
+| Role | Prompt Focus | File Ownership |
+|------|-------------|----------------|
+| Subject Matter Expert | "Research core content for [topic]. Key concepts, common misconceptions, real-world examples. WebSearch mandatory." | `research/sme-report.md` |
+| Pedagogy Researcher | "Research best teaching strategies for [topic] with [audience]. Activity frameworks with evidence. WebSearch mandatory." | `research/pedagogy-report.md` |
+| Audience Analyst | "Research [audience type] learner characteristics. Pain points, skill gaps, motivations, prior knowledge. WebSearch mandatory." | `research/audience-report.md` |
+| Benchmark Scout | "Find existing courses/training on [topic]. What works, what fails, gaps in market. WebSearch mandatory." | `research/benchmark-report.md` |
+| Constraint Mapper | "Analyze delivery constraints: [duration], [format], [group size], [tools]. Feasibility implications." | `research/constraints-report.md` |
+
+**Spawn template (adapt to specific course):**
+```
+Spawn 3-5 researcher agents in parallel. Each agent gets:
+- Role: {role from table above}
+- Focus: {specific prompt tailored to this course's topic and audience}
+- Work context: {work_context_path}
+- Active plan: {plan_dir}
+- File ownership: {plan_dir}/research/{role}-report.md
+- WebSearch: MANDATORY for all subject matter discovery
+- Report format: Compressed findings (500-1500 tokens). Include: key findings with sources, confidence level (High/Medium/Low), recommendations for course design.
+- Progress Write Mandate: Before returning, update {plan_dir}/progress.md with your key findings and sources.
+
+DO NOT: dump raw search results. DO: synthesize and compress truth.
+```
+
+**After all researchers return:**
+1. Orchestrator reads compressed reports (~5K tokens total)
+2. Synthesizes into phase files (compression of intent)
+3. Raw research stays on disk — implementation agents never load it
+4. See `primary-workflow.md` → Step 1.5 for the compression protocol
+
 ---
 
 ## Agent Teams (Optional)

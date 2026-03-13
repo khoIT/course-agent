@@ -105,6 +105,40 @@ Include: files modified/created, key decisions, findings, and recommended next s
 
 Subagent writes follow the merge rule — append to existing sections, don't overwrite.
 
+## Phase File TL;DR Requirement (Mandatory)
+
+Every phase file (`phase-XX-*.md`) MUST begin with a `## TL;DR (50 tokens)` header immediately after the title. This enables cheap rehydration — agents can read just the TL;DR headers (~250 tokens for 5 phases) instead of loading full phase files (~5K+ tokens).
+
+```markdown
+# Phase 02: Learning Objectives
+
+## TL;DR (50 tokens)
+3 terminal objectives for junior CS agents (6-18mo). Focus: HEARD framework, emotional triggers, escalation protocol. Bloom's: Apply level. Assessment: role-play rubric.
+
+## Full Content Below...
+```
+
+**Rule:** TL;DR is written AFTER phase content is complete — it compresses the final state, not a placeholder.
+**Rule:** Update TL;DR whenever phase content changes significantly.
+
+## Compression Priority Matrix
+
+When compacting state (writing progress.md, delegating to subagents, or preparing context for implementation agents), prioritize information retention in this order:
+
+| Priority | Category | Examples | Compress To |
+|----------|----------|----------|-------------|
+| **CRITICAL** | Learner portrait, learning objectives, approval decisions | KSA profile, terminal objectives, user sign-offs | Keep verbatim in progress.md |
+| **HIGH** | Lesson plan structure, activity designs, key research findings | Session flow, timing, activity procedures, cited evidence | Compress to structured summary |
+| **MEDIUM** | Content drafts, facilitator notes, assessment rubrics | Guide text, handout content, scoring criteria | Reference by filepath only |
+| **LOW** | Research journey, brainstorm threads, alternative approaches | Discarded ideas, search queries, exploration paths | Omit — stays in research/ as fallback |
+| **DISPOSABLE** | Raw tool output, build logs, intermediate calculations | WebSearch results, file listings, token counts | Never persist |
+
+**Two types of compression:**
+- **Compression of Truth** (research → reports): Compress evidence with sources. Used in `research/*.md` files. Researchers write these.
+- **Compression of Intent** (reports → plan): Compress decisions with rationale. Used in phase files + progress.md. Planner/orchestrator writes these.
+
+**Rule:** Never mix truth and intent in the same artifact. Research reports carry truth (findings + sources). Phase files carry intent (decisions + rationale). progress.md carries current state (what happened + what's next).
+
 ## Context Budget Awareness
 
 | Context Utilization | Action |

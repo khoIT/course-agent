@@ -42,7 +42,11 @@ Save plans in `./plans` directory with timestamp and descriptive name.
 plans/
 ├── 260311-1505-customer-service-course-design/
     ├── research/
-    │   ├── researcher-XX-report.md      # Subject matter research
+    │   ├── sme-report.md                # Subject Matter Expert findings
+    │   ├── pedagogy-report.md           # Pedagogy Researcher findings
+    │   ├── audience-report.md           # Audience Analyst findings
+    │   ├── benchmark-report.md          # Benchmark Scout findings
+    │   ├── constraints-report.md        # Constraint Mapper findings
     │   ├── visual-references/           # Screenshots and reference images
     │   └── ...
 │   ├── reports/

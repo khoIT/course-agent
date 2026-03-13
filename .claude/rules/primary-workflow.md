@@ -46,33 +46,54 @@ Step 4: Resume from "Next Steps" in progress.md — do NOT restart from scratch
 **Rule:** Never rely solely on TodoWrite for course production state. TodoWrite is session-scoped; plan files persist on disk.
 **Rule:** Write to progress.md at EVERY phase boundary and before any large operation. See `intentional-compaction.md` for full protocol.
 
-#### 1. Research & Discovery (Web Search MANDATORY)
-**Primary agents:** `researcher` (Subject Matter Researcher), `Explore` (Content Scout)
+#### 1. Research & Discovery — Parallel Research Fork (Web Search MANDATORY)
+**Primary agents:** Multiple `researcher` agents (spawned in parallel), `Explore` (Content Scout)
 
-- **Use `WebSearch` tool** (Claude's default) for ALL subject matter research:
-  - Research topic content, best practices, industry standards
-  - Find reference courses, training frameworks, and pedagogical approaches
-  - Verify factual claims and statistics before including in course materials
-  - Search for real-world examples, case studies, and analogies relevant to the target audience
-- **Use browser tools (Claude in Chrome)** for:
-  - Browsing complex web pages that need visual inspection
-  - Taking screenshots of exemplary slide designs, layouts, or infographics for inspiration
-  - Capturing visual reference materials for slide and handout design
+Research is the **compression of truth**. Spawn parallel subagents, each with a focused lens and fresh context. Each returns a compressed report — not their full research journey. The orchestrator never loads raw research into its own context.
+
+**1a. Spawn 3-5 Parallel Researchers** (adapt roles to topic):
+
+| Researcher Role | Focus | Output |
+|-----------------|-------|--------|
+| **Subject Matter Expert** | Core content, key concepts, common misconceptions, real-world examples | `research/sme-report.md` |
+| **Pedagogy Researcher** | Best teaching strategies for this topic + audience, activity frameworks | `research/pedagogy-report.md` |
+| **Audience Analyst** | Learner pain points, skill gaps, motivations, prior knowledge | `research/audience-report.md` |
+| **Benchmark Scout** | Existing courses on this topic, what works/fails, competitive landscape | `research/benchmark-report.md` |
+| **Constraint Mapper** | Time, format, tools, facilitator skills, venue, group size implications | `research/constraints-report.md` |
+
+Not every course needs all 5. Scale to complexity: simple courses may need 2-3 researchers, complex topics benefit from 4-5.
+
+**1b. Researcher Subagent Rules:**
+- Each researcher gets a **fresh context window** — no cross-contamination between research streams
+- Each MUST use `WebSearch` tool for subject matter discovery
+- Each writes its compressed findings to `{plan_dir}/research/{role}-report.md`
+- Each updates `{plan_dir}/progress.md` before returning (Progress Write Mandate)
+- Reports must include: findings (with sources), confidence level, and recommendations
+- Target report size: **500-1500 tokens** — compress truth, not dump raw notes
+- Use browser tools (Claude in Chrome) only for visual references and complex page browsing
 - **Use uploaded materials**: Extract content from PDFs, documents, and reference files provided by user
-- Spawn multiple `researcher` agents in parallel for different research angles (content vs. pedagogy vs. visual references)
-  ```
-  Example: spawn 2 researcher agents in parallel:
-  - Agent A: "Research effective role-play exercises for customer complaint handling.
-    Find 3+ published frameworks with evidence of effectiveness. WebSearch mandatory."
-  - Agent B: "Research common mistakes in customer service training programs.
-    Find post-mortems or case studies showing what fails and why. WebSearch mandatory."
-  ```
-- Use `brainstormer` agent for creative ideation on activities and engagement strategies
-- Report all research findings into the plan's `research/` directory and phase files
-- **[IMPORTANT]** Always cite sources and verify accuracy of researched content
-- **[COMPACTION]** After research completes, update `progress.md` with: key findings, sources, research gaps, recommended next steps.
 
-#### 2. Course Content Creation
+**1c. Orchestrator reads only compressed reports:**
+After all researchers return, orchestrator reads 3-5 short reports (~5K tokens total). Raw research stays on disk as fallback. This keeps the orchestrator in the **Smart Zone**.
+
+- **[COMPACTION]** After all research completes, update `progress.md` with: summary of key findings across all reports, research gaps identified, recommended design direction.
+
+#### 1.5. Research Compression → Plan (Compression of Intent)
+**Primary agent:** `planner` (Course Architect) — or orchestrator directly for simpler courses
+
+This is the **critical firewall** between research noise and implementation clarity. Compress all research findings into plan artifacts:
+
+1. **Read all researcher reports** from `{plan_dir}/research/`
+2. **Synthesize into phase files**: Populate `phase-01-discovery-and-analysis.md` through `phase-04-lesson-plan.md` with insights drawn from research reports
+3. **Write TL;DR header** on each phase file (mandatory — see `intentional-compaction.md` § Compression Priority)
+4. **Discard research from context** — from this point forward, implementation agents receive ONLY plan files + phase files, never raw research reports. Reports stay on disk as on-demand fallback.
+
+**Rule:** The plan is the compression artifact. Everything upstream (research conversations, web search results, brainstorm threads) gets compressed into plan files. Implementation agents never see raw research.
+**Rule:** If a phase file references a specific research finding, cite which report (`research/sme-report.md § Key Concepts`) so agents can pull it on-demand if needed.
+
+- **[COMPACTION]** Update `progress.md` with: research-to-plan compression complete, phase files populated, design direction confirmed.
+
+#### 2. Course Content Creation (Plan Approval Gate MANDATORY)
 **Primary agents:** `planner` (Course Architect), `fullstack-developer` (Content Developer)
 
 - Activate `course-designer` skill to drive the ADDIE workflow
@@ -83,7 +104,29 @@ Step 4: Resume from "Next Steps" in progress.md — do NOT restart from scratch
 - **DO NOT** create duplicate enhanced files — update existing files directly.
 - **[IMPORTANT]** After creating or modifying content files, review for accuracy and consistency.
 - **[IMPORTANT]** Use `WebSearch` to fact-check key claims during content writing — not just during research phase.
+
+**⛔ PLAN APPROVAL GATE — Before Material Generation:**
+
+After Phase 2 (learning objectives + lesson plan) is complete but BEFORE Phase 3 (material generation) begins:
+1. **Present to user**: Lesson plan summary, learning objectives, session structure, activity types
+2. **Wait for explicit approval** — do NOT proceed to material generation without user confirmation
+3. **If user requests changes**: Revise plan, re-present, and wait for approval again
+4. This gate prevents the most expensive error: generating thousands of tokens of materials from a flawed plan
+
+**Why this gate matters (Dex Horthy):** "A bad part of a plan could be a hundred bad lines of code." In course design terms: a flawed lesson plan produces flawed slides, a flawed facilitator guide, flawed activities, and a flawed handout — all of which must be regenerated.
+
 - **[COMPACTION]** After completing each phase's content, update `progress.md` with: files created/modified, design decisions, current phase status.
+
+#### 2.5. Trajectory Check (Between Major Phases)
+
+After completing any major phase (1→2, 2→3, 3→4), before starting the next:
+1. **Re-read learner portrait** (Phase 1 TL;DR)
+2. **Ask:** "Are assumptions from Phase 1 still valid given what Phase N revealed?"
+3. **If any assumption is falsified** → flag to user before proceeding
+4. **If all valid** → continue to next phase
+5. Update `progress.md` § Decisions Made with trajectory check result
+
+This prevents Phase 1 assumptions from silently cascading through all materials.
 
 #### 3. Material Generation
 **Primary agents:** `fullstack-developer` (Content Developer), `ui-ux-designer` (Visual Designer)

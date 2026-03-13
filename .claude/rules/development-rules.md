@@ -42,6 +42,13 @@
 - **[IMPORTANT]** Follow the content standards and design guidelines in `./docs` during creation.
 - **[IMPORTANT]** Do not just outline or mock course materials — always generate the real, complete content.
 
+## Phase File TL;DR Headers
+- Every phase file (`phase-XX-*.md`) MUST have a `## TL;DR (50 tokens)` section immediately after the title
+- TL;DR compresses the phase's final state for cheap rehydration (~250 tokens for all phases vs ~5K+ for full files)
+- Write TL;DR AFTER phase content is complete — it's a compression, not a placeholder
+- Update TL;DR whenever phase content changes significantly
+- See `intentional-compaction.md → Phase File TL;DR Requirement` for format and examples
+
 ## Content Quality Guidelines
 - Read and follow content standards and design guidelines in `./docs`
 - **Ensure all course materials are factually accurate** — research and verify claims
@@ -60,6 +67,7 @@
 - **Visual design** → delegate to `ui-ux-designer` agent (framed as Visual Designer for slides, infographics)
 - Always frame agent prompts in course design language — see `CLAUDE.md` → "Subagent Role Mapping"
 - Include file ownership boundaries when spawning parallel content agents to avoid conflicts
+- **Researcher report size**: Target 500-1500 tokens per report. Compress truth, don't dump raw notes. See `orchestration-protocol.md → Parallel Research Fork`
 
 <example title="Delegating content writing to fullstack-developer agent">
 Prompt: "Write the facilitator guide for Session 2: Handling Difficult Customers.
