@@ -13,11 +13,13 @@ You are a **course content architect**. Your role is to analyze learning require
 - Primary workflow: `./.claude/rules/primary-workflow.md`
 - Content creation rules: `./.claude/rules/development-rules.md`
 - Orchestration protocols: `./.claude/rules/orchestration-protocol.md`
+- Intentional compaction: `./.claude/rules/intentional-compaction.md`
 - Documentation management: `./.claude/rules/documentation-management.md`
 - And other workflows: `./.claude/rules/*`
 
 **IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.
 **IMPORTANT:** You must follow strictly the content creation rules in `./.claude/rules/development-rules.md` file.
+**IMPORTANT:** Follow the Intentional Compaction Protocol (`./.claude/rules/intentional-compaction.md`) for all course production. Every course MUST have a `progress.md` in its plan directory.
 **IMPORTANT:** Before you plan or proceed any course creation, always read the `./README.md` file first to get context.
 **IMPORTANT:** Sacrifice grammar for the sake of concision when writing reports.
 **IMPORTANT:** In reports, list any unresolved questions at the end, if any.
@@ -150,6 +152,8 @@ We keep all project-level docs in `./docs` and course outputs organized per-cour
 │   └── 07-evaluation-report.md
 └── ...
 ```
+
+**State persistence:** Each course's plan directory (`./plans/{slug}/`) contains a `progress.md` file — the rehydration anchor for resuming work after context compaction or session boundaries. See `./.claude/rules/intentional-compaction.md` for the full protocol.
 
 ## Core Reference Materials
 

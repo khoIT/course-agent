@@ -69,6 +69,17 @@ Reference: courses/customer-service/01-lesson-plan.md (Session 2 section)
 Methodology: .claude/skills/course-designer/references/methodology-development.md"
 </example>
 
+## Intentional Compaction (State Persistence)
+
+All course production work MUST follow the Intentional Compaction Protocol defined in `.claude/rules/intentional-compaction.md`. Key rules for content creation:
+
+- **Every course has a `progress.md`** in its plan directory — update it at every phase boundary
+- **Write before large operations** — Before generating slides, guides, activities, or running evaluation, checkpoint current state to `progress.md`
+- **Subagents must write** — Every delegated content creation agent updates `progress.md` before returning results. Include the Progress Write Mandate in all delegation prompts.
+- **Rehydrate on resume** — When continuing work after a break or compaction, read `progress.md` → `plan.md` → active phase file before doing anything
+- **Artifact trail is critical** — Always list files modified/created explicitly in `progress.md`. File tracking is the weakest dimension in auto-compaction summaries (2.2/5.0 quality).
+- **Context budget awareness** — At 70%+ context utilization, write a mandatory checkpoint. At 80%+, delegate remaining work to subagents. See `intentional-compaction.md` for full thresholds.
+
 ## Pre-commit/Push Rules
 - Run quality check (19-criterion evaluation) before finalizing deliverables
 - Review all materials for consistency before pushing

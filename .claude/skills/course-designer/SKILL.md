@@ -25,6 +25,17 @@ Expert instructional designer for professional, learner-centered courses. First 
 
 Do NOT load all references upfront. Load only what the current phase needs.
 
+## State Persistence (Intentional Compaction)
+
+This skill produces large courses across multiple phases. To survive auto-compaction and session boundaries:
+
+1. **progress.md is mandatory** — Every course has `{plan_dir}/progress.md`. Update it at EVERY phase transition.
+2. **Write before large operations** — Before generating slides, guides, or running evaluation, checkpoint to progress.md.
+3. **Rehydrate first** — When resuming, read progress.md → plan.md → active phase file before doing anything.
+4. **Subagents must write** — Every delegated agent updates progress.md before returning results.
+
+See `.claude/rules/intentional-compaction.md` for the full protocol and format.
+
 ## Workflow
 
 ### Phase 0: Discovery Interview
@@ -36,6 +47,7 @@ Understand context before designing. See `references/workflow-detailed-phases.md
 Build a KSA (Knowledge, Skills, Attitudes) profile. Load `references/methodology-philosophy-and-analysis.md`.
 - Target learners (primary/secondary), current state, learning context, design implications.
 - Present to user for confirmation before proceeding.
+- **✏️ progress.md**: Update with learner portrait summary, design implications, user confirmations received.
 
 ```
 Example Learner Portrait:
@@ -45,6 +57,7 @@ Example Learner Portrait:
 ```
 
 ### Phase 2: Design — Objectives + Content + Lesson Plan
+**✏️ progress.md**: Before starting, checkpoint Phase 1 completion. After finishing, record objectives, content structure, and lesson plan decisions.
 Load `references/methodology-design.md`. Four steps:
 1. Write objectives: Action Verb + Standard + Condition (never use "understand", "know")
    ```
@@ -58,6 +71,7 @@ Load `references/methodology-design.md`. Four steps:
 4. Build detailed lesson plan with timing
 
 ### Phase 3: Development — Generate Materials
+**✏️ progress.md**: Before starting, checkpoint Phase 2 completion with objectives and structure decisions. After EACH material type (slides, guide, handout, activities), update with files created and cross-references.
 Load `references/methodology-development.md`. **Fact-check via WebSearch before finalizing.**
 - **Slides (.pptx):** Follow Slide Specifications in methodology-development.md (slides-per-session, font sizes, color ratios). Use pptx skill.
 - **Facilitator Guide (.md):** Every session gets EQUAL depth — timing table, speaker scripts, ≥2 troubleshooting scenarios, technical notes. A guide where Session 1 is detailed but later sessions are one-liners is a FAIL. See Equal Depth Rule in methodology-development.md.
@@ -74,6 +88,7 @@ After generating all materials, run this audit before Phase 4:
 5. **Format compliance:** No .docx references if mandate is .md only
 
 ### Phase 4: Self-Evaluation
+**✏️ progress.md**: Before starting, checkpoint all Phase 3 deliverables (list every file). After evaluation, record scores, issues found, and fix actions.
 Load both `evaluation-criteria-part-1.md` and `evaluation-criteria-part-2.md`.
 
 **Adversarial Audit Protocol (BEFORE scoring):**

@@ -2,6 +2,20 @@
 
 **IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.
 **IMPORTANT**: Ensure token efficiency while maintaining high quality.
+**IMPORTANT**: Follow the Intentional Compaction Protocol (`.claude/rules/intentional-compaction.md`) for all course production.
+
+#### -1. Rehydration (MANDATORY — Every Session Start / Post-Compaction)
+
+When starting a new session, resuming after context compaction, or continuing interrupted work:
+
+```
+Step 1: Read {plan_dir}/progress.md     → Current state, what happened, what's next
+Step 2: Read {plan_dir}/plan.md          → Overall plan, phase statuses
+Step 3: Read active phase file(s)        → Requirements for current work
+Step 4: Resume from "Next Steps" in progress.md — do NOT restart from scratch
+```
+
+**Rule:** NEVER start working on a course without reading progress.md first. If progress.md doesn't exist yet, create it immediately after plan creation (Step 0.7 below).
 
 #### 0. Plan Creation (MANDATORY — Before Any Course Work)
 **Every course MUST begin with a persistent plan on disk.** This ensures state survives context compaction and session boundaries.
@@ -27,8 +41,10 @@
    - Each phase file has: Status, Overview, Key Insights, Requirements, Todo checkboxes, Success Criteria
 5. **Update phase status as work progresses**: After completing each ADDIE phase, update the phase file's status field and check off todo items
 6. **Plan is the single source of truth**: Any new session or context window reads plan files to resume exactly where work left off
+7. **Create progress.md**: Initialize `{plan_dir}/progress.md` with Session Intent, Current Phase, and Next Steps. This is the **rehydration anchor** — without it, post-compaction recovery degrades significantly.
 
 **Rule:** Never rely solely on TodoWrite for course production state. TodoWrite is session-scoped; plan files persist on disk.
+**Rule:** Write to progress.md at EVERY phase boundary and before any large operation. See `intentional-compaction.md` for full protocol.
 
 #### 1. Research & Discovery (Web Search MANDATORY)
 **Primary agents:** `researcher` (Subject Matter Researcher), `Explore` (Content Scout)
@@ -54,6 +70,7 @@
 - Use `brainstormer` agent for creative ideation on activities and engagement strategies
 - Report all research findings into the plan's `research/` directory and phase files
 - **[IMPORTANT]** Always cite sources and verify accuracy of researched content
+- **[COMPACTION]** After research completes, update `progress.md` with: key findings, sources, research gaps, recommended next steps.
 
 #### 2. Course Content Creation
 **Primary agents:** `planner` (Course Architect), `fullstack-developer` (Content Developer)
@@ -66,6 +83,7 @@
 - **DO NOT** create duplicate enhanced files — update existing files directly.
 - **[IMPORTANT]** After creating or modifying content files, review for accuracy and consistency.
 - **[IMPORTANT]** Use `WebSearch` to fact-check key claims during content writing — not just during research phase.
+- **[COMPACTION]** After completing each phase's content, update `progress.md` with: files created/modified, design decisions, current phase status.
 
 #### 3. Material Generation
 **Primary agents:** `fullstack-developer` (Content Developer), `ui-ux-designer` (Visual Designer)
@@ -80,6 +98,7 @@
 - Spawn parallel `fullstack-developer` agents for independent materials (slides, handouts, activities) with distinct file ownership
 - For each material, ensure it traces back to the learner portrait and learning objectives.
 - **Use `WebSearch`** when generating content that references specific tools, platforms, or techniques — verify current accuracy.
+- **[COMPACTION]** After each material type is generated (slides, guides, handouts, activities), update `progress.md` with: files created, cross-references, consistency notes.
 
 #### 4. Quality Evaluation
 **Primary agents:** `tester` (Quality Evaluator), `code-reviewer` (Content Reviewer)
@@ -105,6 +124,7 @@
 - **DO NOT** skip evaluation just to mark tasks complete.
 - **IMPORTANT:** Always fix quality issues following evaluation recommendations. Only finalize when all 19 criteria pass.
 - **Update plan**: Mark `phase-08-quality-evaluation.md` with results and final status.
+- **[COMPACTION]** After evaluation, update `progress.md` with: evaluation scores, issues found, fix actions taken/pending.
 
 #### 5. Integration & Consistency
 **Primary agents:** `project-manager` (Production Manager), `docs-manager` (Documentation Manager)
@@ -116,6 +136,7 @@
 - Delegate to `docs-manager` agent to update docs in `./docs` directory if any.
 - Use `project-manager` agent for progress tracking and status reporting across phases
 - **Update plan**: Set plan.md status to `completed` when all phases pass evaluation.
+- **[COMPACTION]** Final `progress.md` update: mark status=completed, list all deliverables, note any post-delivery considerations.
 
 #### 6. Revision & Debugging
 **Primary agents:** `debugger` (Content Debugger), `researcher` (fact-checking)

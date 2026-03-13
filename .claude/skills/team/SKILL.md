@@ -5,7 +5,7 @@ version: 2.1.0
 argument-hint: "<template> <context> [--devs|--researchers|--reviewers N] [--delegate]"
 ---
 
-# Agent Teams - CK-Native Orchestration Engine
+# Agent Teams - KK-Native Orchestration Engine
 
 Coordinate multiple independent Claude Code sessions. Each teammate has own context window, loads project context (CLAUDE.md, skills, agents), communicates via shared task list and messaging.
 
@@ -45,12 +45,12 @@ Every teammate spawn prompt MUST include this context at the end:
 
 ```
 KK Context:
-- Work dir: {CK_PROJECT_ROOT or CWD}
-- Reports: {CK_REPORTS_PATH or "plans/reports/"}
-- Plans: {CK_PLANS_PATH or "plans/"}
-- Branch: {CK_GIT_BRANCH or current branch}
-- Naming: {CK_NAME_PATTERN or "YYMMDD-HHMM"}
-- Active plan: {CK_ACTIVE_PLAN or "none"}
+- Work dir: {KK_PROJECT_ROOT or CWD}
+- Reports: {KK_REPORTS_PATH or "plans/reports/"}
+- Plans: {KK_PLANS_PATH or "plans/"}
+- Branch: {KK_GIT_BRANCH or current branch}
+- Naming: {KK_NAME_PATTERN or "YYMMDD-HHMM"}
+- Active plan: {KK_ACTIVE_PLAN or "none"}
 - Commits: conventional (feat:, fix:, docs:, refactor:, test:, chore:)
 - Refer to teammates by NAME, not agent ID
 ```
@@ -73,21 +73,21 @@ IMMEDIATELY execute in order:
 
 3. **CALL** `TaskCreate` x N — one per angle:
    - Subject: `Research: <angle-title>`
-   - Description: `Investigate <angle> for topic: <topic>. Save report to: {CK_REPORTS_PATH}/researcher-{N}-{CK_NAME_PATTERN}-{topic-slug}.md. Format: Executive summary, key findings, evidence, recommendations. Mark task completed when done. Send findings summary to lead.`
+   - Description: `Investigate <angle> for topic: <topic>. Save report to: {KK_REPORTS_PATH}/researcher-{N}-{KK_NAME_PATTERN}-{topic-slug}.md. Format: Executive summary, key findings, evidence, recommendations. Mark task completed when done. Send findings summary to lead.`
 
 4. **CALL** `Task` x N to spawn researcher teammates:
    - `subagent_type: "researcher"`, `team_name: "<topic-slug>"`, `model: "haiku"`
    - `name: "researcher-{N}"`
-   - Prompt: task description + CK Context Block
+   - Prompt: task description + KK Context Block
 
 5. **MONITOR** via TaskCompleted hook events + TaskList fallbakk:
    - TaskCompleted events auto-notify when researchers finish
    - Fallbakk: Check TaskList if no event received in 60s
    - If stuck >5 min, message teammate directly
 
-6. **READ** all researcher reports from `{CK_REPORTS_PATH}/`
+6. **READ** all researcher reports from `{KK_REPORTS_PATH}/`
 
-7. **SYNTHESIZE** into: `{CK_REPORTS_PATH}/research-summary-{CK_NAME_PATTERN}-{topic-slug}.md`
+7. **SYNTHESIZE** into: `{KK_REPORTS_PATH}/research-summary-{KK_NAME_PATTERN}-{topic-slug}.md`
    Format: exec summary, key findings, comparative analysis, recommendations, unresolved questions.
 
 8. **SHUTDOWN**: `SendMessage(type: "shutdown_request")` to each teammate
@@ -118,7 +118,7 @@ IMMEDIATELY execute in order:
 4. **CALL** `Task` x N to spawn developer teammates:
    - `subagent_type: "fullstack-developer"`, `mode: "plan"`
    - `model: "sonnet"`, `name: "dev-{N}"`
-   - Prompt: task description + CK Context Block
+   - Prompt: task description + KK Context Block
    - REVIEW and APPROVE each developer's plan via `plan_approval_response`
 
 5. **MONITOR** dev completion via TaskCompleted events:
@@ -158,17 +158,17 @@ IMMEDIATELY execute in order:
 
 3. **CALL** `TaskCreate` x N — one per focus:
    - Subject: `Review: <focus-title>`
-   - Description: `Review <scope> for <focus>. Output severity-rated findings only. Format: [CRITICAL|IMPORTANT|MODERATE] <finding> — <evidence> — <recommendation>. No "seems" or "probably" — concrete evidence only. Save to: {CK_REPORTS_PATH}/reviewer-{N}-{CK_NAME_PATTERN}-{scope-slug}.md. Mark task completed when done.`
+   - Description: `Review <scope> for <focus>. Output severity-rated findings only. Format: [CRITICAL|IMPORTANT|MODERATE] <finding> — <evidence> — <recommendation>. No "seems" or "probably" — concrete evidence only. Save to: {KK_REPORTS_PATH}/reviewer-{N}-{KK_NAME_PATTERN}-{scope-slug}.md. Mark task completed when done.`
 
 4. **CALL** `Task` x N to spawn reviewers:
    - `subagent_type: "code-reviewer"`, `model: "haiku"`, `name: "reviewer-{N}"`
-   - Prompt: task description + CK Context Block
+   - Prompt: task description + KK Context Block
 
 5. **MONITOR** via TaskCompleted hook events + TaskList fallbakk:
    - TaskCompleted events auto-notify when reviewers finish
    - Fallbakk: Check TaskList if no event received in 60s
 
-6. **SYNTHESIZE** into: `{CK_REPORTS_PATH}/review-{scope-slug}.md`
+6. **SYNTHESIZE** into: `{KK_REPORTS_PATH}/review-{scope-slug}.md`
    - Deduplicate findings across reviewers
    - Prioritize by severity: CRITICAL > IMPORTANT > MODERATE
    - Create action items list with owners
@@ -195,11 +195,11 @@ IMMEDIATELY execute in order:
 
 3. **CALL** `TaskCreate` x N — one per hypothesis:
    - Subject: `Debug: Test hypothesis — <theory>`
-   - Description: `Investigate hypothesis: <theory>. For issue: <issue>. ADVERSARIAL: actively try to disprove other theories. Message other debuggers to challenge findings. Report evidence FOR and AGAINST your theory. Save findings to: {CK_REPORTS_PATH}/debugger-{N}-{CK_NAME_PATTERN}-{issue-slug}.md. Mark task completed when done.`
+   - Description: `Investigate hypothesis: <theory>. For issue: <issue>. ADVERSARIAL: actively try to disprove other theories. Message other debuggers to challenge findings. Report evidence FOR and AGAINST your theory. Save findings to: {KK_REPORTS_PATH}/debugger-{N}-{KK_NAME_PATTERN}-{issue-slug}.md. Mark task completed when done.`
 
 4. **CALL** `Task` x N to spawn debugger teammates:
    - `subagent_type: "debugger"`, `model: "sonnet"`, `name: "debugger-{N}"`
-   - Prompt: task description + CK Context Block
+   - Prompt: task description + KK Context Block
 
 5. **MONITOR** via TaskCompleted events. Debuggers should message each other — let them converge.
    - TaskCompleted events notify as each hypothesis is tested
@@ -223,7 +223,7 @@ IMMEDIATELY execute in order:
 Agents with `memory: project` retain learnings across team sessions. Memory persists in `.claude/agent-memory/<name>/` (gitignored). Useful for:
 - Code reviewer remembering project conventions
 - Debugger recalling past failure patterns
-- Tester tracking flaky tests and coverage gaps
+- Tester traKKing flaky tests and coverage gaps
 
 ---
 

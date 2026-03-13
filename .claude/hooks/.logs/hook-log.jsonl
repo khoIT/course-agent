@@ -36,3 +36,8 @@
 {"ts":"2026-03-12T00:18:10.521Z","hook":"scout-block","tool":"Glob","dur":4,"status":"ok","exit":0,"error":""}
 {"ts":"2026-03-12T00:35:57.606Z","hook":"scout-block","tool":"Glob","dur":4,"status":"ok","exit":0,"error":""}
 {"ts":"2026-03-12T00:35:57.626Z","hook":"scout-block","tool":"Glob","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-03-13T17:20:47.561Z","hook":"scout-block","tool":"Grep","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-03-13T17:20:47.658Z","hook":"scout-block","tool":"Grep","dur":5,"status":"ok","exit":0,"error":""}
+{"ts":"2026-03-13T17:20:50.952Z","hook":"scout-block","tool":"Grep","dur":3,"status":"ok","exit":0,"error":""}
+{"ts":"2026-03-13T17:21:22.923Z","hook":"scout-block","tool":"Grep","dur":4,"status":"ok","exit":0,"error":""}
+{"ts":"2026-03-13T17:21:27.930Z","hook":"scout-block","tool":"Grep","dur":4,"status":"ok","exit":0,"error":""}

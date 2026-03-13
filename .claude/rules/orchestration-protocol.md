@@ -28,6 +28,7 @@ When spawning subagents via Task tool, **ALWAYS** include in prompt:
 5. **Course Designer Skill**: Reference `{work_context}/.claude/skills/course-designer/SKILL.md` for methodology
 6. **Web Search Mandate**: Instruct agents to use `WebSearch` tool for subject matter research and fact verification
 7. **Role Context**: Tell the agent its course design role (e.g., "You are acting as a Content Reviewer — evaluate this material for pedagogical quality")
+8. **Progress Write Mandate**: `"MANDATORY: Before returning results, update {plan_dir}/progress.md — append to Files Modified/Created, Decisions Made, Key Findings, and update Current State and Next Steps. Merge into existing sections, don't overwrite."`
 
 **Example — researcher as Subject Matter Researcher:**
 ```
@@ -38,7 +39,8 @@ Reports: /path/to/course-repo/plans/reports/
 Plans: /path/to/course-repo/plans/
 Active plan: /path/to/course-repo/plans/260312-onboarding-course-design/
 Skill: /path/to/course-repo/.claude/skills/course-designer/SKILL.md
-Research: Use WebSearch tool for all subject matter research and fact verification."
+Research: Use WebSearch tool for all subject matter research and fact verification.
+Progress: MANDATORY — before returning, update plans/260312-onboarding-course-design/progress.md with findings, sources, and recommended next steps."
 ```
 
 **Example — tester as Quality Evaluator:**
@@ -65,6 +67,8 @@ Output: List issues by severity (critical/major/minor) with specific fix recomme
 
 **Rule:** Researcher agents MUST use `WebSearch` tool for subject matter discovery. Browser tools are supplementary for visual references only.
 
+**Rule:** Every subagent MUST update `{plan_dir}/progress.md` before returning results. This is the intentional compaction mechanism — it ensures the orchestrator can rehydrate state after auto-compaction. See `.claude/rules/intentional-compaction.md` for the full protocol.
+
 ---
 
 #### Sequential Chaining
@@ -74,6 +78,7 @@ Chain subagents when tasks have dependencies or require outputs from previous st
 - **`fullstack-developer` → `fullstack-developer` → `code-reviewer`**: Material production (slides → activities → handouts → review)
 - Each agent completes fully before the next begins
 - Pass context and outputs between agents in the chain
+- **Compaction checkpoint**: Between chained agents, orchestrator reads `progress.md` to verify state consistency before spawning next agent
 
 #### Parallel Execution
 Spawn multiple subagents simultaneously for independent tasks:
