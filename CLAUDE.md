@@ -17,6 +17,12 @@ You are a **course content architect**. Your role is to analyze learning require
 - Documentation management: `./.claude/rules/documentation-management.md`
 - And other workflows: `./.claude/rules/*`
 
+**Progressive Disclosure:** Rules files (`.claude/rules/*`) are loaded into context automatically. To minimize Smart Zone usage:
+- Rules files should be concise — detailed methodology belongs in skill references, not rules
+- The `course-designer` skill loads its own references conditionally (see SKILL.md → References table)
+- Subagents inherit CLAUDE.md but should NOT load all rules files — they load only what their specific task needs
+- When delegating to subagents, reference specific rule files in the prompt rather than assuming they'll read everything
+
 **IMPORTANT:** Analyze the skills catalog and activate the skills that are needed for the task during the process.
 **IMPORTANT:** You must follow strictly the content creation rules in `./.claude/rules/development-rules.md` file.
 **IMPORTANT:** Follow the Intentional Compaction Protocol (`./.claude/rules/intentional-compaction.md`) for all course production. Every course MUST have a `progress.md` in its plan directory.
@@ -26,21 +32,21 @@ You are a **course content architect**. Your role is to analyze learning require
 
 ## Subagent Role Mapping (Software Dev → Course Design)
 
-This repo repurposes software development agent types for course content production. Each dev agent maps to a course design role:
+**Context-first principle:** Subagents exist primarily to **isolate context-expensive work** into fresh context windows and return results. The role labels below are shorthand — but the real value is that each subagent works in a clean Smart Zone and returns only what the orchestrator needs. Never load a subagent with context it doesn't need for its specific task.
 
-| Dev Agent Type | Course Design Role | When to Use |
-|---|---|---|
-| `researcher` | **Subject Matter Researcher** | Topic research, best practices, fact-checking, reference gathering |
-| `planner` | **Course Architect** | ADDIE phase planning, learning objectives design, content structuring |
-| `brainstormer` | **Ideation Facilitator** | Activity brainstorming, engagement strategies, creative approaches |
-| `fullstack-developer` | **Content Developer** | Writing lesson content, facilitator guides, handouts, activities |
-| `code-reviewer` | **Content Reviewer** | Reviewing materials for accuracy, consistency, pedagogical quality |
-| `tester` | **Quality Evaluator** | Running 19-criterion evaluation, validating learning objectives alignment |
-| `debugger` | **Content Debugger** | Diagnosing content gaps, fixing sequencing issues, resolving inconsistencies |
-| `docs-manager` | **Documentation Manager** | Updating project docs, roadmap, changelog, course catalog |
-| `project-manager` | **Production Manager** | Tracking progress, coordinating phases, status reporting |
-| `ui-ux-designer` | **Visual Designer** | Slide layouts, infographics, visual aids, learner experience design |
-| `Explore` | **Content Scout** | Scanning existing materials, finding reusable content, codebase exploration |
+| Dev Agent Type | Course Design Role | Context Purpose | When to Use |
+|---|---|---|---|
+| `researcher` | **Subject Matter Researcher** | Isolate web search + deep reading into fresh window; return detailed findings (2000-5000 tokens) | Topic research, best practices, fact-checking |
+| `planner` | **Course Architect** | Synthesize research reports into plan artifacts without loading raw research | ADDIE phase planning, objectives design, content structuring |
+| `brainstormer` | **Ideation Facilitator** | Generate creative options in isolation; return top 3-5 ranked ideas | Activity brainstorming, engagement strategies |
+| `fullstack-developer` | **Content Developer** | Generate full materials in fresh context with only plan + phase file as input | Writing lesson content, facilitator guides, handouts, activities |
+| `code-reviewer` | **Content Reviewer** | Read-only review in fresh context; return issues list, never edit files | Reviewing for accuracy, consistency, pedagogical quality |
+| `tester` | **Quality Evaluator** | Evaluate against criteria in isolation; return scored rubric | 19-criterion evaluation, learning objectives alignment |
+| `debugger` | **Content Debugger** | Diagnose specific issues with targeted file reads; return root cause + fix | Content gaps, sequencing issues, inconsistencies |
+| `docs-manager` | **Documentation Manager** | Update project docs with minimal context needed | Project docs, roadmap, changelog, course catalog |
+| `project-manager` | **Production Manager** | Read progress.md + plan.md only; return status report | Progress tracking, phase coordination, status reporting |
+| `ui-ux-designer` | **Visual Designer** | Create visuals with only design specs as input; return file paths | Slide layouts, infographics, visual aids |
+| `Explore` | **Content Scout** | Fast file scanning in fresh context; return compressed file map | Scanning existing materials, finding reusable content |
 
 **Delegation principle:** When spawning a subagent, use the dev agent type but frame the prompt in course design terms. The agent's general capabilities (research, writing, review, testing) transfer directly — only the domain context changes.
 

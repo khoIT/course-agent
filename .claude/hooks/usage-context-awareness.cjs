@@ -107,6 +107,8 @@ async function fetchAndCacheUsageLimits() {
 	}
 
 	try {
+		const controller = new AbortController();
+		const fetchTimeout = setTimeout(() => controller.abort(), 8000);
 		const response = await fetch("https://api.anthropic.com/api/oauth/usage", {
 			method: "GET",
 			headers: {
@@ -116,7 +118,9 @@ async function fetchAndCacheUsageLimits() {
 				"anthropic-beta": "oauth-2025-04-20",
 				"User-Agent": "khoiclaudekit-engineer/1.0",
 			},
+			signal: controller.signal,
 		});
+		clearTimeout(fetchTimeout);
 
 		if (!response.ok) {
 			writeCache("unavailable");

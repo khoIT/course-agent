@@ -103,6 +103,21 @@ MANDATORY: Before returning results, append your findings to progress.md using t
 Include: files modified/created, key decisions, findings, and recommended next steps.
 ```
 
+## Subagent Context Budget Monitoring
+
+Subagents have 200K token context windows. Plan task scope to keep each agent under 50% utilization (~100K tokens). When an agent exceeds 50%, output quality degrades — same as the orchestrator's Dumb Zone.
+
+**Sizing guidelines for content generation agents:**
+
+| Task Scope | Est. Tokens | Risk |
+|------------|-------------|------|
+| 1-2 files, <200 lines each | 30-50K | Low |
+| 3-5 files, ~150 lines each | 60-80K | Medium |
+| 5+ files or 1 file >400 lines | 80-120K | High — consider splitting |
+| All sessions of a multi-session course | 100K+ | Split by session or material type |
+
+**When to split:** If a content agent needs to read 3+ research reports AND generate 5+ files, split into per-session or per-material-type agents. Example: instead of 1 agent for all 5 facilitator guides, use 2 agents (sessions 1-3 and sessions 4-5) or 1 agent per session for large courses (7+ sessions).
+
 Subagent writes follow the merge rule — append to existing sections, don't overwrite.
 
 ## Phase File TL;DR Requirement (Mandatory)
@@ -128,26 +143,42 @@ When compacting state (writing progress.md, delegating to subagents, or preparin
 | Priority | Category | Examples | Compress To |
 |----------|----------|----------|-------------|
 | **CRITICAL** | Learner portrait, learning objectives, approval decisions | KSA profile, terminal objectives, user sign-offs | Keep verbatim in progress.md |
-| **HIGH** | Lesson plan structure, activity designs, key research findings | Session flow, timing, activity procedures, cited evidence | Compress to structured summary |
-| **MEDIUM** | Content drafts, facilitator notes, assessment rubrics | Guide text, handout content, scoring criteria | Reference by filepath only |
+| **HIGH** | Lesson plan structure, activity designs, research findings with frameworks | Session flow, timing, activity procedures, named techniques with full descriptions | Keep in phase files with depth — don't flatten |
+| **MEDIUM** | Content drafts, facilitator notes, assessment rubrics | Guide text, handout content, scoring criteria | Reference by filepath; pass relevant sections to implementation agents on-demand |
 | **LOW** | Research journey, brainstorm threads, alternative approaches | Discarded ideas, search queries, exploration paths | Omit — stays in research/ as fallback |
-| **DISPOSABLE** | Raw tool output, build logs, intermediate calculations | WebSearch results, file listings, token counts | Never persist |
+| **DISPOSABLE** | Raw tool output, build logs, intermediate calculations | WebSearch result snippets, file listings, token counts | Never persist |
 
-**Two types of compression:**
-- **Compression of Truth** (research → reports): Compress evidence with sources. Used in `research/*.md` files. Researchers write these.
-- **Compression of Intent** (reports → plan): Compress decisions with rationale. Used in phase files + progress.md. Planner/orchestrator writes these.
+**Two types of synthesis:**
+- **Research Reports** (sources → structured findings): Detailed extraction with sources. Used in `research/*.md` files. Researchers write these. Target: 2000-5000 tokens per report — richness over brevity.
+- **Phase Files** (reports → design decisions): Decisions with rationale AND supporting evidence. Used in phase files + progress.md. Planner/orchestrator writes these. Preserve key frameworks and named techniques from research.
 
 **Rule:** Never mix truth and intent in the same artifact. Research reports carry truth (findings + sources). Phase files carry intent (decisions + rationale). progress.md carries current state (what happened + what's next).
 
 ## Context Budget Awareness
 
-| Context Utilization | Action |
-|--------------------|--------|
-| < 60% | Work normally. Write progress.md at phase boundaries. |
-| 60-70% | Write progress.md checkpoint. Consider delegating remaining work to subagents. |
-| 70-80% | **Mandatory progress.md write.** Evaluate if compaction/session split needed. |
-| 80-90% | Write progress.md immediately. Wrap up current micro-task. Delegate remaining to subagent. |
-| > 90% | Emergency write to progress.md. Stop and let compaction happen. Rehydrate after. |
+Output quality degrades as context fills. Around 40% utilization, diminishing returns begin for complex creative tasks. Structure your workflow to stay in the Smart Zone by delegating context-expensive operations to subagents with fresh context windows.
+
+| Context Utilization | Zone | Action |
+|--------------------|------|--------|
+| < 40% | **Smart Zone** | Work freely. Write progress.md at phase boundaries. |
+| 40-60% | **Caution Zone** | Prefer delegating to subagents over doing work in-context. Write progress.md checkpoint. |
+| 60-70% | **Dumb Zone Entry** | **Mandatory progress.md write.** Delegate ALL remaining work to subagents. |
+| 70-80% | **Dumb Zone** | Write progress.md immediately. Wrap up current micro-task only. Everything else → subagent. |
+| > 80% | **Emergency** | Emergency write to progress.md. Stop all work. Let compaction happen. Rehydrate after. |
+
+## Trajectory Smell Checklist
+
+Mid-phase signs that the current approach isn't working and you should compact + restart:
+
+| Smell | What It Looks Like | Action |
+|-------|-------------------|--------|
+| **Correction spiral** | User has corrected the same issue 2+ times | Stop. Write progress.md with what's failing. Start fresh context with "do NOT do X" guidance. |
+| **Scope creep** | Original task was "write facilitator guide" but now debugging slide formatting | Checkpoint progress.md. Return to task scope. Defer tangential work. |
+| **Research re-reading** | Re-reading files already read earlier in this context | Context is lost. Compact: write what you learned to progress.md, start fresh. |
+| **Diminishing edit quality** | Edits getting less precise — filler, repeated patterns, losing voice | You're in the Dumb Zone. Checkpoint and delegate remaining work to subagent. |
+| **Contradictory decisions** | Design decision conflicts with earlier decision in same session | Stop. Review progress.md § Decisions Made. Resolve contradiction before continuing. |
+
+When 2+ smells are present simultaneously, mandatory compaction. A fresh context with clear anti-instructions works better than escalating corrections in a polluted context.
 
 ## Anti-Patterns
 

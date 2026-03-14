@@ -9,6 +9,12 @@
 - Update phase file status and checkboxes as work progresses — this is the primary state persistence mechanism
 - Never rely solely on TodoWrite for tracking course production progress
 
+## File Safety & Separation (CRITICAL)
+- **Plans vs. Courses separation:** Design artifacts (plan.md, phase files, research/, progress.md) stay in `plans/`. Final deliverables (guides, handouts, activities, slides) go to `courses/`. When a phase file is finalized, COPY to courses/ — don't move.
+- **Never overwrite existing files without checking.** Before writing to any file in `courses/`, check if it exists. If it does, READ it first. Only overwrite when explicitly instructed or when the orchestrator confirms.
+- **Subagent file ownership is mandatory.** Every delegated content agent must have declared file ownership in its prompt. Agents must NOT write outside their declared paths.
+- **Post-Phase-3 consolidation checkpoint.** After material generation, verify all deliverables are in `courses/` and all design artifacts remain in `plans/`. Resolve duplicates: `courses/` is authoritative for delivery, `plans/` for design decisions.
+
 ## Research & Fact-Checking
 - **Use `WebSearch` tool** (Claude's default) for all subject matter research — do not skip this step
 - Verify factual claims, statistics, and tool/platform references before including in any course material
@@ -67,7 +73,7 @@
 - **Visual design** → delegate to `ui-ux-designer` agent (framed as Visual Designer for slides, infographics)
 - Always frame agent prompts in course design language — see `CLAUDE.md` → "Subagent Role Mapping"
 - Include file ownership boundaries when spawning parallel content agents to avoid conflicts
-- **Researcher report size**: Target 500-1500 tokens per report. Compress truth, don't dump raw notes. See `orchestration-protocol.md → Parallel Research Fork`
+- **Researcher report size**: Target 2000-5000 tokens per report. Prioritize depth and richness — extract full frameworks, techniques, examples. See `orchestration-protocol.md → Parallel Research Fork`
 
 <example title="Delegating content writing to fullstack-developer agent">
 Prompt: "Write the facilitator guide for Session 2: Handling Difficult Customers.

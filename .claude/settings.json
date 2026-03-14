@@ -48,12 +48,13 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node .claude/hooks/dev-rules-reminder.cjs"
+            "command": "node .claude/hooks/dev-rules-reminder.cjs",
+            "timeout": 15
           },
           {
             "type": "command",
             "command": "node .claude/hooks/usage-context-awareness.cjs",
-            "timeout": 30
+            "timeout": 15
           }
         ]
       }

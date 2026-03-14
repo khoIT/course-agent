@@ -26,9 +26,11 @@ When spawning subagents via Task tool, **ALWAYS** include in prompt:
 3. **Plans Path**: `{work_context}/plans/` for that project
 4. **Active Plan Path**: The specific plan directory for the current course (e.g., `{work_context}/plans/260311-leveraging-llm-agents-course-design/`)
 5. **Course Designer Skill**: Reference `{work_context}/.claude/skills/course-designer/SKILL.md` for methodology
-6. **Web Search Mandate**: Instruct agents to use `WebSearch` tool for subject matter research and fact verification
+6. **Research Tools Mandate**: Instruct agents to use `WebSearch` for source discovery AND browser tools (`get_page_text`) or `WebFetch` for reading full content from top sources
 7. **Role Context**: Tell the agent its course design role (e.g., "You are acting as a Content Reviewer — evaluate this material for pedagogical quality")
 8. **Progress Write Mandate**: `"MANDATORY: Before returning results, update {plan_dir}/progress.md — append to Files Modified/Created, Decisions Made, Key Findings, and update Current State and Next Steps. Merge into existing sections, don't overwrite."`
+9. **Research Passthrough** (content developers only): When a content developer writes about a specific technique or framework discovered in research, include the relevant section of the research report in the agent prompt — not a compressed summary. Cite: `research/sme-report.md § Section Name`.
+10. **Parallel Progress Isolation**: When spawning 3+ agents that all write to progress.md, use sequential progress writes (not parallel) OR have each agent write to `{plan_dir}/progress-{agent-role}.md` and merge after all complete. Parallel appends to a single file cause duplicate headers and data loss.
 
 **Example — researcher as Subject Matter Researcher:**
 ```
@@ -65,7 +67,7 @@ Output: List issues by severity (critical/major/minor) with specific fix recomme
 
 **Rule:** Every course production task MUST reference an active plan directory. If no plan exists yet, create one first using `plans/templates/course-design-template.md`.
 
-**Rule:** Researcher agents MUST use `WebSearch` tool for subject matter discovery. Browser tools are supplementary for visual references only.
+**Rule:** Researcher agents use `WebSearch` for source discovery and browser tools (`get_page_text`, `WebFetch`) for reading full content. Browser tools are the PRIMARY reading tool, not supplementary.
 
 **Rule:** Every subagent MUST update `{plan_dir}/progress.md` before returning results. This is the intentional compaction mechanism — it ensures the orchestrator can rehydrate state after auto-compaction. See `.claude/rules/intentional-compaction.md` for the full protocol.
 
@@ -89,20 +91,20 @@ Spawn multiple subagents simultaneously for independent tasks:
 - **Careful Coordination**: Ensure consistent terminology, branding, and style across parallel work
 - **Merge Strategy**: Plan integration points and quality review before combining outputs
 
-#### Parallel Research Fork (RPI Pattern)
+#### Parallel Research Fork (Two-Stage RPI Pattern)
 
-The highest-leverage parallel pattern. Spawn 3-5 `researcher` agents simultaneously at the start of every course, each investigating a different facet. Each operates in a **fresh context window** (Smart Zone), returns a compressed report, and the orchestrator synthesizes them into the plan.
+The highest-leverage parallel pattern, now with two stages for depth. Each researcher operates in a **fresh context window** (Smart Zone).
 
-**Why fork research?** Research is context-expensive (web search results, file reads, reasoning). If one agent does all research sequentially, it enters the Dumb Zone before planning even starts. Parallel researchers each stay lean.
+**Why two stages?** Stage 1 (Scout) finds the best sources fast via WebSearch. Stage 2 (Deep Dive) reads those sources in full via browser tools. This prevents the common failure mode: researchers summarizing search snippets instead of extracting real knowledge from authoritative sources.
 
 **Standard researcher roles for course design:**
 
 | Role | Prompt Focus | File Ownership |
 |------|-------------|----------------|
-| Subject Matter Expert | "Research core content for [topic]. Key concepts, common misconceptions, real-world examples. WebSearch mandatory." | `research/sme-report.md` |
-| Pedagogy Researcher | "Research best teaching strategies for [topic] with [audience]. Activity frameworks with evidence. WebSearch mandatory." | `research/pedagogy-report.md` |
-| Audience Analyst | "Research [audience type] learner characteristics. Pain points, skill gaps, motivations, prior knowledge. WebSearch mandatory." | `research/audience-report.md` |
-| Benchmark Scout | "Find existing courses/training on [topic]. What works, what fails, gaps in market. WebSearch mandatory." | `research/benchmark-report.md` |
+| Subject Matter Expert | "Research core content for [topic]. Key concepts, common misconceptions, real-world examples." | `research/sme-report.md` |
+| Pedagogy Researcher | "Research best teaching strategies for [topic] with [audience]. Activity frameworks with evidence." | `research/pedagogy-report.md` |
+| Audience Analyst | "Research [audience type] learner characteristics. Pain points, skill gaps, motivations, prior knowledge." | `research/audience-report.md` |
+| Benchmark Scout | "Find existing courses/training on [topic]. What works, what fails, gaps in market." | `research/benchmark-report.md` |
 | Constraint Mapper | "Analyze delivery constraints: [duration], [format], [group size], [tools]. Feasibility implications." | `research/constraints-report.md` |
 
 **Spawn template (adapt to specific course):**
@@ -113,18 +115,53 @@ Spawn 3-5 researcher agents in parallel. Each agent gets:
 - Work context: {work_context_path}
 - Active plan: {plan_dir}
 - File ownership: {plan_dir}/research/{role}-report.md
-- WebSearch: MANDATORY for all subject matter discovery
-- Report format: Compressed findings (500-1500 tokens). Include: key findings with sources, confidence level (High/Medium/Low), recommendations for course design.
-- Progress Write Mandate: Before returning, update {plan_dir}/progress.md with your key findings and sources.
 
-DO NOT: dump raw search results. DO: synthesize and compress truth.
+TWO-STAGE RESEARCH PROTOCOL:
+Stage 1 — Scout: Use WebSearch to find 5-10 high-quality sources. Rank by relevance.
+Stage 2 — Deep Dive: For your top 3-5 sources, use browser tools (get_page_text) or WebFetch
+  to read the FULL content. Extract:
+  - Named frameworks, models, techniques (with full descriptions)
+  - Step-by-step procedures and implementation patterns
+  - Real examples, case studies, data points
+  - Common mistakes and contrarian views
+
+REPORT RULES:
+- Write detailed, structured findings — do NOT compress to bullet points
+- Preserve depth: if a source describes a 5-step technique, include all 5 steps
+- Include direct quotes (with attribution) for key insights
+- Target report size: 2000-5000 tokens — richness over brevity
+- Cite every finding with source URL and section
+- Confidence level (High/Medium/Low) for each major finding
+
+Progress Write Mandate: Before returning, update {plan_dir}/progress.md with your key findings and sources.
 ```
 
 **After all researchers return:**
-1. Orchestrator reads compressed reports (~5K tokens total)
-2. Synthesizes into phase files (compression of intent)
-3. Raw research stays on disk — implementation agents never load it
-4. See `primary-workflow.md` → Step 1.5 for the compression protocol
+1. Orchestrator reads full reports (with 1M context, ~15-25K tokens for all reports is affordable)
+2. Synthesizes into phase files, preserving key frameworks and techniques
+3. Research reports stay on disk — implementation agents can pull specific sections on-demand
+4. See `primary-workflow.md` → Step 1.5 for the synthesis protocol
+
+#### On-Demand Context Scout
+
+Before spawning the parallel research fork, run a lightweight context scout to find reusable patterns in existing course materials. This produces on-demand compressed context that is always current.
+
+**When to use:** Before every new course's Phase 1 research fork — unless this is the first course in the repo.
+
+**How it works:**
+1. Spawn a single `Explore` agent (Content Scout):
+   ```
+   Scan courses/ for existing course materials. For each course found:
+   - List deliverable files (slides, guides, handouts, activities)
+   - Note content patterns (session structure, activity types, timing conventions)
+   - Identify reusable templates or frameworks
+   Output: compressed summary (< 500 tokens) of what exists and what patterns to follow.
+   File ownership: {plan_dir}/research/context-scout-report.md
+   ```
+2. Feed the scout report into the parallel research fork — researchers can reference existing patterns
+3. Scout report stays in research/ as reference for implementation agents
+
+The context scout is NOT a substitute for the parallel research fork. It's a quick pre-scan that makes researchers more efficient by giving them existing context to build on.
 
 ---
 

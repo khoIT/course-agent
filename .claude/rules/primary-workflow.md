@@ -63,33 +63,35 @@ Research is the **compression of truth**. Spawn parallel subagents, each with a 
 
 Not every course needs all 5. Scale to complexity: simple courses may need 2-3 researchers, complex topics benefit from 4-5.
 
-**1b. Researcher Subagent Rules:**
+**1b. Two-Stage Research Protocol:**
 - Each researcher gets a **fresh context window** — no cross-contamination between research streams
-- Each MUST use `WebSearch` tool for subject matter discovery
-- Each writes its compressed findings to `{plan_dir}/research/{role}-report.md`
+- **Stage 1 (Scout):** Use `WebSearch` to find 5-10 high-quality sources. Rank by relevance and depth. (~300-500 tokens)
+- **Stage 2 (Deep Dive):** For top 3-5 sources, use browser tools (`get_page_text`) or `WebFetch` to read FULL content. Extract named frameworks, step-by-step techniques, real examples, case studies, contrarian views.
+- Each writes detailed findings to `{plan_dir}/research/{role}-report.md`
 - Each updates `{plan_dir}/progress.md` before returning (Progress Write Mandate)
-- Reports must include: findings (with sources), confidence level, and recommendations
-- Target report size: **500-1500 tokens** — compress truth, not dump raw notes
-- Use browser tools (Claude in Chrome) only for visual references and complex page browsing
+- Reports must include: findings (with source URLs and sections), confidence level, and recommendations
+- Target report size: **2000-5000 tokens** — depth and richness over brevity
+- Browser tools are the PRIMARY reading tool — WebSearch is for discovery, browser is for extraction
 - **Use uploaded materials**: Extract content from PDFs, documents, and reference files provided by user
 
-**1c. Orchestrator reads only compressed reports:**
-After all researchers return, orchestrator reads 3-5 short reports (~5K tokens total). Raw research stays on disk as fallback. This keeps the orchestrator in the **Smart Zone**.
+**1c. Orchestrator reads full reports:**
+With 1M context window, the orchestrator reads all research reports in full (~15-25K tokens total). This preserves the frameworks, techniques, and examples that make course content authoritative. Research reports also stay on disk for implementation agents to pull on-demand.
 
 - **[COMPACTION]** After all research completes, update `progress.md` with: summary of key findings across all reports, research gaps identified, recommended design direction.
 
-#### 1.5. Research Compression → Plan (Compression of Intent)
+#### 1.5. Research Synthesis → Plan
 **Primary agent:** `planner` (Course Architect) — or orchestrator directly for simpler courses
 
-This is the **critical firewall** between research noise and implementation clarity. Compress all research findings into plan artifacts:
+Synthesize research into plan artifacts while preserving depth:
 
-1. **Read all researcher reports** from `{plan_dir}/research/`
-2. **Synthesize into phase files**: Populate `phase-01-discovery-and-analysis.md` through `phase-04-lesson-plan.md` with insights drawn from research reports
-3. **Write TL;DR header** on each phase file (mandatory — see `intentional-compaction.md` § Compression Priority)
-4. **Discard research from context** — from this point forward, implementation agents receive ONLY plan files + phase files, never raw research reports. Reports stay on disk as on-demand fallback.
+1. **Read all researcher reports** from `{plan_dir}/research/` — with 1M context, read them in full
+2. **Synthesize into phase files**: Populate `phase-01-discovery-and-analysis.md` through `phase-04-lesson-plan.md`, preserving key frameworks, named techniques, and examples from research
+3. **Write TL;DR header** on each phase file (mandatory — for quick rehydration across sessions)
+4. Research reports stay on disk — implementation agents can pull specific sections on-demand
 
-**Rule:** The plan is the compression artifact. Everything upstream (research conversations, web search results, brainstorm threads) gets compressed into plan files. Implementation agents never see raw research.
-**Rule:** If a phase file references a specific research finding, cite which report (`research/sme-report.md § Key Concepts`) so agents can pull it on-demand if needed.
+**Rule:** Phase files carry design decisions WITH the evidence behind them. Don't flatten rich research into generic bullets — preserve the frameworks and named techniques that make content authoritative.
+**Rule:** Implementation agents receive phase files as primary context. They MAY also receive relevant research report sections when the content requires subject-matter depth. Cite which report and section (`research/sme-report.md § Technique X`).
+**Rule:** Content developers writing about a specific technique or framework discovered in research SHOULD be given that section of the research report directly — not a compressed summary of it.
 
 - **[COMPACTION]** Update `progress.md` with: research-to-plan compression complete, phase files populated, design direction confirmed.
 

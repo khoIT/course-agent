@@ -1,0 +1,61 @@
+{
+  "output_dir": "courses/prompt-engineering-for-business-users/images",
+  "images": [
+    {
+      "id": "llm-word-prediction",
+      "prompt": "A visual diagram showing how a large language model predicts the next word. A sequence of Vietnamese words flowing left to right with probability percentages above candidate next words. Clean educational style.",
+      "style": "infographic",
+      "size": "1792x1024",
+      "usage": "Session 1, Slide 4"
+    },
+    {
+      "id": "hallucination-warning",
+      "prompt": "An AI robot confidently presenting false information on a screen, while a human detective with a magnifying glass checks the facts. Warning triangle symbol. Educational illustration.",
+      "style": "professional",
+      "size": "1792x1024",
+      "usage": "Session 1, Slide 9"
+    },
+    {
+      "id": "six-component-framework",
+      "prompt": "A hexagonal diagram showing 6 components of an effective prompt: Role, Tone, Task, Format, Constraints, Audience. Each hexagon has a small icon. Center says Prompt. Clean infographic.",
+      "style": "infographic",
+      "size": "1024x1024",
+      "usage": "Session 1, Slide 11"
+    },
+    {
+      "id": "chat-vs-agent",
+      "prompt": "Split screen comparison. Left side: a person typing many messages back and forth with a chatbot (5 message bubbles). Right side: a person giving one brief to an AI agent robot who autonomously completes multiple steps. The agent side shows efficiency and automation.",
+      "style": "flat",
+      "size": "1792x1024",
+      "usage": "Session 2, Slide 5"
+    },
+    {
+      "id": "contract-agent-workflow",
+      "prompt": "A workflow diagram showing: customer order document on the left, flowing through an AI agent in the center, combining with a contract template, outputting a completed contract on the right. Vietnamese business context. Clean process flow.",
+      "style": "infographic",
+      "size": "1792x1024",
+      "usage": "Session 3, Slide 7"
+    },
+    {
+      "id": "context-engineering-smart-zone",
+      "prompt": "A horizontal bar representing an AI context window. Left 40 percent is green labeled Smart Zone with a brain icon. Middle 20 percent is yellow labeled Caution Zone. Right 40 percent is red labeled Dumb Zone with a warning icon. Clean diagram.",
+      "style": "infographic",
+      "size": "1792x1024",
+      "usage": "Session 4, Slide 5"
+    },
+    {
+      "id": "mcp-tools-connection",
+      "prompt": "A central AI brain connected to multiple tools via cables: a file folder, a web browser, a database, a calendar, and a document. Each connection is labeled. Model Context Protocol concept. Clean tech illustration.",
+      "style": "flat",
+      "size": "1024x1024",
+      "usage": "Session 4, Slide 11"
+    },
+    {
+      "id": "skill-md-anatomy",
+      "prompt": "An exploded view of a SKILL.md document showing its 6 sections as separate cards: Name, Description, Input, Steps, Output, Constraints. Each card has a small icon. Like a blueprint or recipe card layout.",
+      "style": "infographic",
+      "size": "1024x1024",
+      "usage": "Session 5, Slide 4"
+    }
+  ]
+}

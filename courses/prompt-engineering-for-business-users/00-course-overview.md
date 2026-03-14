@@ -1,91 +1,106 @@
-# Khóa học: Prompt Engineering cho người dùng doanh nghiệp
+# Prompt Engineering cho Người Dùng Doanh Nghiệp
 
-> Viết prompt hiệu quả không phải kỹ năng IT — đó là kỹ năng giao tiếp. Khóa học này biến bạn từ "hỏi rồi hy vọng" thành "ra lệnh chính xác, nhận kết quả chuẩn."
+## Tổng quan khóa học
 
----
+Khóa học 10 giờ (5 buổi x 2 giờ, qua Zoom) hướng dẫn người dùng không chuyên kỹ thuật cách sử dụng AI hiệu quả trong công việc hàng ngày. Từ viết prompt cơ bản đến xây dựng automation cá nhân, học viên sẽ đi từ "người hỏi AI" thành "người thiết kế quy trình AI."
 
-## Chân dung học viên (Learner Portrait)
+**Ví dụ xuyên suốt:** Contract-agent -- quy trình tự động đọc đơn đặt hàng khách hàng (Google Vietnam) và tạo hợp đồng dịch vụ. Ví dụ này xuất hiện trong cả 5 buổi, từ prompt đơn giản (Buổi 1) đến agent tự động hoàn chỉnh (Buổi 5), giúp học viên thấy rõ hành trình tiến bộ.
 
-### Đối tượng mục tiêu
-- **Nhóm chính:** Người dùng phi kỹ thuật (business users) — nhân viên văn phòng, quản lý, chuyên viên HR, Marketing, Finance, Operations đang dùng ChatGPT/Claude hàng ngày nhưng kết quả không ổn định
-- **Nhóm phụ:** Team leads muốn chuẩn hóa cách team sử dụng AI
-
-### Trạng thái hiện tại (KSA)
-- **Kiến thức (K):** Biết ChatGPT/Claude là gì, đã dùng để hỏi đáp, viết email, brainstorm. CHƯA biết: prompt có cấu trúc, framework, few-shot, chain-of-thought. Nghĩ "AI hiểu ý mình" mà không cần hướng dẫn chi tiết.
-- **Kỹ năng (S):** Gõ câu hỏi tự nhiên và nhận output. CHƯA biết: cách gán vai trò, cung cấp context, định dạng output, dùng ví dụ mẫu, chia nhỏ tác vụ phức tạp, hoặc iterate khi kết quả chưa đúng.
-- **Thái độ (A):** 60% hào hứng nhưng thất vọng vì kết quả không đều. 30% hoài nghi "AI chỉ cho ra bài chung chung." 10% power users muốn nâng cấp. Tất cả đều mất kiên nhẫn nếu không thấy kết quả cải thiện rõ rệt trong buổi đầu.
-
-### Bối cảnh học tập
-- **Phong cách học:** Visual (so sánh trước/sau) + Kinesthetic (thực hành ngay trên ChatGPT/Claude)
-- **Thời lượng:** 5 buổi × 60 phút (tổng 5 giờ)
-- **Hình thức:** Online qua Zoom/Teams — chia sẻ màn hình, breakout rooms
-- **Động lực:** Muốn tiết kiệm thời gian, giảm viết lại, và tạo ấn tượng với output chuyên nghiệp
-
-### Hệ quả cho thiết kế
-- **Before/After pattern:** Mỗi concept mở đầu bằng so sánh prompt kém vs. prompt tốt — cho thấy chênh lệch ngay
-- **Immediate practice:** Sau mỗi 8 phút giảng, có hoạt động thực hành (poll, chat prompt, breakout)
-- **Industry scenarios:** Mỗi framework áp dụng cho 4 ngành: HR, Marketing, Finance, Operations
-- **Scaffolding:** Buổi 1-2 dùng template đầy đủ → Buổi 3 template một phần → Buổi 4-5 tự viết
-- **Content depth:** ~3-4 min/concept (non-technical audience), max 4 concepts/15-min segment
+**Hình thức:** Online qua Zoom, có tương tác (poll, chat, chia sẻ màn hình). Không sử dụng breakout rooms.
 
 ---
 
-## Mục tiêu khóa học (Learning Objectives)
+## Đối tượng học viên
 
-### Buổi 1 — Tư duy Prompt: "Tại sao AI không hiểu ý bạn?"
-1. **Phân tích** ít nhất 3 prompt kém từ công việc hàng ngày và xác định lỗi cụ thể (vague context, no format, no role) *(Level 2)*
-2. **Viết lại** các prompt đó theo công thức Role + Context + Task + Format, đạt output cải thiện rõ rệt *(Level 2)*
+| Nhóm | Mô tả | Nhu cầu chính |
+|------|--------|---------------|
+| **Quản lý** (Managers) | Quản lý dự án, trưởng phòng, giám đốc bộ phận | Tự động hóa báo cáo, phân tích dữ liệu, soạn email, lập kế hoạch |
+| **Marketing** | Chuyên viên marketing, content creator, digital marketer | Viết nội dung, phân tích đối thủ, tạo chiến dịch, xử lý dữ liệu khách hàng |
+| **Giáo viên** (Teachers) | Giáo viên phổ thông, giảng viên đại học, người đào tạo | Ra đề thi, soạn bài giảng, tạo tài liệu học tập, đánh giá học sinh |
 
-### Buổi 2 — Framework RTT & CO-STAR: "Công thức cho mọi tác vụ"
-3. **Áp dụng** framework RTT (Role-Task-Tone) cho ít nhất 3 tác vụ routine theo ngành mình, đạt kết quả chính xác ngay lần đầu *(Level 2)*
-4. **Sử dụng** framework CO-STAR (Context-Objective-Style-Tone-Audience-Response) cho tác vụ phức tạp hơn, so sánh kết quả với prompt không có framework *(Level 2)*
-
-### Buổi 3 — Kỹ thuật nâng cao: "Dạy AI bằng ví dụ"
-5. **Tạo** prompt few-shot với 2-3 ví dụ mẫu cho tác vụ phân loại hoặc trích xuất dữ liệu, đạt accuracy ≥80% *(Level 2)*
-6. **Thiết kế** chain-of-thought prompt cho tác vụ phân tích phức tạp (so sánh, đánh giá, ra quyết định) *(Level 3)*
-
-### Buổi 4 — Prompt cho tác vụ chuyên ngành: "Từ chung chung đến chuyên gia"
-7. **Xây dựng** bộ prompt template cho 3 tác vụ lặp lại trong công việc cụ thể của mình *(Level 3)*
-8. **Đánh giá** chất lượng output bằng rubric (accuracy, completeness, tone, actionability) và iterate đến khi đạt chuẩn *(Level 3)*
-
-### Buổi 5 — Hệ thống hóa & Chia sẻ: "Từ cá nhân đến team"
-9. **Tạo** prompt library cá nhân có tổ chức theo danh mục tác vụ, với ít nhất 10 prompt đã test *(Level 3)*
-10. **Thiết kế** kế hoạch triển khai prompt standards cho team gồm: naming convention, testing process, sharing workflow *(Level 3)*
+**Yêu cầu chung:** Không cần kiến thức lập trình. Biết sử dụng máy tính cơ bản và trình duyệt web.
 
 ---
 
-## Phân loại nội dung (Content Priority)
+## Cấu trúc 5 buổi học
 
-### CẦN CÓ (Must Have)
-- Anatomy of a good prompt: Role + Context + Task + Format
-- Before/After demo so sánh prompt kém vs. prompt tốt (mỗi buổi ≥3 cặp)
-- Framework RTT cho tác vụ đơn giản (~60-70% công việc routine)
-- Framework CO-STAR cho tác vụ phức tạp (phân tích, báo cáo, chiến lược)
-- Few-shot prompting: cách dùng ví dụ mẫu để "dạy" AI
-- Tình huống thực tế theo 4 ngành (HR, Marketing, Finance, Ops)
-- Iteration mindset: prompt → evaluate → refine → repeat
+| Buổi | Chủ đề | Công cụ | Kết quả đạt được |
+|------|--------|---------|-------------------|
+| 1 | **AI + Prompt Mastery** | Claude.ai | Viết prompt 6 thành phần, tạo nội dung hợp đồng sơ bộ từ đơn hàng |
+| 2 | **Tư duy Agent** (Agent Thinking) | Claude.ai, Claude Cowork | Viết task brief 4 phần, phân biệt chat vs. agent, chạy tác vụ trên Cowork |
+| 3 | **Cowork + Claude Code** | Claude Cowork, Claude Code | Cài Claude Code, chạy contract-agent thực tế, phác thảo CLAUDE.md |
+| 4 | **Context Engineering + MCP** | Claude Code | Viết CLAUDE.md cá nhân, kết nối công cụ MCP, hiểu Smart Zone và RPI |
+| 5 | **Xây dựng Skill** (Capstone) | Claude Code | Tạo SKILL.md hoàn chỉnh, trình bày 3 phút trước lớp |
 
-### NÊN CÓ (Should Have)
-- Chain-of-thought cho tác vụ phân tích phức tạp
-- Output format specifications (markdown table, JSON, bullet points)
-- Negative prompting ("Đừng làm X" — khi nào dùng, khi nào tránh)
-- Prompt debugging: khi output sai, check gì trước?
-- Temperature/creativity settings (conceptual understanding)
+**Chuỗi công cụ tiến dần:** Claude.ai (web, dễ dùng) -> Claude Cowork (giao diện agent) -> Claude Code (terminal, mạnh nhất).
 
-### CÓ CŨNG TỐT (Nice to Have)
-- System prompts và custom instructions
-- Multi-turn conversation strategies
-- Prompt chaining (output A → input B)
-- AI tool comparison (ChatGPT vs Claude vs Gemini strengths)
+**Nhịp độ mỗi buổi:**
+- 0:00--0:35 Khái niệm + Demo (poll mỗi 8--10 phút)
+- 0:35--0:40 Nghỉ giải lao
+- 0:40--1:15 Thực hành có hướng dẫn
+- 1:15--1:20 Nghỉ giải lao
+- 1:20--1:50 Áp dụng vào công việc thực tế + Q&A
+- 1:50--2:00 Bài tập về nhà + Tổng kết
 
 ---
 
-## Cấu trúc 5 buổi với Scaffolding
+## Contract-agent: Ví dụ xuyên suốt
 
-| Buổi | Chủ đề | Scaffolding Level | Industry Focus | Concepts | Depth |
-|------|--------|-------------------|----------------|----------|-------|
-| 1 | Tư duy Prompt | Full template (I Do → We Do) | All 4: bad prompt examples | 4 concepts × 4 min = 16 min lecture | 30:70 theory:practice |
-| 2 | RTT & CO-STAR | Guided template (We Do → You Do) | Ngành-specific RTT tasks | 3 concepts × 4 min = 12 min lecture | 25:75 |
-| 3 | Few-shot & CoT | Partial template (You Do guided) | Data tasks per industry | 3 concepts × 4 min = 12 min lecture | 20:80 |
-| 4 | Prompt chuyên ngành | Minimal scaffold (You Do) | Deep-dive own department | 2 concepts × 4 min = 8 min lecture | 15:85 |
-| 5 | Hệ thống hóa | Independent (create + evaluate) | Team deployment plan | 2 concepts × 3 min = 6 min lecture | 10:90 |
+Contract-agent là quy trình AI tự động:
+1. **Input:** File đơn đặt hàng (thông tin khách hàng, dịch vụ, giá, VAT)
+2. **Xử lý:** AI đọc đơn hàng, áp dụng template hợp đồng, điền thông tin
+3. **Output:** File hợp đồng dịch vụ hoàn chỉnh, sẵn sàng ký
+
+**Vai trò trong từng buổi:**
+- **Buổi 1:** Dùng thông tin đơn hàng Google Vietnam làm kịch bản prompt
+- **Buổi 2:** So sánh: chat 5 tin nhắn vs. agent 1 brief cho cùng tác vụ hợp đồng
+- **Buổi 3:** Học viên tự chạy contract-agent trên máy mình
+- **Buổi 4:** Phân tích CLAUDE.md của contract-agent như case study context engineering
+- **Buổi 5:** Lấy cảm hứng từ cấu trúc contract-agent để xây skill cá nhân
+
+---
+
+## Yêu cầu trước khóa học
+
+| Yêu cầu | Chi tiết |
+|----------|----------|
+| **Tài khoản Claude.ai** | Đăng ký miễn phí tại [claude.ai](https://claude.ai). Cần trước Buổi 1. |
+| **Kết nối internet** | Ổn định cho Zoom + Claude.ai đồng thời. Khuyến nghị: wifi hoặc 4G mạnh. |
+| **Máy tính** | Laptop hoặc desktop (không dùng điện thoại). Cần 2 cửa sổ cạnh nhau: Zoom + Claude.ai. |
+| **Claude Code** (từ Buổi 3) | Cài đặt trước Buổi 3. Hướng dẫn chi tiết sẽ gửi qua email 3 ngày trước. |
+| **Zoom** | Phiên bản mới nhất, có camera và microphone. |
+
+**Không yêu cầu:** Kiến thức lập trình, kinh nghiệm AI, tiếng Anh (khóa học hoàn toàn bằng tiếng Việt).
+
+---
+
+## Kết quả sau khóa học
+
+Sau 5 buổi, học viên có thể:
+
+1. **Viết prompt chuyên nghiệp** -- sử dụng khung 6 thành phần (Vai trò, Giọng điệu, Tác vụ, Định dạng, Ràng buộc, Đối tượng) cùng kỹ thuật few-shot và chain-of-thought để tạo kết quả chất lượng cao, dùng được ngay.
+
+2. **Ủy quyền cho AI agent** -- phân biệt khi nào dùng chat vs. agent, viết task brief 4 phần đủ rõ ràng để AI tự thực thi mà không cần giải thích thêm.
+
+3. **Chạy automation thực tế** -- thiết lập Claude Code, chạy agent tự động (ví dụ: contract-agent), đánh giá và điều chỉnh kết quả đầu ra.
+
+4. **Thiết kế môi trường AI cá nhân** -- viết CLAUDE.md tùy chỉnh cho lĩnh vực công việc, kết nối công cụ MCP, áp dụng context engineering để AI hiểu công việc của bạn một lần và dùng mãi.
+
+5. **Xây dựng skill tái sử dụng** -- phân tích quy trình công việc thành các bước tự động hóa, tạo SKILL.md hoàn chỉnh, và chứng minh kết quả qua demo trực tiếp.
+
+---
+
+## Tài liệu khóa học
+
+| Tài liệu | Mô tả | Khi nào dùng |
+|-----------|--------|---------------|
+| **Slide bài giảng** (5 bộ) | Nội dung trình bày cho từng buổi, 10--15 slide mỗi bộ | Mỗi buổi học |
+| **Tài liệu học viên** (Learner Handout) | Tóm tắt kiến thức, template, checklist, thuật ngữ -- tài liệu tra cứu lâu dài | Phát trước Buổi 1 |
+| **Hướng dẫn giảng viên** (Facilitator Guide) | Kịch bản chi tiết, ghi chú thời gian, câu hỏi thường gặp, kế hoạch dự phòng | Chỉ dành cho giảng viên |
+| **Contract-agent demo** | Bộ file mẫu: đơn hàng, CLAUDE.md, template hợp đồng, bài tập | Buổi 1--5 |
+| **Template prompt 6 thành phần** | Bảng điền prompt với hướng dẫn cho từng thành phần | Buổi 1 |
+| **Template task brief** | Mẫu brief 4 phần: mục tiêu, bối cảnh, bước thực hiện, tiêu chí | Buổi 2 |
+| **Template CLAUDE.md** | Khung 4 phần: vai trò, quy tắc, workflow, công cụ | Buổi 3--4 |
+| **Template SKILL.md** | Khung 6 phần: mục tiêu, ngữ cảnh, input, bước, ví dụ, ràng buộc | Buổi 4--5 |
+| **Worksheet Workflow Mapping** | Bảng phân tích 5 tác vụ: chat/agent/không phù hợp AI | Buổi 2 |
+| **Rubric trình bày** | 4 tiêu chí đánh giá capstone: vấn đề, demo, kết quả, trình bày | Buổi 5 |

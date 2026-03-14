@@ -16,9 +16,11 @@ import base64
 import json
 import os
 import sys
+import time
 from pathlib import Path
 from urllib.parse import quote
 from urllib.request import urlretrieve, Request, urlopen
+from urllib.error import HTTPError
 
 # Centralized env resolver
 CLAUDE_ROOT = Path(__file__).parent.parent.parent.parent
@@ -109,7 +111,7 @@ def generate_gemini(prompt: str, style: str = "professional",
 
 def generate_pollinations(prompt: str, style: str = "professional",
                           size: str = "1024x1024", output: str = "output.png") -> str:
-    """Generate image via Pollinations.ai JSON API (free, no API key needed)."""
+    """Generate image via Pollinations.ai GET API (free, no API key needed)."""
     style_suffix = STYLE_PRESETS.get(style, STYLE_PRESETS["professional"])
     full_prompt = f"{prompt}. {style_suffix}"
 
@@ -118,44 +120,34 @@ def generate_pollinations(prompt: str, style: str = "professional",
     output_path = Path(output)
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
-    print(f"Generating (Pollinations.ai — free fallback): {prompt[:80]}...")
+    print(f"Generating (Pollinations.ai — free): {prompt[:80]}...")
     print(f"Style: {style} | Size: {size}")
 
-    # Use JSON API endpoint
-    payload = json.dumps({
-        "prompt": full_prompt,
-        "width": int(width),
-        "height": int(height),
-        "model": "flux",
-        "nologo": True,
-        "seed": hash(prompt) % 100000,
-    }).encode("utf-8")
-
-    req = Request(
-        "https://image.pollinations.ai/",
-        data=payload,
-        headers={
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0 (course-image-gen/1.0)",
-        },
-        method="POST",
+    # Truncate to keep URL length manageable (Pollinations 500-error on long URLs)
+    truncated = full_prompt[:300]
+    encoded_prompt = quote(truncated)
+    seed = abs(hash(prompt)) % 100000
+    url = (
+        f"https://image.pollinations.ai/prompt/{encoded_prompt}"
+        f"?width={width}&height={height}&nologo=true&seed={seed}"
     )
 
-    try:
-        with urlopen(req, timeout=180) as resp:
-            with open(str(output_path), "wb") as f:
-                f.write(resp.read())
-    except Exception:
-        # Fallback to GET URL approach
-        simple_prompt = quote(prompt[:200])
-        url = f"https://image.pollinations.ai/prompt/{simple_prompt}?width={width}&height={height}&nologo=true"
-        fallback_req = Request(url, headers={"User-Agent": "Mozilla/5.0"})
-        with urlopen(fallback_req, timeout=180) as resp:
-            with open(str(output_path), "wb") as f:
-                f.write(resp.read())
-
-    print(f"Saved: {output_path}")
-    return str(output_path)
+    max_retries = 4
+    for attempt in range(max_retries):
+        try:
+            req = Request(url, headers={"User-Agent": "Mozilla/5.0 (course-image-gen/1.0)"})
+            with urlopen(req, timeout=180) as resp:
+                with open(str(output_path), "wb") as f:
+                    f.write(resp.read())
+            print(f"Saved: {output_path}")
+            return str(output_path)
+        except HTTPError as e:
+            if e.code == 429 and attempt < max_retries - 1:
+                wait = (attempt + 1) * 15
+                print(f"Rate limited (429). Waiting {wait}s before retry {attempt + 2}/{max_retries}...")
+                time.sleep(wait)
+            else:
+                raise
 
 
 # --- DALL-E 3 Engine (paid) ---

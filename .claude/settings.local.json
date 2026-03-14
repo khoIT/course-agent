@@ -14,7 +14,9 @@
       "Bash(find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"*.pptx\" 2>/dev/null && find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/07-evaluation-report.md\" -type f 2>/dev/null | grep -v \".output\" | grep -v \"__pycache__\" | head -20)",
       "Bash(find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"slide*.html\" -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/07-evaluation-report.md\" 2>/dev/null | head -20 && find \"C:/Users/CPU12830-local/code/claude-cowork-course/\" -name \"workspace\" -type d -newer \"C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/07-evaluation-report.md\" 2>/dev/null | head -5)",
       "Bash(cd C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/02-slides/workspace && node generate-all-slides.js)",
-      "Bash(ls -la C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/02-slides/*.pptx 2>/dev/null)"
+      "Bash(ls -la C:/Users/CPU12830-local/code/claude-cowork-course/courses/prompt-engineering-claude-code-cowork/02-slides/*.pptx 2>/dev/null)",
+      "WebSearch",
+      "Bash(wc:*)"
     ]
   }
 }

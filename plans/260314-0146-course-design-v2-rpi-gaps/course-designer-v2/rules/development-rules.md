@@ -9,6 +9,12 @@
 - Update phase file status and checkboxes as work progresses — this is the primary state persistence mechanism
 - Never rely solely on TodoWrite for tracking course production progress
 
+## File Safety & Separation (CRITICAL)
+- **Plans vs. Courses separation:** Design artifacts (plan.md, phase files, research/, progress.md) stay in `plans/`. Final deliverables (guides, handouts, activities, slides) go to `courses/`. When a phase file is finalized, COPY to courses/ — don't move.
+- **Never overwrite existing files without checking.** Before writing to any file in `courses/`, check if it exists. If it does, READ it first. Only overwrite when explicitly instructed or when the orchestrator confirms.
+- **Subagent file ownership is mandatory.** Every delegated content agent must have declared file ownership in its prompt. Agents must NOT write outside their declared paths.
+- **Post-Phase-3 consolidation checkpoint.** After material generation, verify all deliverables are in `courses/` and all design artifacts remain in `plans/`. Resolve duplicates: `courses/` is authoritative for delivery, `plans/` for design decisions.
+
 ## Research & Fact-Checking
 - **Use `WebSearch` tool** (Claude's default) for all subject matter research — do not skip this step
 - Verify factual claims, statistics, and tool/platform references before including in any course material
@@ -49,29 +55,6 @@
 - Update TL;DR whenever phase content changes significantly
 - See `intentional-compaction.md → Phase File TL;DR Requirement` for format and examples
 
-## Content Snippets in Phase Files
-
-Phase files (especially phase-04-lesson-plan.md) MUST include sample content fragments — not just instructions. This gives implementation agents concrete examples to build on, dramatically increasing execution reliability.
-
-**What to include:**
-- **Lesson plan:** Sample session opening script (2-3 sentences), example transition between activities
-- **Activities:** One fully-written activity procedure (steps, timing, facilitator cues) as a template for the rest
-- **Facilitator guide:** Example "During Activity" micro-actions paragraph for one activity
-- **Assessments:** Sample rubric row with scoring criteria
-
-**Why this matters (Dex Horthy):** "A bad part of a plan could be a hundred bad lines of code." Plans with actual content snippets produce dramatically more reliable output than abstract instructions. The implementation agent can pattern-match against the example instead of inventing from scratch.
-
-**Example in a phase file:**
-```
-### Sample Activity Procedure (template for all activities)
-**Activity 2: Empathy Mapping Exercise** (15 min)
-1. Facilitator distributes blank empathy map templates (4 quadrants: Says, Thinks, Does, Feels)
-2. "Read the customer scenario on your table. You have 8 minutes to fill in the empathy map individually."
-3. [Timer: 8 min] Facilitator roams — check for empty quadrants, prompt: "What might this customer be FEELING right now?"
-4. "Turn to your table partner. Compare maps. Where did you differ? 3 minutes."
-5. Debrief: Cold-call 2 pairs. "What surprised you about your partner's perspective?"
-```
-
 ## Content Quality Guidelines
 - Read and follow content standards and design guidelines in `./docs`
 - **Ensure all course materials are factually accurate** — research and verify claims
@@ -109,7 +92,7 @@ All course production work MUST follow the Intentional Compaction Protocol defin
 - **Subagents must write** — Every delegated content creation agent updates `progress.md` before returning results. Include the Progress Write Mandate in all delegation prompts.
 - **Rehydrate on resume** — When continuing work after a break or compaction, read `progress.md` → `plan.md` → active phase file before doing anything
 - **Artifact trail is critical** — Always list files modified/created explicitly in `progress.md`. File tracking is the weakest dimension in auto-compaction summaries (2.2/5.0 quality).
-- **Context budget awareness** — At 40%+ (Caution Zone), prefer delegating to subagents. At 60%+, mandatory progress.md write and delegate ALL remaining work. See `intentional-compaction.md` → Context Budget Awareness for full thresholds.
+- **Context budget awareness** — At 70%+ context utilization, write a mandatory checkpoint. At 80%+, delegate remaining work to subagents. See `intentional-compaction.md` for full thresholds.
 
 ## Pre-commit/Push Rules
 - Run quality check (19-criterion evaluation) before finalizing deliverables

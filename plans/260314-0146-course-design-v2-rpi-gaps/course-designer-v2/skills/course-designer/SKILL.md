@@ -43,16 +43,6 @@ Understand context before designing. See `references/workflow-detailed-phases.md
 - **Quick Mode:** If brief is comprehensive, summarize as Learner Portrait → confirm → proceed.
 - **Standard Mode:** 3 rounds — Big Picture → Learner Deep-Dive → Constraints & Preferences.
 
-### Phase 0.5: Context Scout (Skip if first course in repo)
-
-Before launching the parallel research fork, run a lightweight scan of existing course materials to find reusable patterns.
-
-1. Spawn a single `Explore` agent: "Scan `courses/` directory. For each course: list deliverables, note content patterns (session structure, activity types, timing), identify reusable templates. Output: compressed summary (< 500 tokens)."
-2. Output: `{plan_dir}/research/context-scout-report.md`
-3. Feed scout report into researcher prompts — researchers build on existing patterns, not from scratch.
-
-**Rule:** This is a 30-second pre-scan, not a full research phase. If `courses/` is empty or doesn't exist, skip entirely.
-
 ### Phase 1: Analysis — Parallel Research Fork + Learner Portrait
 Load `references/methodology-philosophy-and-analysis.md`.
 
@@ -103,12 +93,6 @@ Load `references/methodology-design.md`. Four steps:
 2. Categorize content: Must Have / Should Have / Nice to Have
 3. Sequence via WHY-WHAT-HOW-SO WHAT framework
 4. Build detailed lesson plan with timing
-5. Include content snippets in the lesson plan — not just structure, but actual sample content:
-   - Sample session opening script (2-3 sentences of what the facilitator would actually say)
-   - One fully-written activity procedure as a template for content developers
-   - Example transition script between activities
-   - Sample assessment question with rubric criteria
-   These snippets dramatically increase implementation reliability — content developers pattern-match against them instead of inventing from scratch.
 
 ### ⛔ Plan Approval Gate (MANDATORY — Between Phase 2 and Phase 3)
 
@@ -127,16 +111,9 @@ Before starting Phase 3, re-read the learner portrait (Phase 1 TL;DR) and ask: "
 Load `references/methodology-development.md`. **Fact-check via WebSearch before finalizing.**
 - **Slides (.pptx):** Follow Slide Specifications in methodology-development.md (slides-per-session, font sizes, color ratios). Use pptx skill.
 - **Facilitator Guide (.md):** Every session gets EQUAL depth — timing table, speaker scripts, ≥2 troubleshooting scenarios, technical notes. A guide where Session 1 is detailed but later sessions are one-liners is a FAIL. See Equal Depth Rule in methodology-development.md.
-  Reference the content snippets from Phase 2 lesson plan as the quality bar for all sessions.
 - **Learner Handout (.md):** Organize by TASK, not by SESSION. Post-course learners want "How do I do X?" not "What was Session 3 about?" Structure as a quick-reference job aid with table of contents by task. Test: can someone who missed the course use this handout alone?
 - **Activities (.md):** REAL criteria + Facilitator Micro-Actions for every activity. Must include "During Activity" section: facilitator roaming schedule, intervention triggers, early-finisher tasks, time-check announcements. See methodology-development.md.
 - **Assessments (.md):** Aligned with objectives. Include rubrics if applicable.
-- **Illustrations (images):** Use `course-image-gen` skill to generate visual aids for key concepts. Workflow:
-  1. Identify 3-5 key concepts per session that benefit from visual reinforcement
-  2. Create an `image-manifest.json` in the course's `images/` directory with prompts, styles, and usage notes
-  3. Run batch generation: `python .claude/skills/course-image-gen/scripts/generate.py --manifest courses/[name]/images/image-manifest.json`
-  4. Reference generated images in slides and handouts
-  Style guide: Use `professional` for slides, `infographic` for handouts/diagrams, `sketch` for brainstorming activities. See `course-image-gen` SKILL.md for all presets.
 
 ### Phase 3.5: Consistency Cross-Check
 After generating all materials, run this audit before Phase 4:
@@ -192,6 +169,13 @@ Load both `evaluation-criteria-part-1.md` and `evaluation-criteria-part-2.md`.
 
 **All text materials MUST be Markdown (.md).** Never generate .docx. Only slides use .pptx.
 Always create `INSTRUCTOR-START-HERE.md` explaining each file's purpose and usage order.
+
+## File Safety Rules (CRITICAL)
+
+1. **Never overwrite existing course files without checking first.** Before writing to any file in `courses/`, check if it exists. If it does, READ it first and confirm the overwrite is intentional — either by user approval or by the orchestrator explicitly instructing "overwrite."
+2. **Plans stay in plans, deliverables go to courses.** Design artifacts (plan.md, phase files, research reports, progress.md) live in `plans/{slug}/`. Final deliverables (guides, handouts, activities, slides) live in `courses/{course-name}/`. When a phase file (e.g., phase-04-lesson-plan.md) is finalized, COPY it to courses/ — don't move it.
+3. **Subagents must declare file ownership.** When spawning content agents, specify which files they may create/modify. Agents must NOT write outside their declared ownership.
+4. **Consolidation checkpoint.** After Phase 3 material generation, verify that all deliverables are in `courses/` and all design artifacts are in `plans/`. If duplicates exist, the `courses/` version is authoritative for delivery; the `plans/` version is authoritative for design decisions.
 
 ## Key Reminders
 
