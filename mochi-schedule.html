@@ -1,0 +1,963 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lịch Chăm Bé Mochi</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Be Vietnam Pro', sans-serif;
+    background: #fff5f8;
+    color: #333;
+    padding: 20px;
+  }
+
+
+  .card {
+    max-width: 760px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
+  }
+
+  .header {
+    background: linear-gradient(135deg, #e75480, #f4a0bb);
+    color: white;
+    padding: 28px 32px;
+    text-align: center;
+  }
+  .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .header p { font-size: 13px; opacity: 0.9; }
+
+  .intro {
+    margin: 20px 24px 0;
+    background: #f0f8ff;
+    border-radius: 14px;
+    border-left: 4px solid #6db3f2;
+    overflow: hidden;
+  }
+  .intro summary {
+    font-weight: 700; font-size: 14px; color: #2980b9;
+    padding: 14px 20px;
+    cursor: pointer;
+    list-style: none;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .intro summary::-webkit-details-marker { display: none; }
+  .intro summary::after {
+    content: '▸';
+    margin-left: auto;
+    font-size: 14px;
+    transition: transform 0.2s;
+  }
+  .intro[open] summary::after { transform: rotate(90deg); }
+  .intro-content { padding: 0 20px 16px; }
+  .intro-content p { font-size: 13px; color: #444; line-height: 1.7; margin-bottom: 6px; }
+  .intro-content ul { padding-left: 18px; margin-top: 6px; }
+  .intro-content li { font-size: 12.5px; color: #444; margin-bottom: 5px; line-height: 1.6; }
+
+  .section { padding: 0 24px 20px; }
+
+  .guide-hub {
+    margin: 16px 0 0;
+    padding: 14px;
+    background: #f0f8ff;
+    border: 1px solid #6db3f2;
+    border-radius: 14px;
+  }
+  .guide-hub-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .guide-hub-header::-webkit-details-marker { display: none; }
+  .guide-hub-header::after {
+    content: '▾';
+    font-size: 16px;
+    color: #2980b9;
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .guide-hub:not([open]) .guide-hub-header::after { transform: rotate(-90deg); }
+  .guide-hub-title {
+    font-size: 13px;
+    font-weight: 700;
+    color: #2980b9;
+  }
+  .guide-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .guide-tab {
+    border: 1px solid #a8d4f7;
+    background: white;
+    color: #2980b9;
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: 12px;
+    font-family: inherit;
+    font-weight: 600;
+    position: relative;
+    z-index: 2;
+    -webkit-tap-highlight-color: rgba(41,128,185,0.2);
+    touch-action: manipulation;
+    cursor: pointer;
+  }
+  .guide-tab.is-active {
+    background: #2980b9;
+    border-color: #2980b9;
+    color: white;
+    box-shadow: 0 6px 14px rgba(41,128,185,0.2);
+  }
+  .guide-panels { margin-top: 6px; }
+  .guide-panel { display: none; }
+  .guide-panel.is-active { display: block; }
+  .guide-hub .note,
+  .guide-hub .reassure {
+    margin: 0;
+  }
+
+  .schedule-table-wrap {
+    position: relative;
+  }
+  .current-time-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    display: none;
+    border-top: 0.5px solid rgba(251, 167, 0, 0.75);
+    pointer-events: none;
+    z-index: 2;
+  }
+  .current-time-line.is-visible { display: block; }
+  .current-time-label {
+    position: absolute;
+    right: 8px;
+    top: -10px;
+    padding: 1px 6px;
+    border-radius: 999px;
+    background: rgba(255, 216, 20, 0.99);
+    color: rgba(140, 93, 0, 0.75);
+    font-size: 9.5px;
+    font-weight: 600;
+    line-height: 1.4;
+    letter-spacing: 0.2px;
+  }
+
+  .schedule-block {
+    margin: 16px 0 0;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid #fce4ec;
+    background: white;
+    scroll-margin-top: 20px;
+    transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+  .schedule-block.is-current {
+    border-color: #f4a0bb;
+    box-shadow: 0 10px 24px rgba(231,84,128,0.16);
+    transform: scale(1.01);
+  }
+  .schedule-block summary {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    font-size: 14px;
+    font-weight: 700;
+    color: #e75480;
+    background: #fff0f5;
+    padding: 12px 16px;
+    cursor: pointer;
+    list-style: none;
+    user-select: none;
+  }
+  .schedule-block summary::-webkit-details-marker { display: none; }
+  .schedule-block summary::after {
+    content: '▾';
+    margin-left: auto;
+    margin-top: 2px;
+    font-size: 16px;
+    transition: transform 0.2s;
+    color: #e75480;
+    flex-shrink: 0;
+  }
+  .schedule-block:not([open]) summary::after { transform: rotate(-90deg); }
+  .schedule-block.is-current summary {
+    background: linear-gradient(135deg, #fff0f5, #ffe5ee);
+  }
+  .summary-main {
+    min-width: 0;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .summary-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .summary-title {
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+  }
+  .time-window {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: white;
+    border: 1px solid #f3bfd0;
+    color: #c73f6a;
+    font-size: 11px;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+  .schedule-block summary .tip {
+    font-size: 11.5px;
+    font-weight: 400;
+    color: #b0788e;
+    font-style: italic;
+    text-transform: none;
+    letter-spacing: 0;
+    line-height: 1.4;
+  }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: #fce4ec; }
+  thead th {
+    padding: 9px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #c73f6a;
+    text-align: left;
+    letter-spacing: 0.4px;
+  }
+  tbody tr { border-bottom: 1px solid #f9e4ec; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #fff8fb; }
+  td { padding: 10px 14px; font-size: 13px; vertical-align: top; line-height: 1.5; }
+  td:first-child {
+    font-weight: 700;
+    color: #e75480;
+    white-space: nowrap;
+    width: 110px;
+  }
+  .sub { display: block; font-size: 11.5px; color: #999; margin-top: 2px; font-style: italic; }
+
+  tr.me-time { background: #f0fff0; }
+  tr.me-time td:first-child { color: #27ae60; }
+  .me-badge {
+    display: inline-block;
+    background: #27ae60;
+    color: white;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.3px;
+  }
+
+  /* Possible me-time — not guaranteed, bé có thể dậy sớm */
+  tr.me-time-maybe { background: #f5fef5; }
+  tr.me-time-maybe td:first-child { color: #6dbb6d; }
+  .me-badge-maybe {
+    display: inline-block;
+    background: transparent;
+    color: #6dbb6d;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 8px;
+    border: 1.5px dashed #6dbb6d;
+    border-radius: 10px;
+    margin-left: 6px;
+    vertical-align: middle;
+    letter-spacing: 0.3px;
+  }
+
+  .note {
+    margin: 20px 24px 10px;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .note-health {
+    background: #fef3f3;
+    border-left: 4px solid #e74c3c;
+  }
+  .note-play {
+    background: #f5f0ff;
+    border-left: 4px solid #9b59b6;
+    margin-top: 14px;
+  }
+  .note-title { font-weight: 700; font-size: 13px; margin-bottom: 8px; }
+  .note-health .note-title { color: #c0392b; }
+  .note-play .note-title { color: #7d3c98; }
+  .note ul { padding-left: 18px; }
+  .note li { font-size: 12.5px; color: #555; margin-bottom: 5px; line-height: 1.5; }
+  .note li strong { color: #c0392b; }
+
+  .reassure {
+    margin: 10px 24px 20px;
+    background: #e8f8f5;
+    border-left: 4px solid #1abc9c;
+    border-radius: 10px;
+    padding: 14px 16px;
+  }
+  .reassure p { font-size: 12.5px; color: #1a7a65; line-height: 1.6; }
+  .reassure strong { color: #16a085; }
+
+  .footer {
+    text-align: center;
+    padding: 16px;
+    background: #fce4ec;
+    font-size: 12px;
+    color: #c73f6a;
+    font-weight: 500;
+    line-height: 1.6;
+  }
+
+  /* #7 — Active row highlight within current block */
+  tr.is-active-row {
+    background: #fff0f5 !important;
+    border-left: 3px solid #e75480;
+  }
+  tr.is-active-row td:first-child {
+    color: #e75480;
+    font-weight: 800;
+  }
+  /* Preserve me-time green theme when it's also the active row */
+  tr.me-time.is-active-row {
+    background: #e6f9e6 !important;
+    border-left: 3px solid #27ae60;
+  }
+  tr.me-time.is-active-row td:first-child {
+    color: #27ae60;
+  }
+  /* Preserve me-time-maybe theme when active */
+  tr.me-time-maybe.is-active-row {
+    background: #eef9ee !important;
+    border-left: 3px dashed #6dbb6d;
+  }
+  tr.me-time-maybe.is-active-row td:first-child {
+    color: #6dbb6d;
+  }
+
+  @media (max-width: 640px) {
+    body { padding: 10px; }
+    .header { padding: 24px 16px; }
+    .intro { margin: 12px 12px 0; }
+    .section { padding: 0 12px 12px; }
+
+    /* #4 — Bigger fonts on mobile */
+    td { font-size: 15px; padding: 12px 14px; line-height: 1.6; }
+    td:first-child { font-size: 14px; }
+    .sub { font-size: 13px; margin-top: 4px; }
+    thead th { font-size: 13px; padding: 10px 14px; }
+
+    /* #3 — Inline layout on mobile: time + activity on same row */
+    table, thead, tbody { display: block; width: 100%; }
+    thead { display: none; }
+    tbody tr {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      padding: 12px 14px;
+      margin-bottom: 8px;
+      border: 1px solid #fce4ec;
+      border-radius: 10px;
+      background: white;
+      gap: 0;
+    }
+    tbody tr:hover { background: #fff8fb; }
+    td:first-child {
+      flex-shrink: 0;
+      width: auto;
+      white-space: nowrap;
+      font-size: 12px;
+      font-weight: 700;
+      color: #e75480;
+      padding: 0 10px 0 0;
+      border-bottom: none;
+      margin-bottom: 0;
+    }
+    td:last-child {
+      flex: 1;
+      min-width: 0;
+      padding: 0;
+      font-size: 14px;
+      font-weight: 600;
+      color: #e75480;
+    }
+    td:last-child .sub {
+      color: #999;
+      font-weight: 400;
+      font-style: italic;
+      margin-top: 6px;
+      /* Force sub text to span full width below both columns */
+      display: block;
+    }
+    td:last-child .me-badge {
+      vertical-align: baseline;
+    }
+    tr.me-time {
+      background: #f0fff0;
+      border-color: #c3e6cb;
+    }
+    tr.me-time td:first-child,
+    tr.me-time td:last-child {
+      color: #27ae60;
+    }
+    tr.me-time-maybe {
+      background: #f5fef5;
+      border-color: #c3e6cb;
+      border-style: dashed;
+    }
+    tr.me-time-maybe td:first-child,
+    tr.me-time-maybe td:last-child {
+      color: #6dbb6d;
+    }
+    tr.is-active-row {
+      border-color: #f4a0bb;
+      border-left: 3px solid #e75480;
+      box-shadow: 0 4px 12px rgba(231,84,128,0.12);
+    }
+    tr.me-time.is-active-row {
+      background: #e6f9e6 !important;
+      border-color: #27ae60;
+      border-left: 3px solid #27ae60;
+      box-shadow: 0 4px 12px rgba(39,174,96,0.15);
+    }
+    tr.me-time-maybe.is-active-row {
+      background: #eef9ee !important;
+      border-color: #6dbb6d;
+      border-left: 3px dashed #6dbb6d;
+      box-shadow: 0 4px 12px rgba(109,187,109,0.12);
+    }
+
+    /* #6 — Bigger guide tabs on mobile */
+    .guide-hub { padding: 10px; }
+    .guide-hub-header { flex-direction: column; align-items: stretch; }
+    .guide-tabs { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 6px; }
+    .guide-tab {
+      font-size: 13px;
+      padding: 12px 8px;
+      text-align: center;
+      min-height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* Fix guide-hub arrow positioning on mobile (column layout breaks ::after) */
+    .guide-hub-header {
+      position: relative;
+      padding-right: 28px;
+    }
+    .guide-hub-header::after {
+      position: absolute;
+      top: 50%;
+      right: 4px;
+      transform: translateY(-50%);
+    }
+    .guide-hub:not([open]) .guide-hub-header::after {
+      transform: translateY(-50%) rotate(-90deg);
+    }
+
+    /* Schedule block summary */
+    .schedule-block summary { padding: 14px; }
+    .summary-meta { gap: 6px; }
+    .summary-title { font-size: 15px; }
+    .time-window { font-size: 12px; padding: 4px 10px; }
+    .schedule-block summary .tip { font-size: 13px; }
+    .current-time-label { right: 8px; font-size: 10px; }
+
+    /* Intro section */
+    .intro-content p { font-size: 14px; }
+    .intro-content li { font-size: 13.5px; }
+    .intro summary { font-size: 15px; padding: 16px; }
+
+    /* Notes */
+    .note li { font-size: 13.5px; }
+    .note-title { font-size: 14px; }
+    .reassure p { font-size: 13.5px; }
+  }
+
+  /* #3 — Focus-visible states for keyboard/assistive navigation */
+  .guide-tab:focus-visible,
+  .schedule-block summary:focus-visible,
+  .intro summary:focus-visible,
+  .guide-hub-header:focus-visible {
+    outline: 2px solid #6db3f2;
+    outline-offset: 2px;
+    border-radius: 8px;
+  }
+
+  /* #7 — Scroll fade hint on tall expanded blocks (mobile) */
+  @media (max-width: 640px) {
+    .schedule-block[open] .schedule-table-wrap {
+      position: relative;
+    }
+    .schedule-block[open] .schedule-table-wrap::after {
+      content: '';
+      position: sticky;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      display: block;
+      height: 24px;
+      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.9));
+      pointer-events: none;
+    }
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .card { box-shadow: none; border-radius: 0; }
+    tr.me-time { background: #f0fff0 !important; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    .schedule-block { transform: none !important; box-shadow: none !important; }
+    .guide-tabs { display: none; }
+    .guide-panel { display: block !important; margin-top: 12px; }
+    .current-time-line { display: none !important; }
+    .schedule-block summary::after, .intro summary::after { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div class="header">
+    <h1>🌸 Lịch Một Ngày Cùng Bé Mochi</h1>
+    <p>Bé Mochi — Trần Khánh Hân</p>
+  </div>
+
+  <details class="intro">
+    <summary>👋 Chào cô! Đây là vài điều về Mochi</summary>
+    <div class="intro-content">
+      <p>Mochi là bé gái rất dễ thương, thích được bế và nghe nói chuyện. Bé đang trong giai đoạn ăn dặm + bú sữa, và mỗi ngày bé đều cần được chơi, ngủ đủ giấc, và cảm nhận sự yêu thương từ người chăm sóc.</p>
+      <ul>
+        <li>Bé thích: được phơi nắng, nghe hát, nằm sấp tập lật (tummy time)</li>
+        <li>Bé không thích: tiếng ồn lớn đột ngột, nằm một mình quá lâu</li>
+        <li>Tín hiệu bé buồn ngủ: dụi mắt, quấy nhẹ, ngáp</li>
+        <li>Tín hiệu bé đói: mút tay, quay đầu tìm ti</li>
+      </ul>
+    </div>
+  </details>
+
+  <div class="section">
+
+    <details class="guide-hub">
+      <summary class="guide-hub-header" style="cursor:pointer; list-style:none;">
+        <div class="guide-hub-title">📖 Hướng dẫn chăm bé</div>
+      </summary>
+
+      <div style="padding-top:10px;">
+        <div class="guide-tabs" role="tablist" aria-label="Các gợi ý nhanh">
+          <button type="button" class="guide-tab is-active" data-guide-target="play">Chơi cùng bé</button>
+          <button type="button" class="guide-tab" data-guide-target="health">Lưu ý sức khỏe</button>
+          <button type="button" class="guide-tab" data-guide-target="reassure">Lời nhắn từ mẹ</button>
+        </div>
+      </div>
+
+      <div class="guide-panels">
+        <div class="guide-panel is-active" data-guide-panel="play">
+          <div class="note note-play">
+            <div class="note-title">🎮 Gợi ý chơi cùng Mochi (cho bé phát triển vui vẻ)</div>
+            <ul>
+              <li><strong>Tummy time</strong> — cho bé nằm sấp 3-5 phút, đặt đồ chơi trước mặt để bé với tay (tập cơ cổ & lưng)</li>
+              <li><strong>Hát & nói chuyện</strong> — hát bất kỳ bài gì cô thích! Bé yêu nghe giọng người hơn mọi thứ</li>
+              <li><strong>Sách vải / hình ảnh</strong> — chỉ cho bé xem hình, gọi tên đồ vật, bé sẽ rất chăm chú</li>
+              <li><strong>Lắc lục lạc / đồ chơi có tiếng</strong> — lắc bên trái, bên phải, bé sẽ quay đầu theo (tập thính giác)</li>
+              <li><strong>Massage nhẹ</strong> — xoa nhẹ chân tay bé sau khi tắm, bé rất thích và sẽ rất thư giãn</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="guide-panel" data-guide-panel="health">
+          <div class="note note-health">
+            <div class="note-title">💗 Lưu ý sức khỏe — Mochi có bệnh tim bẩm sinh</div>
+            <ul>
+              <li>Bé vẫn vui chơi bình thường, chỉ cần <strong>không để bé khóc quá lâu</strong> hoặc gắng sức quá mức</li>
+              <li><strong>Báo mẹ ngay</strong> nếu thấy: bé thở nhanh bất thường, môi/đầu ngón tay tím tái, hoặc bỏ bú đột ngột</li>
+              <li>Khi đi dạo: tránh nơi đông người, khói bụi — chọn chỗ thoáng mát, ít xe cộ</li>
+              <li>Đừng lo lắng quá nha cô — mẹ luôn ở gần và sẵn sàng hỗ trợ! Cô chỉ cần quan sát bé bình thường là đủ rồi</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="guide-panel" data-guide-panel="reassure">
+          <div class="reassure">
+            <p><strong>Một lời nhắn cho cô:</strong> Mọi thứ không cần hoàn hảo đâu nha! Miễn bé được ăn ngủ đúng giờ, được chơi vui, và cảm nhận sự yêu thương từ cô là tuyệt vời lắm rồi. Cô cũng nhớ chăm sóc bản thân, nghỉ ngơi đủ, ăn uống ngon miệng nha. Cảm ơn cô rất nhiều! 💛</p>
+          </div>
+        </div>
+      </div>
+    </details>
+
+    <details class="schedule-block" data-start="390" data-end="645">
+      <summary>
+        <span class="summary-main">
+          <span class="summary-meta">
+            <span class="summary-title">🌅 Buổi Sáng</span>
+            <span class="time-window">6:30 – 10:45</span>
+          </span>
+          <span class="tip">Lúc Mochi vui nhất, tận dụng chơi & kết nối với bé nha!</span>
+        </span>
+      </summary>
+      <div class="schedule-table-wrap">
+        <div class="current-time-line"><span class="current-time-label"></span></div>
+        <table>
+          <thead><tr><th>Giờ</th><th>Hoạt động</th></tr></thead>
+          <tbody>
+            <tr><td>6:30 - 6:45</td><td>Mochi dậy — rửa mặt nhẹ bằng khăn ấm, thay tã cho bé <span class="sub">Nói chuyện vui với bé khi thay tã, bé rất thích nghe giọng người lớn</span></td></tr>
+            <tr><td>6:45 – 7:00</td><td>Đưa Mochi ra phơi nắng <span class="sub">Nắng nhẹ buổi sáng rất tốt cho bé — chỉ cần 15-20 phút, tránh nắng gắt</span></td></tr>
+            <tr><td>7:00 - 7:30</td><td>Cho Mochi bú cữ sáng <span class="sub">Bế bé nghiêng khoảng 45°, vỗ ợ hơi sau khi bú xong</span></td></tr>
+            <tr><td>7:30 – 9:00</td><td>Chơi cùng Mochi <span class="sub">Gợi ý: tummy time (nằm sấp), lắc lục lạc, hát ru, đọc sách vải, xem hình màu sắc</span></td></tr>
+            <tr class="me-time"><td>9:00 – 10:30</td><td>Mochi ngủ giấc sáng <span class="me-badge">Thời gian của cô</span> <span class="sub">Cô nghỉ ngơi thoải mái, uống nước, lướt điện thoại — cô xứng đáng được nghỉ!</span></td></tr>
+            <tr><td>10:30 – 10:45</td><td>Mochi dậy — thay tã, ôm bé một chút cho bé tỉnh dần <span class="sub">Đừng vội vàng, cho bé 5-10 phút tỉnh ngủ từ từ</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="schedule-block" data-start="645" data-end="945">
+      <summary>
+        <span class="summary-main">
+          <span class="summary-meta">
+            <span class="summary-title">🍽️ Buổi Trưa</span>
+            <span class="time-window">10:45 – 15:45</span>
+          </span>
+          <span class="tip">Bé ăn dặm do mẹ lo, cô phụ chuẩn bị & dọn dẹp thôi nha!</span>
+        </span>
+      </summary>
+      <div class="schedule-table-wrap">
+        <div class="current-time-line"><span class="current-time-label"></span></div>
+        <table>
+          <thead><tr><th>Giờ</th><th>Hoạt động</th></tr></thead>
+          <tbody>
+            <tr><td>10:45 - 11:00</td><td>Phụ mẹ chuẩn bị ghế ăn dặm & dụng cụ cho Mochi<span class="sub">Lấy ghế, yếm, khăn lau, chén muỗng — mẹ sẽ hướng dẫn chỗ để</span></td></tr>
+            <tr><td>11:00 – 11:30</td><td>Mochi ăn dặm (mẹ cho ăn)<span class="sub">Cô có thể ngồi chơi cùng bé hoặc tranh thủ nghỉ tay</span></td></tr>
+            <tr><td>11:30 - 11:45</td><td>Rửa chén bát, dụng cụ ăn dặm của Mochi</td></tr>
+            <tr class="me-time"><td>11:45 - 12:30</td><td>Cô ăn trưa <span class="me-badge">Thời gian của cô</span> <span class="sub">Ăn ngon miệng nha cô, cứ thoải mái!</span></td></tr>
+            <tr><td>12:30 - 13:00</td><td>Soạn đồ tắm, phụ mẹ tắm cho Mochi <span class="sub">Chuẩn bị khăn, quần áo sạch, tã mới — mẹ sẽ tắm chính, cô phụ giữ bé</span></td></tr>
+            <tr><td>13:00 - 13:30</td><td>Giặt đồ bé + phơi</td></tr>
+            <tr><td>13:30 – 14:00</td><td>Dỗ Mochi ngủ trưa <span class="sub">Bế nhẹ, vỗ mông đều đều, hát nhỏ — khi bé ngủ say, cô được ngủ cùng luôn nha</span></td></tr>
+            <tr class="me-time-maybe"><td>14:00 – 15:45</td><td>Mochi ngủ trưa — cô nghỉ ngơi <span class="me-badge-maybe">Có thể nghỉ 💤</span> <span class="sub">Bé có thể dậy sớm hơn (14:00-15:30) — nếu bé ngủ say, cô tranh thủ ngủ hoặc nghỉ thoải mái nha!</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="schedule-block" data-start="945" data-end="1140">
+      <summary>
+        <span class="summary-main">
+          <span class="summary-meta">
+            <span class="summary-title">☀️ Buổi Chiều</span>
+            <span class="time-window">15:45 – 19:00</span>
+          </span>
+          <span class="tip">Bé thích đi dạo & cô có thời gian riêng dài nhất trong ngày!</span>
+        </span>
+      </summary>
+      <div class="schedule-table-wrap">
+        <div class="current-time-line"><span class="current-time-label"></span></div>
+        <table>
+          <thead><tr><th>Giờ</th><th>Hoạt động</th></tr></thead>
+          <tbody>
+            <tr><td>15:45 - 16:00</td><td>Mochi dậy — rửa mặt, thay tã <span class="sub">Cho bé uống chút nước nếu cần</span></td></tr>
+            <tr><td>16:00 – 16:30</td><td>Đưa Mochi đi dạo <span class="sub">Đi quanh khu nhà, cho bé ngắm cây cối — tránh nơi đông, nhiều khói bụi nha</span></td></tr>
+            <tr><td>16:30 - 16:45</td><td>Mẹ cho Mochi ăn dặm chiều <span class="sub">Cô không cần lo phần này, mẹ xử lý</span></td></tr>
+            <tr><td>16:45 – 17:00</td><td>Quét sân, đổ rác <span class="sub">Việc nhẹ nhàng thôi, không cần cầu kỳ</span></td></tr>
+            <tr><td>17:00 - 17:30</td><td>Phụ mẹ lau người, thay đồ buổi tối cho Mochi</td></tr>
+            <tr class="me-time"><td>17:30 – 18:30</td><td>Cô ăn uống, tắm rửa, nghỉ ngơi <span class="me-badge">Thời gian của cô</span> <span class="sub">1 tiếng trọn vẹn cho cô — ăn tối, tắm, nghỉ ngơi thoải mái nha!</span></td></tr>
+            <tr class="me-time-maybe"><td>18:30 – 19:00</td><td>Cô nghỉ thêm hoặc chuẩn bị cho buổi tối <span class="me-badge-maybe">Có thể nghỉ 💤</span> <span class="sub">Nếu rảnh thì nghỉ tiếp, hoặc chuẩn bị sữa cho cữ tối</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="schedule-block" data-start="1140" data-end="1380">
+      <summary>
+        <span class="summary-main">
+          <span class="summary-meta">
+            <span class="summary-title">🌙 Buổi Tối</span>
+            <span class="time-window">19:00 – 23:00</span>
+          </span>
+          <span class="tip">Bé hơi quấy hơn ban ngày, bình tĩnh nha cô, có mẹ phụ cùng!</span>
+        </span>
+      </summary>
+      <div class="schedule-table-wrap">
+        <div class="current-time-line"><span class="current-time-label"></span></div>
+        <table>
+          <thead><tr><th>Giờ</th><th>Hoạt động</th></tr></thead>
+          <tbody>
+            <tr><td>19:00 - 19:30</td><td>Pha sữa cho Mochi bú cữ tối <span class="sub">Mẹ sẽ hướng dẫn lượng sữa & nhiệt độ nước pha</span></td></tr>
+            <tr><td>19:30 – 20:00</td><td>Chơi nhẹ nhàng cùng Mochi <span class="sub">Buổi tối nên chơi êm: ôm bé, kể chuyện, xem hình, nghe nhạc nhẹ — tránh kích thích mạnh</span></td></tr>
+            <tr><td>20:00 – 21:00</td><td>Dỗ Mochi ngủ đêm (mẹ phụ cùng) <span class="sub">Tắt đèn bớt, giọng nhỏ lại, vỗ nhẹ — bé sẽ dần dần chìm vào giấc ngủ</span></td></tr>
+            <tr class="me-time"><td>Sau khi bé ngủ</td><td>Cô gọi điện gia đình / thời gian cá nhân <span class="me-badge">Thời gian của cô</span> <span class="sub">Gọi điện cho người thân, xem phim, nghỉ ngơi — cô cần được nạp năng lượng!</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+    <details class="schedule-block" data-start="1380" data-end="390">
+      <summary>
+        <span class="summary-main">
+          <span class="summary-meta">
+            <span class="summary-title">🌛 Đêm Khuya</span>
+            <span class="time-window">23:00 – 6:30</span>
+          </span>
+          <span class="tip">Chỉ dậy pha sữa rồi ngủ tiếp thôi, không cần thức lâu</span>
+        </span>
+      </summary>
+      <div class="schedule-table-wrap">
+        <div class="current-time-line"><span class="current-time-label"></span></div>
+        <table>
+          <thead><tr><th>Giờ</th><th>Hoạt động</th></tr></thead>
+          <tbody>
+            <tr><td>23:00 – 00:00</td><td>Pha sữa cho Mochi bú cữ đêm <span class="sub">Bé bú xong thường ngủ lại ngay — cô ngủ tiếp luôn nha</span></td></tr>
+            <tr><td>5:00 - 5:15</td><td><em>(Tùy hôm)</em> Pha sữa bú cữ rạng sáng <span class="sub">Nếu bé không dậy đòi bú → bỏ qua cữ này, bé sẽ bú luôn cữ 7:00 sáng</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
+
+  </div>
+
+  <div class="footer">
+    Gia đình bé Mochi 🌸 — Cô là một phần quan trọng trong hành trình lớn lên của bé!<br>
+    Có gì thắc mắc cứ hỏi mẹ bất kỳ lúc nào nha 💬
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const guideTabs = Array.from(document.querySelectorAll('.guide-tab'));
+    const guidePanels = Array.from(document.querySelectorAll('.guide-panel'));
+    const scheduleBlocks = Array.from(document.querySelectorAll('.schedule-block'));
+    const printableDetails = Array.from(document.querySelectorAll('.intro, .schedule-block'));
+    let printState = [];
+
+    const setActiveGuide = (target) => {
+      guideTabs.forEach((tab) => {
+        tab.classList.toggle('is-active', tab.dataset.guideTarget === target);
+      });
+
+      guidePanels.forEach((panel) => {
+        panel.classList.toggle('is-active', panel.dataset.guidePanel === target);
+      });
+    };
+
+    guideTabs.forEach((tab) => {
+      const handler = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        setActiveGuide(tab.dataset.guideTarget);
+      };
+      // iOS Safari needs touchend — click alone can be swallowed by parent <details>
+      tab.addEventListener('touchend', handler);
+      tab.addEventListener('click', handler);
+    });
+
+    const formatClock = (minutes) => {
+      const hours = Math.floor(minutes / 60) % 24;
+      const mins = minutes % 60;
+      return `${String(hours).padStart(2, '0')}:${String(mins).padStart(2, '0')}`;
+    };
+
+    const isNowInRange = (minutes, start, end) => {
+      if (start < end) {
+        return minutes >= start && minutes < end;
+      }
+
+      return minutes >= start || minutes < end;
+    };
+
+    const getCurrentBlock = () => {
+      const now = new Date();
+      const minutes = (now.getHours() * 60) + now.getMinutes();
+      const currentBlock = scheduleBlocks.find((block) => {
+        const start = Number(block.dataset.start);
+        const end = Number(block.dataset.end);
+        return isNowInRange(minutes, start, end);
+      });
+
+      return { currentBlock, minutes };
+    };
+
+    const getProgressRatio = (minutes, start, end) => {
+      const normalizedMinutes = start < end ? minutes : (minutes < start ? minutes + 1440 : minutes);
+      const normalizedEnd = start < end ? end : end + 1440;
+      const duration = Math.max(1, normalizedEnd - start);
+      const elapsed = Math.min(duration, Math.max(0, normalizedMinutes - start));
+      return elapsed / duration;
+    };
+
+    const isMobile = () => window.matchMedia('(max-width: 640px)').matches;
+
+    const updateCurrentTimeLine = (currentBlock, minutes) => {
+      scheduleBlocks.forEach((block) => {
+        const line = block.querySelector('.current-time-line');
+        if (line) {
+          line.classList.remove('is-visible');
+        }
+      });
+      // Remove all previous mobile badges
+      document.querySelectorAll('.mobile-time-badge').forEach(b => b.remove());
+
+      if (!currentBlock || !currentBlock.open) {
+        return;
+      }
+
+      const activeRow = currentBlock.querySelector('tr.is-active-row');
+      const mobile = isMobile();
+
+      // Mobile: show time badge on active row
+      if (mobile && activeRow) {
+        const isMeTime = activeRow.classList.contains('me-time') || activeRow.classList.contains('me-time-maybe');
+        const badgeColor = isMeTime ? '#27ae60' : '#e75480';
+        const badge = document.createElement('span');
+        badge.className = 'mobile-time-badge';
+        badge.textContent = '⏰ ' + formatClock(minutes);
+        badge.style.cssText = `display:inline-block;background:${badgeColor};color:white;font-size:12px;font-weight:700;padding:4px 12px;border-radius:999px;margin-top:8px;`;
+        const tds = activeRow.querySelectorAll('td');
+        const targetTd = tds[tds.length - 1];
+        if (targetTd) {
+          targetTd.appendChild(badge);
+        }
+      }
+
+      // Position the time line based on actual row boundaries (works desktop + mobile)
+      const wrap = currentBlock.querySelector('.schedule-table-wrap');
+      const line = currentBlock.querySelector('.current-time-line');
+      const label = currentBlock.querySelector('.current-time-label');
+
+      if (!wrap || !line || !label || !activeRow) {
+        return;
+      }
+
+      // Calculate position within the active row based on time progress
+      const rows = Array.from(currentBlock.querySelectorAll('tbody tr'));
+      const rowIndex = rows.indexOf(activeRow);
+      const rowTime = parseTimeText(activeRow.querySelector('td:first-child')?.textContent || '');
+      const nextRow = rows[rowIndex + 1];
+      const nextTime = nextRow ? parseTimeText(nextRow.querySelector('td:first-child')?.textContent || '') : Number(currentBlock.dataset.end);
+      const rowDuration = (nextTime !== null && nextTime > rowTime) ? nextTime - rowTime : 60;
+      const rowProgress = Math.max(0, Math.min(1, (minutes - rowTime) / rowDuration));
+
+      // Get the row's position relative to the wrap container
+      const wrapRect = wrap.getBoundingClientRect();
+      const rowRect = activeRow.getBoundingClientRect();
+      const rowTop = rowRect.top - wrapRect.top;
+      const rowHeight = rowRect.height;
+      const lineTop = Math.max(0, Math.min(wrap.offsetHeight - 2, rowTop + (rowHeight * rowProgress)));
+
+      line.style.top = `${lineTop}px`;
+      label.textContent = formatClock(minutes);
+      line.classList.add('is-visible');
+    };
+
+    // #7 — Parse time text to minutes for row-level highlight
+    const parseTimeText = (text) => {
+      const match = text.match(/(\d{1,2}):(\d{2})/);
+      if (!match) return null;
+      return parseInt(match[1]) * 60 + parseInt(match[2]);
+    };
+
+    const highlightActiveRow = (block, minutes) => {
+      const rows = Array.from(block.querySelectorAll('tbody tr'));
+      rows.forEach(r => r.classList.remove('is-active-row'));
+      // Find the row whose time range contains current minutes
+      let activeRow = null;
+      for (let i = 0; i < rows.length; i++) {
+        const td = rows[i].querySelector('td:first-child');
+        if (!td) continue;
+        const rowTime = parseTimeText(td.textContent);
+        if (rowTime === null) continue;
+        const nextRow = rows[i + 1];
+        const nextTime = nextRow ? parseTimeText(nextRow.querySelector('td:first-child')?.textContent || '') : null;
+        if (nextTime !== null) {
+          if (minutes >= rowTime && minutes < nextTime) { activeRow = rows[i]; break; }
+        } else {
+          if (minutes >= rowTime) { activeRow = rows[i]; }
+        }
+      }
+      if (activeRow) activeRow.classList.add('is-active-row');
+    };
+
+    const focusCurrentBlock = (shouldScroll) => {
+      const { currentBlock, minutes } = getCurrentBlock();
+
+      scheduleBlocks.forEach((block) => {
+        block.classList.toggle('is-current', block === currentBlock);
+      });
+
+      if (!currentBlock) {
+        updateCurrentTimeLine(null, minutes);
+        return;
+      }
+
+      // Force open current block — use both for iOS Safari compatibility
+      currentBlock.open = true;
+      currentBlock.setAttribute('open', '');
+
+      // Use double-rAF to ensure DOM has rendered the open state before measuring
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          highlightActiveRow(currentBlock, minutes);
+          updateCurrentTimeLine(currentBlock, minutes);
+
+          if (shouldScroll) {
+            setTimeout(() => {
+              const activeRow = currentBlock.querySelector('tr.is-active-row');
+              (activeRow || currentBlock).scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }, 300);
+          }
+        });
+      });
+    };
+
+    setActiveGuide('play');
+    focusCurrentBlock(true);
+    window.setInterval(() => {
+      focusCurrentBlock(false);
+    }, 60000);
+
+    window.addEventListener('resize', () => {
+      focusCurrentBlock(false);
+    });
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        focusCurrentBlock(false);
+      }
+    });
+
+    window.addEventListener('beforeprint', () => {
+      printState = printableDetails.map((detail) => detail.open);
+      printableDetails.forEach((detail) => {
+        detail.open = true;
+      });
+    });
+
+    window.addEventListener('afterprint', () => {
+      printableDetails.forEach((detail, index) => {
+        detail.open = printState[index];
+      });
+      focusCurrentBlock(false);
+    });
+  });
+</script>
+
+</body>
+</html>
