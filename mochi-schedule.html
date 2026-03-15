@@ -34,6 +34,32 @@
   }
   .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
   .header p { font-size: 13px; opacity: 0.9; }
+  .lang-switcher {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    display: flex;
+    gap: 4px;
+  }
+  .lang-btn {
+    background: rgba(255,255,255,0.2);
+    border: 1.5px solid rgba(255,255,255,0.4);
+    color: white;
+    border-radius: 8px;
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    font-family: inherit;
+    cursor: pointer;
+    transition: background 0.2s;
+    -webkit-tap-highlight-color: rgba(255,255,255,0.3);
+    touch-action: manipulation;
+  }
+  .lang-btn.is-active {
+    background: white;
+    color: #e75480;
+    border-color: white;
+  }
 
   .intro {
     margin: 20px 24px 0;
@@ -505,22 +531,32 @@
     border-radius: 8px;
   }
 
-  /* #7 — Scroll fade hint on tall expanded blocks (mobile) */
-  @media (max-width: 640px) {
-    .schedule-block[open] .schedule-table-wrap {
-      position: relative;
-    }
-    .schedule-block[open] .schedule-table-wrap::after {
-      content: '';
-      position: sticky;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      display: block;
-      height: 24px;
-      background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,0.9));
-      pointer-events: none;
-    }
+  /* #7 — Global scroll hint chevron (fixed bottom-right) */
+  .scroll-hint {
+    display: none;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    pointer-events: none;
+    z-index: 10;
+    line-height: 1;
+  }
+  .scroll-hint span {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(231,84,128,0.15);
+    color: #e75480;
+    font-size: 16px;
+    backdrop-filter: blur(4px);
+    animation: bounce-hint 2s ease-in-out infinite;
+  }
+  @keyframes bounce-hint {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
   }
 
   @media print {
@@ -538,7 +574,12 @@
 <body>
 
 <div class="card">
-  <div class="header">
+  <div class="header" style="position:relative;">
+    <div class="lang-switcher">
+      <button type="button" class="lang-btn is-active" data-lang="vi">VN</button>
+      <button type="button" class="lang-btn" data-lang="en">EN</button>
+      <button type="button" class="lang-btn" data-lang="ko">KR</button>
+    </div>
     <h1>🌸 Lịch Một Ngày Cùng Bé Mochi</h1>
     <p>Bé Mochi — Trần Khánh Hân</p>
   </div>
@@ -701,7 +742,7 @@
         <table>
           <thead><tr><th>Giờ</th><th>Hoạt động</th></tr></thead>
           <tbody>
-            <tr><td>19:00 - 19:30</td><td>Pha sữa cho Mochi bú cữ tối <span class="sub">Mẹ sẽ hướng dẫn lượng sữa & nhiệt độ nước pha</span></td></tr>
+            <tr><td>19:00 - 19:30</td><td>Pha sữa + Cho Mochi bú cữ tối <span class="sub">Mẹ sẽ hướng dẫn lượng sữa & nhiệt độ nước pha</span></td></tr>
             <tr><td>19:30 – 20:00</td><td>Chơi nhẹ nhàng cùng Mochi <span class="sub">Buổi tối nên chơi êm: ôm bé, kể chuyện, xem hình, nghe nhạc nhẹ — tránh kích thích mạnh</span></td></tr>
             <tr><td>20:00 – 21:00</td><td>Dỗ Mochi ngủ đêm (mẹ phụ cùng) <span class="sub">Tắt đèn bớt, giọng nhỏ lại, vỗ nhẹ — bé sẽ dần dần chìm vào giấc ngủ</span></td></tr>
             <tr class="me-time"><td>Sau khi bé ngủ</td><td>Cô gọi điện gia đình / thời gian cá nhân <span class="me-badge">Thời gian của cô</span> <span class="sub">Gọi điện cho người thân, xem phim, nghỉ ngơi — cô cần được nạp năng lượng!</span></td></tr>
@@ -725,7 +766,7 @@
         <table>
           <thead><tr><th>Giờ</th><th>Hoạt động</th></tr></thead>
           <tbody>
-            <tr><td>23:00 – 00:00</td><td>Pha sữa cho Mochi bú cữ đêm <span class="sub">Bé bú xong thường ngủ lại ngay — cô ngủ tiếp luôn nha</span></td></tr>
+            <tr><td>23:00 – 00:00</td><td>Pha sữa + Cho Mochi bú cữ đêm <span class="sub">Bé bú xong thường ngủ lại ngay — cô ngủ tiếp luôn nha</span></td></tr>
             <tr><td>5:00 - 5:15</td><td><em>(Tùy hôm)</em> Pha sữa bú cữ rạng sáng <span class="sub">Nếu bé không dậy đòi bú → bỏ qua cữ này, bé sẽ bú luôn cữ 7:00 sáng</span></td></tr>
           </tbody>
         </table>
@@ -739,6 +780,8 @@
     Có gì thắc mắc cứ hỏi mẹ bất kỳ lúc nào nha 💬
   </div>
 </div>
+
+<div class="scroll-hint" id="scrollHint"><span>▾</span></div>
 
 <script>
   document.addEventListener('DOMContentLoaded', () => {
@@ -927,8 +970,27 @@
       });
     };
 
+    // #7 — Show/hide global scroll hint (fixed bottom-right)
+    const scrollHint = document.getElementById('scrollHint');
+    const updateScrollHint = () => {
+      // Find any open block whose last row is below the viewport
+      const shouldShow = scheduleBlocks.some((block) => {
+        if (!block.open) return false;
+        const lastRow = block.querySelector('tbody tr:last-child');
+        if (!lastRow) return false;
+        return lastRow.getBoundingClientRect().bottom > window.innerHeight;
+      });
+      scrollHint.style.display = shouldShow ? 'block' : 'none';
+    };
+    window.addEventListener('scroll', updateScrollHint, { passive: true });
+    scheduleBlocks.forEach((block) => {
+      block.addEventListener('toggle', () => setTimeout(updateScrollHint, 100));
+    });
+
     setActiveGuide('play');
     focusCurrentBlock(true);
+    // Delay hint check until after auto-scroll completes (300ms delay + ~700ms smooth scroll)
+    setTimeout(updateScrollHint, 1200);
     window.setInterval(() => {
       focusCurrentBlock(false);
     }, 60000);
@@ -955,6 +1017,293 @@
         detail.open = printState[index];
       });
       focusCurrentBlock(false);
+    });
+
+    // ===== LANGUAGE SWITCHER =====
+    const i18n = {
+      vi: {
+        title: '🌸 Lịch Một Ngày Cùng Bé Mochi',
+        subtitle: 'Bé Mochi — Trần Khánh Hân',
+        introSummary: '👋 Chào cô! Đây là vài điều về Mochi',
+        introDesc: 'Mochi là bé gái rất dễ thương, thích được bế và nghe nói chuyện. Bé đang trong giai đoạn ăn dặm + bú sữa, và mỗi ngày bé đều cần được chơi, ngủ đủ giấc, và cảm nhận sự yêu thương từ người chăm sóc.',
+        introHints: [
+          'Bé thích: được phơi nắng, nghe hát, nằm sấp tập lật (tummy time)',
+          'Bé không thích: tiếng ồn lớn đột ngột, nằm một mình quá lâu',
+          'Tín hiệu bé buồn ngủ: dụi mắt, quấy nhẹ, ngáp',
+          'Tín hiệu bé đói: mút tay, quay đầu tìm ti'
+        ],
+        guideTitle: '📖 Hướng dẫn chăm bé',
+        guideTabs: ['Chơi cùng bé', 'Lưu ý sức khỏe', 'Lời nhắn từ mẹ'],
+        playTitle: '🎮 Gợi ý chơi cùng Mochi (cho bé phát triển vui vẻ)',
+        playItems: [
+          '<strong>Tummy time</strong> — cho bé nằm sấp 3-5 phút, đặt đồ chơi trước mặt để bé với tay (tập cơ cổ & lưng)',
+          '<strong>Hát & nói chuyện</strong> — hát bất kỳ bài gì cô thích! Bé yêu nghe giọng người hơn mọi thứ',
+          '<strong>Sách vải / hình ảnh</strong> — chỉ cho bé xem hình, gọi tên đồ vật, bé sẽ rất chăm chú',
+          '<strong>Lắc lục lạc / đồ chơi có tiếng</strong> — lắc bên trái, bên phải, bé sẽ quay đầu theo (tập thính giác)',
+          '<strong>Massage nhẹ</strong> — xoa nhẹ chân tay bé sau khi tắm, bé rất thích và sẽ rất thư giãn'
+        ],
+        healthTitle: '💗 Lưu ý sức khỏe — Mochi có bệnh tim bẩm sinh',
+        healthItems: [
+          'Bé vẫn vui chơi bình thường, chỉ cần <strong>không để bé khóc quá lâu</strong> hoặc gắng sức quá mức',
+          '<strong>Báo mẹ ngay</strong> nếu thấy: bé thở nhanh bất thường, môi/đầu ngón tay tím tái, hoặc bỏ bú đột ngột',
+          'Khi đi dạo: tránh nơi đông người, khói bụi — chọn chỗ thoáng mát, ít xe cộ',
+          'Đừng lo lắng quá nha cô — mẹ luôn ở gần và sẵn sàng hỗ trợ! Cô chỉ cần quan sát bé bình thường là đủ rồi'
+        ],
+        reassure: '<strong>Một lời nhắn cho cô:</strong> Mọi thứ không cần hoàn hảo đâu nha! Miễn bé được ăn ngủ đúng giờ, được chơi vui, và cảm nhận sự yêu thương từ cô là tuyệt vời lắm rồi. Cô cũng nhớ chăm sóc bản thân, nghỉ ngơi đủ, ăn uống ngon miệng nha. Cảm ơn cô rất nhiều! 💛',
+        meBadge: 'Thời gian của cô',
+        maybeBadge: 'Có thể nghỉ 💤',
+        scrollHint: '▾',
+        footer: ['Gia đình bé Mochi 🌸 — Cô là một phần quan trọng trong hành trình lớn lên của bé!', 'Có gì thắc mắc cứ hỏi mẹ bất kỳ lúc nào nha 💬'],
+        blocks: [
+          { title: '🌅 Buổi Sáng', tip: 'Lúc Mochi vui nhất, tận dụng chơi & kết nối với bé nha!', rows: [
+            ['Mochi dậy — rửa mặt nhẹ bằng khăn ấm, thay tã cho bé', 'Nói chuyện vui với bé khi thay tã, bé rất thích nghe giọng người lớn'],
+            ['Đưa Mochi ra phơi nắng', 'Nắng nhẹ buổi sáng rất tốt cho bé — chỉ cần 15-20 phút, tránh nắng gắt'],
+            ['Cho Mochi bú cữ sáng', 'Bế bé nghiêng khoảng 45°, vỗ ợ hơi sau khi bú xong'],
+            ['Chơi cùng Mochi', 'Gợi ý: tummy time (nằm sấp), lắc lục lạc, hát ru, đọc sách vải, xem hình màu sắc'],
+            ['Mochi ngủ giấc sáng', 'Cô nghỉ ngơi thoải mái, uống nước, lướt điện thoại — cô xứng đáng được nghỉ!'],
+            ['Mochi dậy — thay tã, ôm bé một chút cho bé tỉnh dần', 'Đừng vội vàng, cho bé 5-10 phút tỉnh ngủ từ từ']
+          ]},
+          { title: '🍽️ Buổi Trưa', tip: 'Bé ăn dặm do mẹ lo, cô phụ chuẩn bị & dọn dẹp thôi nha!', rows: [
+            ['Phụ mẹ chuẩn bị ghế ăn dặm & dụng cụ cho Mochi', 'Lấy ghế, yếm, khăn lau, chén muỗng — mẹ sẽ hướng dẫn chỗ để'],
+            ['Mochi ăn dặm (mẹ cho ăn)', 'Cô có thể ngồi chơi cùng bé hoặc tranh thủ nghỉ tay'],
+            ['Rửa chén bát, dụng cụ ăn dặm của Mochi', ''],
+            ['Cô ăn trưa', 'Ăn ngon miệng nha cô, cứ thoải mái!'],
+            ['Soạn đồ tắm, phụ mẹ tắm cho Mochi', 'Chuẩn bị khăn, quần áo sạch, tã mới — mẹ sẽ tắm chính, cô phụ giữ bé'],
+            ['Giặt đồ bé + phơi', ''],
+            ['Dỗ Mochi ngủ trưa', 'Bế nhẹ, vỗ mông đều đều, hát nhỏ — khi bé ngủ say, cô được ngủ cùng luôn nha'],
+            ['Mochi ngủ trưa — cô nghỉ ngơi', 'Bé có thể dậy sớm hơn (14:00-15:30) — nếu bé ngủ say, cô tranh thủ ngủ hoặc nghỉ thoải mái nha!']
+          ]},
+          { title: '☀️ Buổi Chiều', tip: 'Bé thích đi dạo & cô có thời gian riêng dài nhất trong ngày!', rows: [
+            ['Mochi dậy — rửa mặt, thay tã', 'Cho bé uống chút nước nếu cần'],
+            ['Đưa Mochi đi dạo', 'Đi quanh khu nhà, cho bé ngắm cây cối — tránh nơi đông, nhiều khói bụi nha'],
+            ['Mẹ cho Mochi ăn dặm chiều', 'Cô không cần lo phần này, mẹ xử lý'],
+            ['Quét sân, đổ rác', 'Việc nhẹ nhàng thôi, không cần cầu kỳ'],
+            ['Phụ mẹ lau người, thay đồ buổi tối cho Mochi', ''],
+            ['Cô ăn uống, tắm rửa, nghỉ ngơi', '1 tiếng trọn vẹn cho cô — ăn tối, tắm, nghỉ ngơi thoải mái nha!'],
+            ['Cô nghỉ thêm hoặc chuẩn bị cho buổi tối', 'Nếu rảnh thì nghỉ tiếp, hoặc chuẩn bị sữa cho cữ tối']
+          ]},
+          { title: '🌙 Buổi Tối', tip: 'Bé hơi quấy hơn ban ngày, bình tĩnh nha cô, có mẹ phụ cùng!', rows: [
+            ['Pha sữa cho Mochi bú cữ tối', 'Mẹ sẽ hướng dẫn lượng sữa & nhiệt độ nước pha'],
+            ['Chơi nhẹ nhàng cùng Mochi', 'Buổi tối nên chơi êm: ôm bé, kể chuyện, xem hình, nghe nhạc nhẹ — tránh kích thích mạnh'],
+            ['Dỗ Mochi ngủ đêm (mẹ phụ cùng)', 'Tắt đèn bớt, giọng nhỏ lại, vỗ nhẹ — bé sẽ dần dần chìm vào giấc ngủ'],
+            ['Cô gọi điện gia đình / thời gian cá nhân', 'Gọi điện cho người thân, xem phim, nghỉ ngơi — cô cần được nạp năng lượng!']
+          ]},
+          { title: '🌛 Đêm Khuya', tip: 'Chỉ dậy pha sữa rồi ngủ tiếp thôi, không cần thức lâu', rows: [
+            ['Pha sữa cho Mochi bú cữ đêm', 'Bé bú xong thường ngủ lại ngay — cô ngủ tiếp luôn nha'],
+            ['<em>(Tùy hôm)</em> Pha sữa bú cữ rạng sáng', 'Nếu bé không dậy đòi bú → bỏ qua cữ này, bé sẽ bú luôn cữ 7:00 sáng']
+          ]}
+        ]
+      },
+      en: {
+        title: '🌸 A Day with Baby Mochi',
+        subtitle: 'Baby Mochi — Trần Khánh Hân',
+        introSummary: '👋 Hi! Here are some things about Mochi',
+        introDesc: 'Mochi is a very cute baby girl who loves being held and talked to. She\'s in the weaning + nursing stage, and needs play time, enough sleep, and lots of love from her caregiver every day.',
+        introHints: [
+          'She likes: sunbathing, listening to singing, tummy time',
+          'She doesn\'t like: sudden loud noises, being alone too long',
+          'Sleepy signs: rubbing eyes, fussing gently, yawning',
+          'Hungry signs: sucking hands, turning head to find milk'
+        ],
+        guideTitle: '📖 Baby Care Guide',
+        guideTabs: ['Playing with Baby', 'Health Notes', 'Message from Mom'],
+        playTitle: '🎮 Play Ideas for Mochi (for happy development)',
+        playItems: [
+          '<strong>Tummy time</strong> — let baby lie face down 3-5 min, place toys in front to reach for (neck & back muscles)',
+          '<strong>Sing & talk</strong> — sing any song you like! Baby loves human voices more than anything',
+          '<strong>Fabric books / pictures</strong> — point and name objects, baby will focus intently',
+          '<strong>Rattle / sound toys</strong> — shake left, right, baby will turn head to follow (hearing practice)',
+          '<strong>Gentle massage</strong> — softly rub baby\'s limbs after bath, she loves it and relaxes'
+        ],
+        healthTitle: '💗 Health Notes — Mochi has a congenital heart condition',
+        healthItems: [
+          'Baby plays normally, just <strong>don\'t let her cry too long</strong> or overexert',
+          '<strong>Alert mom immediately</strong> if: unusually fast breathing, blue lips/fingertips, or sudden refusal to feed',
+          'When going out: avoid crowded, dusty areas — choose open, cool spots with little traffic',
+          'Don\'t worry too much — mom is always nearby and ready to help! Just observe baby normally'
+        ],
+        reassure: '<strong>A message for you:</strong> Everything doesn\'t need to be perfect! As long as baby eats and sleeps on time, plays happily, and feels your love — that\'s wonderful. Please take care of yourself too, rest enough, eat well. Thank you so much! 💛',
+        meBadge: 'Your Time',
+        maybeBadge: 'May Rest 💤',
+        scrollHint: '▾',
+        footer: ['Mochi\'s Family 🌸 — You\'re an important part of baby\'s growing journey!', 'Any questions, just ask mom anytime 💬'],
+        blocks: [
+          { title: '🌅 Morning', tip: 'Mochi is happiest now, great time to play & bond!', rows: [
+            ['Mochi wakes up — gentle face wash with warm cloth, change diaper', 'Chat happily during diaper change, she loves hearing adults talk'],
+            ['Take Mochi out for sunshine', 'Gentle morning sun is great — just 15-20 min, avoid harsh sun'],
+            ['Morning nursing session', 'Hold baby at about 45°, burp after feeding'],
+            ['Play with Mochi', 'Ideas: tummy time, rattle, lullabies, fabric books, colorful pictures'],
+            ['Mochi\'s morning nap', 'Rest freely, drink water, use your phone — you deserve a break!'],
+            ['Mochi wakes up — change diaper, cuddle to help her wake gently', 'No rush, give baby 5-10 min to wake slowly']
+          ]},
+          { title: '🍽️ Midday', tip: 'Mom handles solid food, you just help prep & clean up!', rows: [
+            ['Help mom prepare high chair & utensils', 'Get chair, bib, cloth, bowl & spoon — mom will show you where'],
+            ['Mochi eats solid food (mom feeds)', 'You can sit with baby or take a short rest'],
+            ['Wash baby\'s dishes & utensils', ''],
+            ['Your lunch', 'Enjoy your meal, take your time!'],
+            ['Prepare bath supplies, help mom bathe Mochi', 'Prepare towel, clean clothes, new diaper — mom leads, you assist'],
+            ['Wash baby\'s clothes + hang to dry', ''],
+            ['Put Mochi down for afternoon nap', 'Hold gently, pat rhythmically, sing softly — when baby sleeps, you can nap too'],
+            ['Mochi naps — your rest time', 'Baby may wake early (14:00-15:30) — if she sleeps soundly, rest or nap freely!']
+          ]},
+          { title: '☀️ Afternoon', tip: 'Baby loves walks & you get the longest personal time!', rows: [
+            ['Mochi wakes up — wash face, change diaper', 'Give baby some water if needed'],
+            ['Take Mochi for a walk', 'Walk around the neighborhood, let baby see trees — avoid crowded, dusty areas'],
+            ['Mom feeds Mochi afternoon solid food', 'You don\'t need to handle this, mom\'s got it'],
+            ['Sweep yard, take out trash', 'Light work, nothing fancy'],
+            ['Help mom wipe baby down, change into evening clothes', ''],
+            ['Your dinner, shower, rest', 'A full hour for you — dinner, shower, relax!'],
+            ['Extra rest or prepare for evening', 'If free, rest more, or prep milk for evening feed']
+          ]},
+          { title: '🌙 Evening', tip: 'Baby may be fussier, stay calm — mom will help!', rows: [
+            ['Make milk for Mochi\'s evening feed', 'Mom will guide milk amount & water temperature'],
+            ['Gentle play with Mochi', 'Evening play should be calm: cuddle, stories, pictures, soft music — avoid strong stimulation'],
+            ['Put Mochi to sleep (mom helps)', 'Dim lights, speak softly, pat gently — baby will gradually fall asleep'],
+            ['Call family / personal time', 'Call loved ones, watch shows, rest — you need to recharge!']
+          ]},
+          { title: '🌛 Late Night', tip: 'Just wake for milk then go back to sleep', rows: [
+            ['Make milk for night feed', 'Baby usually falls right back asleep — you go back to sleep too'],
+            ['<em>(Some nights)</em> Early morning feed', 'If baby doesn\'t wake → skip this, she\'ll feed at 7:00 AM']
+          ]}
+        ]
+      },
+      ko: {
+        title: '🌸 모치와 함께하는 하루',
+        subtitle: '아기 모치 — 쩐 카인 한',
+        introSummary: '👋 안녕하세요! 모치에 대해 알아주세요',
+        introDesc: '모치는 안기는 것과 대화를 좋아하는 귀여운 여자 아기예요. 이유식과 수유를 함께 하고 있으며, 매일 놀이, 충분한 수면, 돌봐주시는 분의 사랑이 필요해요.',
+        introHints: [
+          '좋아하는 것: 일광욕, 노래 듣기, 터미타임',
+          '싫어하는 것: 갑작스러운 큰 소리, 오래 혼자 있기',
+          '졸린 신호: 눈 비비기, 약간 보채기, 하품',
+          '배고픈 신호: 손 빨기, 젖 찾으려 고개 돌리기'
+        ],
+        guideTitle: '📖 아기 돌봄 가이드',
+        guideTabs: ['아기와 놀기', '건강 주의사항', '엄마의 메시지'],
+        playTitle: '🎮 모치와 놀기 (즐거운 발달을 위해)',
+        playItems: [
+          '<strong>터미타임</strong> — 3-5분 엎드려 놀기, 앞에 장난감을 놓아주세요 (목과 등 근육 발달)',
+          '<strong>노래와 대화</strong> — 아무 노래나 불러주세요! 아기는 사람 목소리를 가장 좋아해요',
+          '<strong>천 책/그림</strong> — 사물을 가리키며 이름을 말해주세요, 아기가 집중해요',
+          '<strong>딸랑이/소리 장난감</strong> — 좌우로 흔들면 아기가 고개를 돌려 따라가요 (청각 발달)',
+          '<strong>부드러운 마사지</strong> — 목욕 후 팔다리를 부드럽게 문질러주세요, 편안해져요'
+        ],
+        healthTitle: '💗 건강 주의사항 — 모치는 선천성 심장병이 있어요',
+        healthItems: [
+          '아기는 정상적으로 놀 수 있어요, <strong>너무 오래 울거나 과도하게 힘들지 않게</strong> 해주세요',
+          '<strong>즉시 엄마에게 알려주세요:</strong> 비정상적으로 빠른 호흡, 입술/손끝 파란색, 갑자기 수유 거부',
+          '외출 시: 사람 많고 먼지 많은 곳 피하기 — 시원하고 깨끗한 곳을 선택해주세요',
+          '너무 걱정하지 마세요 — 엄마가 항상 가까이 있고 도와드릴 준비가 되어 있어요!'
+        ],
+        reassure: '<strong>한마디 전해드려요:</strong> 모든 것이 완벽할 필요 없어요! 아기가 제때 먹고 자고, 즐겁게 놀고, 사랑을 느끼면 충분해요. 본인도 잘 챙기시고, 충분히 쉬시고, 맛있게 드세요. 정말 감사합니다! 💛',
+        meBadge: '나의 시간',
+        maybeBadge: '쉴 수 있어요 💤',
+        scrollHint: '▾',
+        footer: ['모치네 가족 🌸 — 아기의 성장 여정에서 소중한 분이에요!', '궁금한 점 있으면 언제든 엄마에게 물어보세요 💬'],
+        blocks: [
+          { title: '🌅 아침', tip: '모치가 가장 기분 좋을 때, 놀이와 교감에 좋아요!', rows: [
+            ['모치 기상 — 따뜻한 수건으로 세수, 기저귀 교체', '기저귀 갈 때 즐겁게 말해주세요, 아기가 어른 목소리를 좋아해요'],
+            ['모치 햇볕 쬐기', '아침 햇볕이 좋아요 — 15-20분만, 강한 햇볕은 피해주세요'],
+            ['아침 수유', '약 45도로 안고, 수유 후 트림시켜 주세요'],
+            ['모치와 놀기', '추천: 터미타임, 딸랑이, 자장가, 천 책, 알록달록 그림'],
+            ['모치 아침 낮잠', '편하게 쉬세요, 물 마시고, 핸드폰 보세요 — 쉴 자격이 있어요!'],
+            ['모치 기상 — 기저귀 교체, 안아주며 천천히 깨우기', '서두르지 마세요, 5-10분 천천히 깨워주세요']
+          ]},
+          { title: '🍽️ 점심', tip: '이유식은 엄마가 담당, 준비와 정리만 도와주세요!', rows: [
+            ['엄마 도와 유아 의자 & 식기 준비', '의자, 턱받이, 수건, 그릇 & 숟가락 — 엄마가 위치를 알려드려요'],
+            ['모치 이유식 (엄마가 먹여요)', '아기와 함께 앉아있거나 잠깐 쉬어도 돼요'],
+            ['아기 식기 설거지', ''],
+            ['점심 식사', '맛있게 드세요, 편하게!'],
+            ['목욕 준비, 엄마 도와 모치 목욕', '수건, 깨끗한 옷, 새 기저귀 준비 — 엄마가 주도, 보조해 주세요'],
+            ['아기 빨래 + 널기', ''],
+            ['모치 낮잠 재우기', '부드럽게 안고, 리듬감 있게 토닥, 작게 노래 — 아기가 잠들면 같이 자도 돼요'],
+            ['모치 낮잠 — 휴식 시간', '아기가 일찍 깨울 수 있어요 (14:00-15:30) — 푹 자면 편하게 쉬세요!']
+          ]},
+          { title: '☀️ 오후', tip: '아기는 산책을 좋아해요 & 가장 긴 개인 시간!', rows: [
+            ['모치 기상 — 세수, 기저귀 교체', '필요하면 물을 조금 먹여주세요'],
+            ['모치 산책', '동네 산책, 나무 구경 — 사람 많고 먼지 많은 곳은 피해주세요'],
+            ['엄마가 모치 오후 이유식', '이건 신경 쓸 필요 없어요, 엄마가 해요'],
+            ['마당 쓸기, 쓰레기 버리기', '가벼운 일이에요, 대충해도 돼요'],
+            ['엄마 도와 모치 닦기, 저녁 옷 갈아입히기', ''],
+            ['저녁 식사, 샤워, 휴식', '온전한 1시간 — 저녁, 샤워, 편히 쉬세요!'],
+            ['추가 휴식 또는 저녁 준비', '여유 있으면 더 쉬거나, 저녁 수유용 우유 준비']
+          ]},
+          { title: '🌙 저녁', tip: '아기가 낮보다 보챌 수 있어요, 차분하게 — 엄마가 도와줘요!', rows: [
+            ['모치 저녁 수유용 우유 타기', '엄마가 우유 양과 물 온도를 알려드려요'],
+            ['모치와 부드럽게 놀기', '저녁에는 차분하게: 안기, 이야기, 그림, 잔잔한 음악 — 강한 자극 피하기'],
+            ['모치 재우기 (엄마 도움)', '불 줄이고, 작은 목소리로, 토닥토닥 — 아기가 서서히 잠들어요'],
+            ['가족 전화 / 개인 시간', '가족에게 전화, 영상 보기, 휴식 — 에너지 충전이 필요해요!']
+          ]},
+          { title: '🌛 심야', tip: '우유 타고 다시 자면 돼요, 오래 깨어있을 필요 없어요', rows: [
+            ['모치 야간 수유용 우유 타기', '아기는 보통 바로 다시 잠들어요 — 같이 다시 자세요'],
+            ['<em>(어떤 날만)</em> 새벽 수유', '아기가 안 깨면 → 건너뛰세요, 7시 아침 수유에 먹여요']
+          ]}
+        ]
+      }
+    };
+
+    // Apply language to all DOM elements
+    const applyLang = (lang) => {
+      const t = i18n[lang];
+      // Header
+      document.querySelector('.header h1').textContent = t.title;
+      document.querySelector('.header p').textContent = t.subtitle;
+      // Intro
+      document.querySelector('.intro summary').innerHTML = t.introSummary;
+      document.querySelector('.intro-content > p').textContent = t.introDesc;
+      document.querySelectorAll('.intro-content li').forEach((li, i) => { if (t.introHints[i]) li.textContent = t.introHints[i]; });
+      // Guide hub
+      document.querySelector('.guide-hub-title').textContent = t.guideTitle;
+      guideTabs.forEach((tab, i) => { if (t.guideTabs[i]) tab.textContent = t.guideTabs[i]; });
+      // Guide panels
+      document.querySelector('[data-guide-panel="play"] .note-title').innerHTML = t.playTitle;
+      document.querySelectorAll('[data-guide-panel="play"] li').forEach((li, i) => { if (t.playItems[i]) li.innerHTML = t.playItems[i]; });
+      document.querySelector('[data-guide-panel="health"] .note-title').innerHTML = t.healthTitle;
+      document.querySelectorAll('[data-guide-panel="health"] li').forEach((li, i) => { if (t.healthItems[i]) li.innerHTML = t.healthItems[i]; });
+      document.querySelector('[data-guide-panel="reassure"] .reassure p').innerHTML = t.reassure;
+      // Me-time badges
+      document.querySelectorAll('.me-badge').forEach(b => { b.textContent = t.meBadge; });
+      document.querySelectorAll('.me-badge-maybe').forEach(b => { b.textContent = t.maybeBadge; });
+      // Schedule blocks
+      scheduleBlocks.forEach((block, bi) => {
+        const bd = t.blocks[bi];
+        if (!bd) return;
+        block.querySelector('.summary-title').textContent = bd.title;
+        block.querySelector('.schedule-block summary .tip').textContent = bd.tip;
+        const rows = Array.from(block.querySelectorAll('tbody tr'));
+        rows.forEach((row, ri) => {
+          const rd = bd.rows[ri];
+          if (!rd) return;
+          const actTd = row.querySelector('td:last-child');
+          if (!actTd) return;
+          // Rebuild innerHTML preserving badges
+          const badge = actTd.querySelector('.me-badge, .me-badge-maybe');
+          const mobileBadge = actTd.querySelector('.mobile-time-badge');
+          let html = rd[0];
+          if (badge) html += ' ' + badge.outerHTML;
+          if (rd[1]) html += ' <span class="sub">' + rd[1] + '</span>';
+          if (mobileBadge) html += mobileBadge.outerHTML;
+          actTd.innerHTML = html;
+        });
+      });
+      // Footer
+      const footer = document.querySelector('.footer');
+      footer.innerHTML = t.footer[0] + '<br>' + t.footer[1];
+      // Update lang buttons
+      document.querySelectorAll('.lang-btn').forEach(b => {
+        b.classList.toggle('is-active', b.dataset.lang === lang);
+      });
+    };
+
+    // Language button handlers
+    document.querySelectorAll('.lang-btn').forEach(btn => {
+      const handler = (e) => {
+        e.stopPropagation();
+        e.preventDefault();
+        applyLang(btn.dataset.lang);
+      };
+      btn.addEventListener('touchend', handler);
+      btn.addEventListener('click', handler);
     });
   });
 </script>
